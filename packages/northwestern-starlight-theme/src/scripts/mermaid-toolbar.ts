@@ -246,7 +246,7 @@ function initMermaidToolbar(): number {
             if (!svg) return;
 
             const action = btn.dataset.action;
-            if (action === "fullscreen") openFullscreen(svg, container, index, btn);
+            if (action === "fullscreen") openFullscreen(svg, container, index, btn, e.detail === 0);
             else if (action === "download-svg") {
                 downloadSvg(svg, container, index);
                 showSuccess(btn, "Downloaded!");
@@ -256,7 +256,7 @@ function initMermaidToolbar(): number {
     return injected;
 }
 
-function openFullscreen(svg: SVGElement, container: HTMLElement, index: number, triggerBtn?: HTMLElement) {
+function openFullscreen(svg: SVGElement, container: HTMLElement, index: number, triggerBtn?: HTMLElement, keyboardOpen = false) {
     const overlay = document.createElement("div");
     overlay.className = "nu-mermaid-overlay";
     overlay.setAttribute("role", "dialog");
@@ -546,9 +546,11 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number, 
         if (e.target === overlay) close();
     });
 
-    // Focus first button in controls on open
-    const firstBtn = controls.querySelector<HTMLElement>(".nu-mermaid-btn");
-    firstBtn?.focus();
+    // Focus first button in controls only for keyboard users
+    if (keyboardOpen) {
+        const firstBtn = controls.querySelector<HTMLElement>(".nu-mermaid-btn");
+        firstBtn?.focus();
+    }
 
     function close() {
         overlay.style.opacity = "0";
