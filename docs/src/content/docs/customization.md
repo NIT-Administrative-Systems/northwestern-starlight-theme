@@ -127,7 +127,9 @@ All three respect existing overrides. If you set `Hero`, `EditLink`, or `ThemeSe
 
 ## Mermaid Diagrams
 
-Mermaid support is opt-in. Install `astro-mermaid` and `mermaid`, then add the integration:
+Mermaid support is opt-in. When enabled, the theme applies Northwestern colors to all diagram types and adds a completely custom fullscreen viewer with pan/zoom, SVG download, source copying, and touch support.
+
+Install `astro-mermaid` and `mermaid`, then add the integration:
 
 ```diff lang="ts"
 +import { northwesternMermaid } from "@nu-appdev/northwestern-starlight-theme/mermaid";
