@@ -450,7 +450,7 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
             window.removeEventListener("mouseup", onMouseUp);
             document.body.style.overflow = "";
             overlay.remove();
-        }, 150);
+        }, 200);
     }
 }
 
