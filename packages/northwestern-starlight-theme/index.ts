@@ -1,3 +1,6 @@
+import { copyFileSync, existsSync, mkdirSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import type { StarlightPlugin } from "@astrojs/starlight/types";
 
 export interface NorthwesternHomepageConfig {
@@ -59,10 +62,30 @@ export default function northwesternTheme(config: NorthwesternThemeConfig = {}):
         name: "northwestern-starlight-theme",
         hooks: {
             async "config:setup"({ config: starlightConfig, updateConfig, addIntegration, logger }) {
+                // Apply default favicon if consumer hasn't set one
+                const consumerSetFavicon =
+                    starlightConfig.favicon && (starlightConfig.favicon as { href: string }).href !== "/favicon.svg";
+
                 addIntegration({
                     name: "northwestern-theme-config",
                     hooks: {
-                        "astro:config:setup": ({ updateConfig: updateAstroConfig }) => {
+                        "astro:config:setup": ({ config: astroConfig, updateConfig: updateAstroConfig }) => {
+                            // Copy bundled favicon to public/ if consumer hasn't set a custom one
+                            if (!consumerSetFavicon) {
+                                const publicDir =
+                                    astroConfig.publicDir instanceof URL
+                                        ? fileURLToPath(astroConfig.publicDir)
+                                        : String(astroConfig.publicDir);
+                                const dest = join(publicDir, "favicon.png");
+
+                                if (!existsSync(dest)) {
+                                    const src = join(dirname(fileURLToPath(import.meta.url)), "src", "favicon.png");
+                                    mkdirSync(dirname(dest), { recursive: true });
+                                    copyFileSync(src, dest);
+                                    logger.info("Copied Northwestern favicon to public/favicon.png");
+                                }
+                            }
+
                             updateAstroConfig({
                                 vite: {
                                     plugins: [
@@ -102,6 +125,7 @@ export default function northwesternTheme(config: NorthwesternThemeConfig = {}):
                 }
 
                 updateConfig({
+                    ...(consumerSetFavicon ? {} : { favicon: "/favicon.png" }),
                     components: {
                         ...(starlightConfig.components ?? {}),
                         Hero:

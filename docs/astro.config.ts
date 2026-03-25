@@ -14,7 +14,6 @@ export default defineConfig({
         starlight({
             plugins: [northwesternTheme({ homepage: { layout: "split" } }), starlightChangelogs()],
             title: "Northwestern Starlight Theme",
-            favicon: "/favicon.ico",
             editLink: {
                 baseUrl: "https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/edit/main/docs/",
             },
