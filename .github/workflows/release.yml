@@ -126,5 +126,3 @@ jobs:
       - name: Publish to npm
         working-directory: packages/northwestern-starlight-theme
         run: pnpm publish --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

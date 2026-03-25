@@ -1,5 +1,5 @@
 <h1 align="center">
-    <img src="/art/logo.svg" width="80" alt="Northwestern Starlight Theme"><br/>
+    <img src="https://raw.githubusercontent.com/NIT-Administrative-Systems/northwestern-starlight-theme/main/art/logo.svg" width="80" alt="Northwestern Starlight Theme"><br/>
     Northwestern Starlight Theme
 </h1>
 
