@@ -588,7 +588,7 @@ function getDiagramType(container: Element): string {
     return slugify(raw.replace(/[-_](v\d+|beta)$/i, "").replace(/(diagram|chart)$/i, "")) || "diagram";
 }
 
-function buildFilename(container: Element, index: number): string {
+function buildFilename(container: Element): string {
     const site = getSiteSlug();
     const page = getPageSlug();
     const type = getDiagramType(container);
@@ -608,7 +608,7 @@ function downloadSvg(svg: SVGElement, container: Element, index: number) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = buildFilename(container, index);
+    a.download = buildFilename(container);
     a.click();
     URL.revokeObjectURL(url);
 }
