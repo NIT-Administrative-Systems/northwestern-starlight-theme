@@ -12,15 +12,34 @@
         right: 0.5rem;
         z-index: 2;
         display: flex;
-        gap: 0.25rem;
+        gap: 1px;
         align-items: center;
+        padding: 0;
+        overflow: hidden;
+        background: var(--nu-border-color);
+        border: 1px solid var(--nu-border-color);
         opacity: 0;
+
+        /* stylelint-disable-next-line property-no-vendor-prefix -- Safari requires prefix */
+        -webkit-backdrop-filter: blur(12px) saturate(1.2);
+        backdrop-filter: blur(12px) saturate(1.2);
         transition: opacity var(--nu-transition-fast);
     }
 
     .mermaid:hover .nu-mermaid-toolbar,
     .mermaid:focus-within .nu-mermaid-toolbar {
         opacity: 1;
+    }
+
+    /* Touch devices can't hover — keep toolbar visible */
+    @media (hover: none) {
+        .nu-mermaid-toolbar {
+            opacity: 0.8;
+        }
+
+        .mermaid:active .nu-mermaid-toolbar {
+            opacity: 1;
+        }
     }
 
     .nu-mermaid-btn {
@@ -36,11 +55,15 @@
         line-height: 1;
         color: var(--nu-color-text-muted);
         cursor: pointer;
-        background: var(--nu-card-bg);
-        border: 1px solid var(--nu-border-color);
+        background: rgb(255 255 255 / 85%);
+        border: none;
         transition:
             color var(--nu-transition-fast),
             background var(--nu-transition-fast);
+    }
+
+    :root:not([data-theme="light"]) .nu-mermaid-btn {
+        background: rgb(30 30 30 / 85%);
     }
 
     .nu-mermaid-btn svg {
@@ -51,13 +74,18 @@
         pointer-events: none;
     }
 
+    .nu-mermaid-btn:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 0.25rem var(--nu-focus-shadow-color);
+    }
+
     .nu-mermaid-btn:hover {
         color: var(--nu-color-text);
-        background: #ebedf0;
+        background: var(--nu-hover-bg);
     }
 
     :root:not([data-theme="light"]) .nu-mermaid-btn:hover {
-        background: #3a3a3a;
+        background: var(--nu-hover-bg);
     }
 
     .nu-mermaid-btn.nu-mermaid-success {
@@ -72,7 +100,8 @@
 
     .nu-mermaid-overlay-controls .nu-mermaid-btn.nu-mermaid-success {
         color: #fff !important;
-        background: var(--nu-color-success) !important;
+        background: rgb(0 134 86 / 60%) !important;
+        border-color: rgb(0 134 86 / 80%) !important;
     }
 
     .nu-mermaid-overlay {
@@ -82,7 +111,7 @@
         display: flex;
         flex-direction: column;
         background: #f3f5f7;
-        transition: opacity 150ms ease;
+        transition: opacity 200ms ease;
     }
 
     :root:not([data-theme="light"]) .nu-mermaid-overlay {
@@ -90,29 +119,38 @@
     }
 
     .nu-mermaid-overlay-controls {
+        box-sizing: border-box;
         display: flex;
+        flex-shrink: 0;
         gap: 0.25rem;
         align-items: center;
         height: var(--sl-nav-height);
         padding: 0 1.5rem;
         background: var(--nu-topbar-bg);
+        border-bottom: 1px solid var(--nu-border-color);
     }
 
     .nu-mermaid-overlay-controls .nu-mermaid-btn {
-        width: 1.75rem;
-        height: 1.75rem;
-        color: var(--nu-color-text-muted);
-        background: var(--nu-card-bg);
-        border: 1px solid var(--nu-border-color);
+        width: auto;
+        height: auto;
+        padding: 0.5rem;
+        color: #fff;
+        background: rgb(255 255 255 / 15%);
+        border: 1px solid rgb(255 255 255 / 25%);
+    }
+
+    .nu-mermaid-overlay-controls .nu-mermaid-btn svg {
+        width: 16px;
+        height: 16px;
     }
 
     .nu-mermaid-overlay-controls .nu-mermaid-btn:hover {
-        color: var(--nu-color-text);
-        background: #ebedf0;
+        color: #fff;
+        background: rgb(255 255 255 / 25%);
     }
 
     :root:not([data-theme="light"]) .nu-mermaid-overlay-controls .nu-mermaid-btn:hover {
-        background: #3a3a3a;
+        background: rgb(255 255 255 / 25%);
     }
 
     .nu-mermaid-separator {
@@ -128,13 +166,13 @@
 
     .nu-mermaid-overlay-controls .nu-mermaid-close {
         color: #fff;
-        background: var(--nu-color-danger);
-        border-color: var(--nu-color-danger);
+        background: rgb(255 255 255 / 20%);
+        border-color: rgb(255 255 255 / 30%);
     }
 
     .nu-mermaid-overlay-controls .nu-mermaid-close:hover {
-        background: var(--nu-dark-orange);
-        border-color: var(--nu-dark-orange);
+        background: rgb(255 255 255 / 35%);
+        border-color: rgb(255 255 255 / 40%);
     }
 
     .nu-mermaid-viewport {
@@ -143,6 +181,7 @@
         align-items: center;
         justify-content: center;
         overflow: hidden;
+        touch-action: none;
         cursor: grab;
     }
 
