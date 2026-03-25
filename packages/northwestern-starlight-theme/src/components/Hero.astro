@@ -7,11 +7,12 @@ const PAGE_TITLE_ID = "_top";
 const { data } = Astro.locals.starlightRoute.entry;
 const { title = data.title, tagline, image, actions = [] } = data.hero || {};
 
+const imageWidthPx = parseInt(themeConfig.homepage.imageWidth, 10) || 500;
+
 const imageAttrs = {
     loading: "eager" as const,
     decoding: "async" as const,
-    width: 400,
-    height: 400,
+    width: imageWidthPx,
     alt: image?.alt || "",
 };
 
@@ -32,9 +33,10 @@ if (image) {
 const hasImage = Boolean(darkImage || lightImage || rawHtml);
 const isSplit = hasImage && themeConfig.homepage.layout === "split";
 const showTitle = themeConfig.homepage.showTitle;
+const imageWidth = themeConfig.homepage.imageWidth;
 ---
 
-<div class:list={["hero", { "hero--split": isSplit }]}>
+<div class:list={["hero", { "hero--split": isSplit }]} style={`--hero-image-width: ${imageWidth};`}>
     {
         isSplit ? (
             <>
@@ -163,7 +165,7 @@ const showTitle = themeConfig.homepage.showTitle;
     .hero-image-centered .hero-image,
     .hero-image-centered .hero-html {
         object-fit: contain;
-        width: min(90%, 500px);
+        width: min(90%, var(--hero-image-width, 500px));
         height: auto;
     }
 
