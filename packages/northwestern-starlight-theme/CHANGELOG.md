@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Fullscreen mermaid viewer: wheel zoom and double-click zoom anchor to the pointer position.
+- Fullscreen Mermaid viewer: wheel zoom and double-click zoom anchor to the pointer position.
 - Zoom level badge (e.g. `84%`) in the fullscreen viewer.
 - GFM footnote styles: superscript `[n]` reference markers, footnotes section with separator, styled `↩︎` back-references.
 
@@ -22,8 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Accessibility
 
-- Fullscreen mermaid overlay: `role="dialog"`, `aria-modal`, focus trap, focus restore on close.
+- Fullscreen Mermaid overlay: `role="dialog"`, `aria-modal`, focus trap, focus restore on close.
 - White focus rings on overlay controls, theme toggle, and menu button (all sit on dark backgrounds where the purple ring was invisible).
+- Inline Mermaid toolbar buttons use a solid accent outline on focus instead of the near-invisible shadow ring.
 
 ## [1.1.1] - 2026-03-25
 
