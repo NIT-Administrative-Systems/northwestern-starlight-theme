@@ -7,7 +7,8 @@
 
 @layer northwestern {
     .site-title,
-    .header a,
+    .header > a,
+    .header > nav a,
     .social-icons a,
     starlight-theme-select,
     starlight-theme-select label,
