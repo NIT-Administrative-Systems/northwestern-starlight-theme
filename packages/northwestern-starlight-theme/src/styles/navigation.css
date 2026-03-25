@@ -59,6 +59,13 @@
         line-height: 1 !important;
     }
 
+    /* stylelint-disable-next-line selector-id-pattern -- Starlight's own ID */
+    #starlight__search input:focus {
+        --pagefind-ui-border: var(--nu-focus-border) !important;
+        outline: none !important;
+        box-shadow: 0 0 0 0.25rem var(--nu-focus-shadow-color) !important;
+    }
+
     site-search button[data-open-modal] > svg {
         flex-shrink: 0;
         align-self: center;
