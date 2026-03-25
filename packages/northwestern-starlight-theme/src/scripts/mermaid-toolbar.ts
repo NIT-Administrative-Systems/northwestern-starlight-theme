@@ -3,7 +3,7 @@
  *
  * Features:
  *   - Hover toolbar: fullscreen, download SVG, copy mermaid source
- *   - Fullscreen overlay: pan/zoom, download, copy, zoom indicator, diagram title
+ *   - Fullscreen overlay: pan/zoom, download, copy
  *   - Keyboard: +/- zoom, 0 reset, arrows pan, Escape close
  *   - Double-click to zoom in
  *   - Smooth open/close animation
@@ -309,7 +309,7 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
 
     function calcFitScale(mode: "both" | "width" | "height" = "both"): number {
         const maxW = window.innerWidth * 0.92;
-        const maxH = (window.innerHeight - 120) * 0.92; // account for title + controls
+        const maxH = (window.innerHeight - 120) * 0.92; // account for controls bar
         if (mode === "width") return maxW / vbWidth;
         if (mode === "height") return maxH / vbHeight;
         return Math.min(maxW / vbWidth, maxH / vbHeight);
