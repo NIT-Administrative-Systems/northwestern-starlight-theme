@@ -81,7 +81,7 @@ const showTitle = themeConfig.homepage.showTitle;
                     </div>
                 )}
                 <div class="sl-flex copy">
-                    <h1 id={PAGE_TITLE_ID} data-page-title set:html={title} />
+                    {showTitle && <h1 id={PAGE_TITLE_ID} data-page-title set:html={title} />}
                     {tagline && <div class="tagline" set:html={tagline} />}
                 </div>
                 {actions.length > 0 && (
