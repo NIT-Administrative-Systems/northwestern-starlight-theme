@@ -362,8 +362,17 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
         "wheel",
         (e) => {
             e.preventDefault();
-            const delta = e.deltaY > 0 ? 0.9 : 1.1;
-            zoomTo(scale * delta);
+            const factor = e.deltaY > 0 ? 0.9 : 1.1;
+            const newScale = Math.min(Math.max(0.1, scale * factor), 20);
+            // Anchor zoom to cursor: keep the point under the cursor fixed
+            const rect = viewport.getBoundingClientRect();
+            const cx = e.clientX - rect.left - rect.width / 2;
+            const cy = e.clientY - rect.top - rect.height / 2;
+            const ratio = 1 - newScale / scale;
+            panX += (cx - panX) * ratio;
+            panY += (cy - panY) * ratio;
+            scale = newScale;
+            updateTransform();
         },
         { passive: false },
     );
