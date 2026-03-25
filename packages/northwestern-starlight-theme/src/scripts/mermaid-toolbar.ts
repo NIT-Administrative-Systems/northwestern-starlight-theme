@@ -468,7 +468,15 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
 
     viewport.addEventListener("dblclick", (e) => {
         e.preventDefault();
-        zoomTo(scale * 1.5);
+        const newScale = Math.min(Math.max(0.1, scale * 1.5), 20);
+        const rect = viewport.getBoundingClientRect();
+        const cx = e.clientX - rect.left - rect.width / 2;
+        const cy = e.clientY - rect.top - rect.height / 2;
+        const ratio = 1 - newScale / scale;
+        panX += (cx - panX) * ratio;
+        panY += (cy - panY) * ratio;
+        scale = newScale;
+        updateTransform();
     });
 
     controls.addEventListener("click", (e) => {
