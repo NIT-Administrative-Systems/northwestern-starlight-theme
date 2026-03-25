@@ -22,7 +22,6 @@ declare global {
     }
 }
 
-// ---- Icon paths ----
 const ICONS = {
     fullscreen: ["M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"],
     download: ["M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4", "M7 10l5 5 5-5", "M12 15V3"],
@@ -97,7 +96,6 @@ function createZoomButton(
 
 type MermaidThemeMode = "light" | "dark";
 
-// ---- Store original mermaid source before rendering ----
 const mermaidSources = new Map<Element, string>();
 const renderedThemes = new WeakMap<HTMLElement, MermaidThemeMode>();
 let mermaidRuntimePromise: Promise<typeof import("mermaid")["default"]> | undefined;
@@ -176,7 +174,6 @@ async function renderMermaidDiagrams(force = false) {
     }
 }
 
-// ---- Success feedback (green check) ----
 function showSuccess(btn: HTMLButtonElement, label = "Copied!") {
     const originalTitle = btn.title;
     const originalIcon = btn.querySelector("svg");
@@ -197,7 +194,6 @@ function showSuccess(btn: HTMLButtonElement, label = "Copied!") {
     }, 1500);
 }
 
-// ---- Clipboard helper ----
 async function copyToClipboard(text: string, btn: HTMLButtonElement) {
     try {
         await navigator.clipboard.writeText(text);
@@ -207,7 +203,6 @@ async function copyToClipboard(text: string, btn: HTMLButtonElement) {
     }
 }
 
-// ---- Inline toolbar injection ----
 function initMermaidToolbar(): number {
     const diagrams = document.querySelectorAll<HTMLElement>(".mermaid");
     if (!diagrams.length) return 0;
@@ -244,7 +239,7 @@ function initMermaidToolbar(): number {
             const action = btn.dataset.action;
             if (action === "fullscreen") openFullscreen(svg, container, index);
             else if (action === "download-svg") {
-                downloadSvg(svg, index);
+                downloadSvg(svg, container, index);
                 showSuccess(btn, "Downloaded!");
             } else if (action === "copy-source" && source) copyToClipboard(source, btn);
         });
@@ -252,7 +247,6 @@ function initMermaidToolbar(): number {
     return injected;
 }
 
-// ---- Fullscreen overlay ----
 function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) {
     const overlay = document.createElement("div");
     overlay.className = "nu-mermaid-overlay";
@@ -287,7 +281,6 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
 
     overlay.appendChild(controls);
 
-    // Viewport
     const viewport = document.createElement("div");
     viewport.className = "nu-mermaid-viewport";
 
@@ -297,7 +290,6 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
     const cloned = svg.cloneNode(true) as SVGElement;
     cloned.removeAttribute("style");
 
-    // Calculate initial fit
     const viewBox = svg.getAttribute("viewBox");
     let vbWidth = 800;
     let vbHeight = 600;
@@ -323,7 +315,6 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
     viewport.appendChild(wrapper);
     overlay.appendChild(viewport);
 
-    // Add to DOM with animation
     overlay.style.opacity = "0";
     document.body.appendChild(overlay);
     document.body.style.overflow = "hidden";
@@ -356,7 +347,6 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
         updateTransform();
     }
 
-    // Mouse wheel zoom
     viewport.addEventListener(
         "wheel",
         (e) => {
@@ -367,7 +357,6 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
         { passive: false },
     );
 
-    // Pan with mouse drag
     viewport.addEventListener("mousedown", (e) => {
         isPanning = true;
         startX = e.clientX - panX;
@@ -391,7 +380,6 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
 
-    // Touch: one-finger pan, pinch-to-zoom
     let lastTouchDist = 0;
     let lastTouchX = 0;
     let lastTouchY = 0;
@@ -456,13 +444,11 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
         lastTouchDist = 0;
     });
 
-    // Double-click/tap to zoom in
     viewport.addEventListener("dblclick", (e) => {
         e.preventDefault();
         zoomTo(scale * 1.5);
     });
 
-    // Control buttons
     controls.addEventListener("click", (e) => {
         const btn = (e.target as HTMLElement).closest<HTMLButtonElement>(".nu-mermaid-overlay-btn");
         if (!btn) return;
@@ -473,13 +459,12 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
         else if (action === "zoom-out") zoomTo(scale * 0.7);
         else if (action === "zoom-reset") resetView();
         else if (action === "download-svg") {
-            downloadSvg(svg, index);
+            downloadSvg(svg, container, index);
             showSuccess(btn, "Downloaded!");
         } else if (action === "copy-svg") copyToClipboard(svg.outerHTML, btn);
         else if (action === "copy-source" && source) copyToClipboard(source, btn);
     });
 
-    // Keyboard shortcuts
     const onKeydown = (e: KeyboardEvent) => {
         if (e.key === "Escape") close();
         else if (e.key === "+" || e.key === "=") zoomTo(scale * 1.2);
@@ -519,20 +504,56 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
     }
 }
 
-// ---- Download SVG ----
-function downloadSvg(svg: SVGElement, index: number) {
+function slugify(text: string): string {
+    return text
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+}
+
+function getSiteSlug(): string {
+    const parts = document.title.split("|");
+    const site = (parts.length > 1 ? parts[parts.length - 1] : parts[0]).trim();
+    return slugify(site);
+}
+
+function getPageSlug(): string {
+    const path = window.location.pathname.replace(/^\/|\/$/g, "");
+    return slugify(path) || "index";
+}
+
+function getDiagramType(container: Element): string {
+    const source = mermaidSources.get(container) ?? "";
+    const raw = source.trim().split(/[\s\n]/)[0];
+    // Strip version suffixes (-v2, -beta), then common trailing words (Diagram, Chart)
+    return slugify(raw.replace(/[-_](v\d+|beta)$/i, "").replace(/(diagram|chart)$/i, "")) || "diagram";
+}
+
+function buildFilename(container: Element, index: number): string {
+    const site = getSiteSlug();
+    const page = getPageSlug();
+    const type = getDiagramType(container);
+
+    // Count diagrams of same type on page to add suffix if needed
+    const allDiagrams = [...document.querySelectorAll<HTMLElement>(".mermaid:not(.nu-mermaid-fullscreen)")];
+    const sameType = allDiagrams.filter((d) => getDiagramType(d) === type);
+    const suffix = sameType.length > 1 ? `-${sameType.indexOf(container as HTMLElement) + 1}` : "";
+
+    return `${site}_${page}-${type}${suffix}.svg`;
+}
+
+function downloadSvg(svg: SVGElement, container: Element, index: number) {
     const clone = svg.cloneNode(true) as SVGElement;
     clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     const blob = new Blob([clone.outerHTML], { type: "image/svg+xml" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `diagram-${index + 1}.svg`;
+    a.download = buildFilename(container, index);
     a.click();
     URL.revokeObjectURL(url);
 }
 
-// ---- Watch for mermaid renders ----
 function watchForMermaidRender() {
     const toolbarEnabled = window.__NU_MERMAID_TOOLBAR__ !== false;
     // Initial load: lazy render (only diagrams in/near viewport)
