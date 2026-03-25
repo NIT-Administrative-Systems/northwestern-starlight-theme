@@ -552,10 +552,13 @@ function openFullscreen(
         if (e.target === overlay) close();
     });
 
-    // Focus first button in controls only for keyboard users
+    // Keyboard: focus first button (shows focus ring). Mouse: focus overlay container (no ring, but Tab works).
     if (keyboardOpen) {
         const firstBtn = controls.querySelector<HTMLElement>(".nu-mermaid-btn");
         firstBtn?.focus();
+    } else {
+        overlay.setAttribute("tabindex", "-1");
+        overlay.focus();
     }
 
     function close() {
