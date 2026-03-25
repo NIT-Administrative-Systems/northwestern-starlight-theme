@@ -116,13 +116,24 @@ async function getMermaidRuntime() {
 function captureSource() {
     document.querySelectorAll<HTMLElement>("pre.mermaid").forEach((pre) => {
         if (mermaidSources.has(pre)) return;
-        const source = pre.textContent?.trim() || "";
-        if (source) mermaidSources.set(pre, source);
+        // Prefer data-diagram attribute (set by astro-mermaid before it renders SVG)
+        // over textContent, which may contain rendered SVG text nodes instead of source
+        const source = pre.getAttribute("data-diagram")?.trim() || pre.textContent?.trim() || "";
+        if (source) {
+            mermaidSources.set(pre, source);
+            // Persist source to data attribute so it survives across render cycles
+            if (!pre.hasAttribute("data-diagram")) {
+                pre.setAttribute("data-diagram", source);
+            }
+        }
     });
 }
 
 async function renderDiagram(container: HTMLElement, mode: MermaidThemeMode, index: number) {
-    const source = mermaidSources.get(container) ?? container.textContent?.trim();
+    const source =
+        mermaidSources.get(container) ??
+        container.getAttribute("data-diagram")?.trim() ??
+        container.textContent?.trim();
     if (!source) return;
     const mermaid = await getMermaidRuntime();
 
