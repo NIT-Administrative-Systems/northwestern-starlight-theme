@@ -34,8 +34,6 @@ const ICONS = {
         "M16 4h2a2 2 0 012 2v6a2 2 0 01-2 2h-8a2 2 0 01-2-2V6a2 2 0 012-2",
     ],
     code: ["M16 18l6-6-6-6", "M8 6l-6 6 6 6"],
-    fitWidth: ["M21 3H3v18h18V3z", "M9 3v18", "M15 3v18"],
-    fitHeight: ["M21 3H3v18h18V3z", "M3 9h18", "M3 15h18"],
 };
 
 function createSvgIcon(paths: string[], size = 14): SVGElement {
@@ -116,13 +114,24 @@ async function getMermaidRuntime() {
 function captureSource() {
     document.querySelectorAll<HTMLElement>("pre.mermaid").forEach((pre) => {
         if (mermaidSources.has(pre)) return;
-        const source = pre.textContent?.trim() || "";
-        if (source) mermaidSources.set(pre, source);
+        // Prefer data-diagram attribute (set by astro-mermaid before it renders SVG)
+        // over textContent, which may contain rendered SVG text nodes instead of source
+        const source = pre.getAttribute("data-diagram")?.trim() || pre.textContent?.trim() || "";
+        if (source) {
+            mermaidSources.set(pre, source);
+            // Persist source to data attribute so it survives across render cycles
+            if (!pre.hasAttribute("data-diagram")) {
+                pre.setAttribute("data-diagram", source);
+            }
+        }
     });
 }
 
 async function renderDiagram(container: HTMLElement, mode: MermaidThemeMode, index: number) {
-    const source = mermaidSources.get(container) ?? container.textContent?.trim();
+    const source =
+        mermaidSources.get(container) ??
+        container.getAttribute("data-diagram")?.trim() ??
+        container.textContent?.trim();
     if (!source) return;
     const mermaid = await getMermaidRuntime();
 
@@ -237,7 +246,7 @@ function initMermaidToolbar(): number {
             if (!svg) return;
 
             const action = btn.dataset.action;
-            if (action === "fullscreen") openFullscreen(svg, container, index);
+            if (action === "fullscreen") openFullscreen(svg, container, index, btn, e.detail === 0);
             else if (action === "download-svg") {
                 downloadSvg(svg, container, index);
                 showSuccess(btn, "Downloaded!");
@@ -247,9 +256,18 @@ function initMermaidToolbar(): number {
     return injected;
 }
 
-function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) {
+function openFullscreen(
+    svg: SVGElement,
+    container: HTMLElement,
+    index: number,
+    triggerBtn?: HTMLElement,
+    keyboardOpen = false,
+) {
     const overlay = document.createElement("div");
     overlay.className = "nu-mermaid-overlay";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", "Mermaid diagram fullscreen viewer");
 
     // Controls
     const controls = document.createElement("div");
@@ -299,11 +317,9 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
         vbHeight = parts[3] || 600;
     }
 
-    function calcFitScale(mode: "both" | "width" | "height" = "both"): number {
+    function calcFitScale(): number {
         const maxW = window.innerWidth * 0.92;
         const maxH = (window.innerHeight - 120) * 0.92; // account for controls bar
-        if (mode === "width") return maxW / vbWidth;
-        if (mode === "height") return maxH / vbHeight;
         return Math.min(maxW / vbWidth, maxH / vbHeight);
     }
 
@@ -311,8 +327,13 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
     cloned.setAttribute("width", String(Math.round(vbWidth * initialScale)));
     cloned.setAttribute("height", String(Math.round(vbHeight * initialScale)));
 
+    const zoomBadge = document.createElement("span");
+    zoomBadge.className = "nu-mermaid-zoom-badge";
+    zoomBadge.textContent = "100%";
+
     wrapper.appendChild(cloned);
     viewport.appendChild(wrapper);
+    viewport.appendChild(zoomBadge);
     overlay.appendChild(viewport);
 
     overlay.style.opacity = "0";
@@ -333,6 +354,7 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
     function updateTransform() {
         wrapper.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
         wrapper.style.transformOrigin = "center center";
+        zoomBadge.textContent = `${Math.round(scale * 100)}%`;
     }
 
     function zoomTo(newScale: number) {
@@ -351,8 +373,17 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
         "wheel",
         (e) => {
             e.preventDefault();
-            const delta = e.deltaY > 0 ? 0.9 : 1.1;
-            zoomTo(scale * delta);
+            const factor = e.deltaY > 0 ? 0.9 : 1.1;
+            const newScale = Math.min(Math.max(0.1, scale * factor), 20);
+            // Anchor zoom to cursor: keep the point under the cursor fixed
+            const rect = viewport.getBoundingClientRect();
+            const cx = e.clientX - rect.left - rect.width / 2;
+            const cy = e.clientY - rect.top - rect.height / 2;
+            const ratio = 1 - newScale / scale;
+            panX += (cx - panX) * ratio;
+            panY += (cy - panY) * ratio;
+            scale = newScale;
+            updateTransform();
         },
         { passive: false },
     );
@@ -446,7 +477,15 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
 
     viewport.addEventListener("dblclick", (e) => {
         e.preventDefault();
-        zoomTo(scale * 1.5);
+        const newScale = Math.min(Math.max(0.1, scale * 1.5), 20);
+        const rect = viewport.getBoundingClientRect();
+        const cx = e.clientX - rect.left - rect.width / 2;
+        const cy = e.clientY - rect.top - rect.height / 2;
+        const ratio = 1 - newScale / scale;
+        panX += (cx - panX) * ratio;
+        panY += (cy - panY) * ratio;
+        scale = newScale;
+        updateTransform();
     });
 
     controls.addEventListener("click", (e) => {
@@ -466,6 +505,27 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
     });
 
     const onKeydown = (e: KeyboardEvent) => {
+        if (e.key === "Tab") {
+            // Focus trap: cycle focus within the overlay
+            const focusable = overlay.querySelectorAll<HTMLElement>(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+            );
+            if (!focusable.length) return;
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (e.shiftKey) {
+                if (document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                }
+            } else {
+                if (document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
+            return;
+        }
         if (e.key === "Escape") close();
         else if (e.key === "+" || e.key === "=") zoomTo(scale * 1.2);
         else if (e.key === "-" || e.key === "_") zoomTo(scale * 0.8);
@@ -492,6 +552,15 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
         if (e.target === overlay) close();
     });
 
+    // Keyboard: focus first button (shows focus ring). Mouse: focus overlay container (no ring, but Tab works).
+    if (keyboardOpen) {
+        const firstBtn = controls.querySelector<HTMLElement>(".nu-mermaid-btn");
+        firstBtn?.focus();
+    } else {
+        overlay.setAttribute("tabindex", "-1");
+        overlay.focus();
+    }
+
     function close() {
         overlay.style.opacity = "0";
         setTimeout(() => {
@@ -500,6 +569,7 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
             window.removeEventListener("mouseup", onMouseUp);
             document.body.style.overflow = "";
             overlay.remove();
+            triggerBtn?.focus();
         }, 200);
     }
 }
@@ -529,7 +599,7 @@ function getDiagramType(container: Element): string {
     return slugify(raw.replace(/[-_](v\d+|beta)$/i, "").replace(/(diagram|chart)$/i, "")) || "diagram";
 }
 
-function buildFilename(container: Element, index: number): string {
+function buildFilename(container: Element): string {
     const site = getSiteSlug();
     const page = getPageSlug();
     const type = getDiagramType(container);
@@ -549,7 +619,7 @@ function downloadSvg(svg: SVGElement, container: Element, index: number) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = buildFilename(container, index);
+    a.download = buildFilename(container);
     a.click();
     URL.revokeObjectURL(url);
 }

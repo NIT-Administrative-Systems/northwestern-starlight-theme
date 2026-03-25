@@ -38,6 +38,13 @@
         background: rgb(255 255 255 / 25%) !important;
     }
 
+    starlight-menu-button button:focus-visible,
+    northwestern-theme-toggle button:focus-visible,
+    .header northwestern-theme-toggle button:focus-visible {
+        outline: none !important;
+        box-shadow: 0 0 0 2px rgb(255 255 255 / 60%) !important;
+    }
+
     @media (width < 50rem) {
         site-search button {
             color: var(--nu-topbar-text) !important;

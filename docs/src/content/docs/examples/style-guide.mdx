@@ -43,6 +43,16 @@ Regular paragraph text in Akkurat Pro. This text contains **bold**, *italic*, `i
 >
 > > Nested blockquotes indent further with the same styling.
 
+### Footnotes
+
+Footnotes follow [GitHub Flavored Markdown](https://github.blog/changelog/2021-09-30-footnotes-now-supported-in-markdown-fields/) syntax. Use `[^label]` in text and define the footnote content at the bottom.
+
+Northwestern was founded in 1851[^1] and has two campuses in the Chicago metropolitan area[^2]. The Lakefill extended the Evanston campus 1,000 feet into Lake Michigan[^3].
+
+[^1]: Nine men gathered to incorporate a university that would serve the Northwest Territory.
+[^2]: The Evanston campus sits on the lakefront; the Chicago campus is in Streeterville.
+[^3]: Constructed in 1962, the Lakefill created 22 acres of new land.
+
 ---
 
 ## Lists
@@ -223,6 +233,7 @@ export default defineConfig({
 ## Steps
 
 <Steps>
+
 1. Install the theme package
 
    ```bash
@@ -300,7 +311,7 @@ Content above a horizontal rule.
 
 ---
 
-Content below a horizontal rule. Rules render as a 3px purple bar.
+Content below a horizontal rule. Rules render as a 3px gray bar.
 
 ---
 
@@ -337,3 +348,4 @@ pie title Northwestern Schools
 ```
 
 For more diagram types see the [Mermaid Diagrams](/examples/mermaid/) page.
+

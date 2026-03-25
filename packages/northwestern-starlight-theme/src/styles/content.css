@@ -6,7 +6,7 @@
    ========================================================================== */
 
 @layer northwestern {
-    .sl-markdown-content a:not(.anchor-link, [role="tab"], .not-content) {
+    .sl-markdown-content a:not(.anchor-link, [role="tab"], .not-content, [data-footnote-ref], [data-footnote-backref]) {
         padding-bottom: 2px;
         font-weight: 700;
         color: var(--sl-color-accent);
@@ -15,9 +15,84 @@
         transition: all var(--nu-transition-default);
     }
 
-    .sl-markdown-content a:not(.anchor-link, [role="tab"], .not-content):hover {
+    .sl-markdown-content
+        a:not(.anchor-link, [role="tab"], .not-content, [data-footnote-ref], [data-footnote-backref]):hover {
         text-decoration: none;
         border-bottom-style: solid;
+    }
+
+    /* Footnote references — superscript markers with brackets */
+    .sl-markdown-content a[data-footnote-ref] {
+        font-weight: 600;
+        line-height: 1;
+        vertical-align: super;
+        color: var(--sl-color-accent);
+        text-decoration: none;
+    }
+
+    .sl-markdown-content a[data-footnote-ref]::before {
+        content: "[";
+    }
+
+    .sl-markdown-content a[data-footnote-ref]::after {
+        content: "]";
+    }
+
+    .sl-markdown-content a[data-footnote-ref]:hover {
+        text-decoration: underline;
+    }
+
+    /* Footnotes section */
+    .sl-markdown-content section[data-footnotes] {
+        padding-top: 1.5rem;
+        margin-top: 2.5rem;
+        font-size: 0.875rem;
+        color: var(--nu-color-text-muted);
+        border-top: 1px solid var(--nu-border-color);
+    }
+
+    /* Hide the default <hr> that remark-gfm inserts before footnotes */
+    .sl-markdown-content section[data-footnotes] > :first-child:is(hr) {
+        display: none;
+    }
+
+    /* Collapse the heading wrapper around the sr-only "Footnotes" label */
+    .sl-markdown-content section[data-footnotes] > .sl-heading-wrapper {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        white-space: nowrap;
+        border: 0;
+        clip-path: inset(50%);
+    }
+
+    .sl-markdown-content section[data-footnotes] ol {
+        padding-left: 1.5rem;
+    }
+
+    .sl-markdown-content section[data-footnotes] li {
+        padding-left: 0.25rem;
+    }
+
+    .sl-markdown-content section[data-footnotes] li + li {
+        margin-top: 0.5rem;
+    }
+
+    .sl-markdown-content section[data-footnotes] a[data-footnote-backref] {
+        margin-left: 0.25em;
+        font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", sans-serif;
+        font-size: 1em;
+        font-weight: 700;
+        color: var(--sl-color-accent);
+        text-decoration: none;
+        font-variant-emoji: text;
+    }
+
+    .sl-markdown-content section[data-footnotes] a[data-footnote-backref]:hover {
+        border-bottom: 1px solid var(--sl-color-accent);
     }
 
     .sl-markdown-content ul:not(:where(.not-content *)) {
@@ -55,14 +130,10 @@
     }
 
     .sl-markdown-content hr:not(:where(.not-content *)) {
-        height: 3px;
+        height: 1px;
         margin: 2.5rem 0;
-        background: var(--nu-purple-10);
+        background: var(--nu-border-color);
         border: 0;
-    }
-
-    :root:not([data-theme="light"]) .sl-markdown-content hr:not(:where(.not-content *)) {
-        background: var(--nu-purple-140);
     }
 
     .sl-markdown-content blockquote:not(:where(.not-content *)) {

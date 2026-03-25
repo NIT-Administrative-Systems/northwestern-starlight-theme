@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-03-25
+
+### Added
+
+- Fullscreen Mermaid viewer: wheel zoom and double-click zoom anchor to the pointer position.
+- Zoom level badge (e.g. `84%`) in the fullscreen viewer.
+- GFM footnote styles: superscript `[n]` reference markers, footnotes section with separator, styled `↩︎` back-references.
+
+### Fixed
+
+- Mermaid diagrams sometimes breaking on Firefox and Safari. The toolbar script read `textContent` after `astro-mermaid` had already rendered SVG into the element. Reads `data-diagram` first now.
+- Horizontal rules in dark mode used `--nu-purple-140`, which was invisible against the background. Switched to `--nu-border-color`.
+
+### Accessibility
+
+- Fullscreen Mermaid overlay: `role="dialog"`, `aria-modal`, focus trap, focus restore on close.
+- White focus rings on overlay controls, theme toggle, and menu button (all sit on dark backgrounds where the purple ring was invisible).
+- Inline Mermaid toolbar buttons use a solid accent outline on focus instead of the near-invisible shadow ring.
+
 ## [1.1.1] - 2026-03-25
 
 ### Fixed
@@ -52,7 +71,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OpenAPI plugin compatibility with method badge preservation
 - Reduced motion support for transitions
 
-[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/releases/tag/v1.0.0
