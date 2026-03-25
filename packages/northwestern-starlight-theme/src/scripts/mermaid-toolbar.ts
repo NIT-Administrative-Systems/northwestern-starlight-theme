@@ -246,7 +246,7 @@ function initMermaidToolbar(): number {
             if (!svg) return;
 
             const action = btn.dataset.action;
-            if (action === "fullscreen") openFullscreen(svg, container, index);
+            if (action === "fullscreen") openFullscreen(svg, container, index, btn);
             else if (action === "download-svg") {
                 downloadSvg(svg, container, index);
                 showSuccess(btn, "Downloaded!");
@@ -256,9 +256,12 @@ function initMermaidToolbar(): number {
     return injected;
 }
 
-function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) {
+function openFullscreen(svg: SVGElement, container: HTMLElement, index: number, triggerBtn?: HTMLElement) {
     const overlay = document.createElement("div");
     overlay.className = "nu-mermaid-overlay";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", "Mermaid diagram fullscreen viewer");
 
     // Controls
     const controls = document.createElement("div");
@@ -496,6 +499,27 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
     });
 
     const onKeydown = (e: KeyboardEvent) => {
+        if (e.key === "Tab") {
+            // Focus trap: cycle focus within the overlay
+            const focusable = overlay.querySelectorAll<HTMLElement>(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+            );
+            if (!focusable.length) return;
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (e.shiftKey) {
+                if (document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                }
+            } else {
+                if (document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
+            return;
+        }
         if (e.key === "Escape") close();
         else if (e.key === "+" || e.key === "=") zoomTo(scale * 1.2);
         else if (e.key === "-" || e.key === "_") zoomTo(scale * 0.8);
@@ -522,6 +546,10 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
         if (e.target === overlay) close();
     });
 
+    // Focus first button in controls on open
+    const firstBtn = controls.querySelector<HTMLElement>(".nu-mermaid-btn");
+    firstBtn?.focus();
+
     function close() {
         overlay.style.opacity = "0";
         setTimeout(() => {
@@ -530,6 +558,7 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
             window.removeEventListener("mouseup", onMouseUp);
             document.body.style.overflow = "";
             overlay.remove();
+            triggerBtn?.focus();
         }, 200);
     }
 }
