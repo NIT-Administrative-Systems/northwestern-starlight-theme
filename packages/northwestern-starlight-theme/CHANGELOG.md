@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Scrollbar gutter no longer reserves space on splash pages, removing the visible gap next to the topbar on pages without a scrollbar.
+
 ## [1.1.0] - 2026-03-25
 
 ### Added

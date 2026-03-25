@@ -7,8 +7,11 @@
 
 /* Unlayered — paints immediately to prevent white flash on load */
 html {
-    scrollbar-gutter: stable;
     background-color: #18181b;
+}
+
+html:not([data-has-hero]) {
+    scrollbar-gutter: stable;
 }
 
 html[data-theme="light"] {
