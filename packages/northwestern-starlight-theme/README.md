@@ -5,7 +5,7 @@
 
 <p align="center">
     <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Node-22+-339933?style=flat&logo=node.js&logoColor=white" alt="Node Version"></a>
-    <a href="https://astro.build"><img src="https://img.shields.io/badge/Astro-5.x+-BC52EE?style=flat&logo=astro&logoColor=white" alt="Astro Version"></a>
+    <a href="https://astro.build"><img src="https://img.shields.io/badge/Astro-5.x%20%7C%206.x-BC52EE?style=flat&logo=astro&logoColor=white" alt="Astro Version"></a>
     <a href="https://starlight.astro.build"><img src="https://img.shields.io/badge/Starlight-0.32+-FF5D01?style=flat&logo=astro&logoColor=white" alt="Starlight Version"></a>
 </p>
 

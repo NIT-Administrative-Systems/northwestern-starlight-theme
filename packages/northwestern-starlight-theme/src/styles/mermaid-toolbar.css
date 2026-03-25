@@ -119,13 +119,15 @@
     }
 
     .nu-mermaid-overlay-controls {
+        box-sizing: border-box;
         display: flex;
+        flex-shrink: 0;
         gap: 0.25rem;
         align-items: center;
         height: var(--sl-nav-height);
         padding: 0 1.5rem;
         background: var(--nu-topbar-bg);
-        box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
+        border-bottom: 1px solid var(--nu-border-color);
     }
 
     .nu-mermaid-overlay-controls .nu-mermaid-btn {
