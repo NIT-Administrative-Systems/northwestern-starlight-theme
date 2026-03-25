@@ -130,14 +130,10 @@
     }
 
     .sl-markdown-content hr:not(:where(.not-content *)) {
-        height: 3px;
+        height: 1px;
         margin: 2.5rem 0;
-        background: var(--nu-purple-10);
+        background: var(--nu-border-color);
         border: 0;
-    }
-
-    :root:not([data-theme="light"]) .sl-markdown-content hr:not(:where(.not-content *)) {
-        background: var(--nu-purple-140);
     }
 
     .sl-markdown-content blockquote:not(:where(.not-content *)) {
