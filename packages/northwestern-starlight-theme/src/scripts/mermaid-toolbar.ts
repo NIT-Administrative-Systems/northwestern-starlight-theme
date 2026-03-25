@@ -256,7 +256,13 @@ function initMermaidToolbar(): number {
     return injected;
 }
 
-function openFullscreen(svg: SVGElement, container: HTMLElement, index: number, triggerBtn?: HTMLElement, keyboardOpen = false) {
+function openFullscreen(
+    svg: SVGElement,
+    container: HTMLElement,
+    index: number,
+    triggerBtn?: HTMLElement,
+    keyboardOpen = false,
+) {
     const overlay = document.createElement("div");
     overlay.className = "nu-mermaid-overlay";
     overlay.setAttribute("role", "dialog");
