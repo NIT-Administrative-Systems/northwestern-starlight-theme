@@ -318,8 +318,13 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
     cloned.setAttribute("width", String(Math.round(vbWidth * initialScale)));
     cloned.setAttribute("height", String(Math.round(vbHeight * initialScale)));
 
+    const zoomBadge = document.createElement("span");
+    zoomBadge.className = "nu-mermaid-zoom-badge";
+    zoomBadge.textContent = "100%";
+
     wrapper.appendChild(cloned);
     viewport.appendChild(wrapper);
+    viewport.appendChild(zoomBadge);
     overlay.appendChild(viewport);
 
     overlay.style.opacity = "0";
@@ -340,6 +345,7 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
     function updateTransform() {
         wrapper.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
         wrapper.style.transformOrigin = "center center";
+        zoomBadge.textContent = `${Math.round(scale * 100)}%`;
     }
 
     function zoomTo(newScale: number) {
