@@ -144,6 +144,11 @@
         height: 16px;
     }
 
+    .nu-mermaid-overlay-controls .nu-mermaid-btn:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 2px rgb(255 255 255 / 60%);
+    }
+
     .nu-mermaid-overlay-controls .nu-mermaid-btn:hover {
         color: #fff;
         background: rgb(255 255 255 / 25%);
