@@ -1,0 +1,199 @@
+---
+import crypto from "node:crypto";
+
+const id = `northwestern-theme-mask-${crypto.randomBytes(4).toString("hex")}`;
+const accessibleLabel = Astro.locals.t("themeSelect.accessibleLabel");
+---
+
+<northwestern-theme-toggle>
+    <button aria-label={accessibleLabel} aria-live="polite" title={accessibleLabel} type="button">
+        <svg aria-hidden="true" height="16" viewBox="0 0 24 24" width="16">
+            <mask class="moon" id={id}>
+                <rect fill="white" height="100%" width="100%" x="0" y="0"></rect>
+                <circle cx="24" cy="10" fill="black" r="6"></circle>
+            </mask>
+            <circle class="sun" cx="12" cy="12" mask={`url(#${id})`} r="6"></circle>
+            <g class="sun-beams" stroke="currentColor">
+                <line x1="12" x2="12" y1="1" y2="3"></line>
+                <line x1="12" x2="12" y1="21" y2="23"></line>
+                <line x1="4.22" x2="5.64" y1="4.22" y2="5.64"></line>
+                <line x1="18.36" x2="19.78" y1="18.36" y2="19.78"></line>
+                <line x1="1" x2="3" y1="12" y2="12"></line>
+                <line x1="21" x2="23" y1="12" y2="12"></line>
+                <line x1="4.22" x2="5.64" y1="19.78" y2="18.36"></line>
+                <line x1="18.36" x2="19.78" y1="5.64" y2="4.22"></line>
+            </g>
+        </svg>
+    </button>
+</northwestern-theme-toggle>
+
+<script is:inline>
+    StarlightThemeProvider.updatePickers();
+</script>
+
+<script>
+    type Theme = "auto" | "dark" | "light";
+
+    const storageKey = "starlight-theme";
+
+    function parseTheme(theme: unknown): Theme {
+        return theme === "auto" || theme === "dark" || theme === "light" ? theme : "auto";
+    }
+
+    function loadTheme(): Theme {
+        return parseTheme(typeof localStorage !== "undefined" && localStorage.getItem(storageKey));
+    }
+
+    function storeTheme(theme: Theme): void {
+        if (typeof localStorage !== "undefined") {
+            localStorage.setItem(storageKey, theme === "light" || theme === "dark" ? theme : "");
+        }
+    }
+
+    function getPreferredColorScheme(): Theme {
+        return matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    }
+
+    function onThemeChange(theme: Theme): void {
+        StarlightThemeProvider.updatePickers(theme);
+        document.documentElement.dataset.theme = theme === "auto" ? getPreferredColorScheme() : theme;
+        storeTheme(theme);
+        syncToggleButtons();
+    }
+
+    function syncToggleButtons(): void {
+        const currentTheme = parseTheme(document.documentElement.dataset.theme);
+        const nextTheme = currentTheme === "dark" ? "light" : "dark";
+
+        document.querySelectorAll("northwestern-theme-toggle button").forEach((button) => {
+            if (button instanceof HTMLButtonElement) {
+                button.setAttribute("aria-label", `${button.title}: ${nextTheme}`);
+                button.setAttribute("aria-pressed", String(currentTheme === "dark"));
+            }
+        });
+    }
+
+    matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => {
+        if (loadTheme() === "auto") onThemeChange("auto");
+    });
+
+    class NorthwesternThemeToggle extends HTMLElement {
+        constructor() {
+            super();
+            onThemeChange(loadTheme());
+
+            this.querySelector("button")?.addEventListener("click", () => {
+                const theme = parseTheme(document.documentElement.dataset.theme);
+                const newTheme = theme === "dark" ? "light" : "dark";
+                onThemeChange(newTheme);
+            });
+        }
+    }
+
+    if (!customElements.get("northwestern-theme-toggle")) {
+        customElements.define("northwestern-theme-toggle", NorthwesternThemeToggle);
+    }
+</script>
+
+<style>
+    @layer northwestern {
+        northwestern-theme-toggle {
+            --nu-theme-toggle-duration: 400ms;
+            --nu-theme-toggle-ease: cubic-bezier(0.5, 1.25, 0.75, 1.25);
+            align-self: stretch;
+            display: inline-flex;
+        }
+
+        northwestern-theme-toggle button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: auto;
+            height: 100%;
+            padding: 0.5rem;
+            background-color: transparent;
+            border: 1px solid currentcolor;
+            color: inherit;
+            cursor: pointer;
+        }
+
+        northwestern-theme-toggle svg {
+            stroke-linecap: round;
+        }
+
+        northwestern-theme-toggle svg :is(.moon, .sun, .sun-beams) {
+            transform-origin: center;
+        }
+
+        northwestern-theme-toggle svg :is(.moon, .sun) {
+            fill: currentcolor;
+        }
+
+        northwestern-theme-toggle svg .sun-beams {
+            stroke: currentcolor;
+            stroke-width: 2px;
+        }
+
+        northwestern-theme-toggle button:focus-visible {
+            outline: 2px solid var(--nu-focus-ring);
+            outline-offset: 2px;
+        }
+
+        :global([data-theme="dark"]) northwestern-theme-toggle svg .sun {
+            transform: scale(1.75);
+        }
+
+        :global([data-theme="dark"]) northwestern-theme-toggle svg .sun-beams {
+            opacity: 0;
+        }
+
+        :global([data-theme="dark"]) northwestern-theme-toggle svg .moon circle {
+            transform: translateX(-7px);
+        }
+
+        @supports (cx: 1) {
+            :global([data-theme="dark"]) northwestern-theme-toggle svg .moon circle {
+                cx: 17;
+                transform: translateX(0);
+            }
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            northwestern-theme-toggle svg .sun {
+                transition: transform var(--nu-theme-toggle-duration) var(--nu-theme-toggle-ease);
+            }
+
+            northwestern-theme-toggle svg .sun-beams {
+                transition:
+                    opacity var(--nu-theme-toggle-duration) ease,
+                    transform var(--nu-theme-toggle-duration) var(--nu-theme-toggle-ease);
+            }
+
+            northwestern-theme-toggle svg .moon circle {
+                transition: transform calc(var(--nu-theme-toggle-duration) / 2) ease-out;
+            }
+
+            @supports (cx: 1) {
+                northwestern-theme-toggle svg .moon circle {
+                    transition: cx calc(var(--nu-theme-toggle-duration) / 2) ease-out;
+                }
+            }
+
+            :global([data-theme="dark"]) northwestern-theme-toggle svg .sun {
+                transform: scale(1.75);
+                transition-duration: calc(var(--nu-theme-toggle-duration) / 2);
+                transition-timing-function: ease;
+            }
+
+            :global([data-theme="dark"]) northwestern-theme-toggle svg .sun-beams {
+                transform: rotateZ(-25deg);
+                transition-duration: calc(var(--nu-theme-toggle-duration) / 4);
+            }
+
+            :global([data-theme="dark"]) northwestern-theme-toggle svg .moon circle {
+                transition-delay: calc(var(--nu-theme-toggle-duration) / 4);
+                transition-duration: var(--nu-theme-toggle-duration);
+            }
+        }
+    }
+</style>

@@ -1,0 +1,146 @@
+name: 🔍 CI
+
+env:
+  NODE_VERSION: "24"
+  PNPM_VERSION: "10.x.x"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  lint-and-build:
+    name: 🧹 Lint & Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Run Biome
+        run: pnpm check
+
+      - name: Run Stylelint
+        run: pnpm lint:css
+
+      - name: Check dependencies
+        run: pnpm check:deps
+
+      - name: Verify build
+        run: pnpm docs:build
+
+  accessibility:
+    name: 🌐 Accessibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install chromium --with-deps
+
+      - name: Run accessibility tests
+        run: pnpm test:accessibility
+
+  compatibility:
+    name: ⭐ Starlight ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "minimum"
+            starlight: "0.32"
+            astro: "5"
+          - name: "latest"
+            starlight: "latest"
+            astro: "latest"
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Create smoke test project
+        run: |
+          mkdir -p /tmp/compat-test/src/content/docs
+          cat > /tmp/compat-test/astro.config.ts << 'CONF'
+          import starlight from "@astrojs/starlight";
+          import { defineConfig } from "astro/config";
+          import northwesternTheme from "@nu-appdev/northwestern-starlight-theme";
+          export default defineConfig({
+              integrations: [
+                  starlight({
+                      plugins: [northwesternTheme()],
+                      title: "Compat Test",
+                  }),
+              ],
+          });
+          CONF
+          cat > /tmp/compat-test/src/content/docs/index.mdx << 'PAGE'
+          ---
+          title: Test
+          ---
+          Hello world.
+          PAGE
+          cat > /tmp/compat-test/package.json << 'PKG'
+          { "type": "module" }
+          PKG
+          cd /tmp/compat-test
+          pnpm add @astrojs/starlight@${{ matrix.starlight }} astro@${{ matrix.astro }}
+          pnpm add @nu-appdev/northwestern-starlight-theme@file:${{ github.workspace }}/packages/northwestern-starlight-theme
+
+      - name: Verify build
+        working-directory: /tmp/compat-test
+        run: npx astro build

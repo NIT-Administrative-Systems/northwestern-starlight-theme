@@ -1,0 +1,114 @@
+/* ==========================================================================
+   Theme — Starlight Variable Mapping
+
+   Encapsulates the mapping from Northwestern design tokens onto Starlight's
+   theme variables, plus global paint and border-radius overrides.
+   ========================================================================== */
+
+/* Unlayered — paints immediately to prevent white flash on load */
+html {
+    scrollbar-gutter: stable;
+    background-color: #18181b;
+}
+
+html[data-theme="light"] {
+    background-color: #f8fafc;
+}
+
+@layer northwestern {
+    :root,
+    ::backdrop {
+        --sl-color-accent-low: rgb(78 42 132 / 20%);
+        --sl-color-accent: var(--nu-purple-40);
+        --sl-color-accent-high: var(--nu-purple-30);
+
+        --sl-color-black: var(--nu-body-bg);
+        --sl-color-bg: var(--nu-body-bg);
+        --sl-color-bg-nav: var(--nu-topbar-bg);
+        --sl-color-bg-sidebar: var(--nu-sidebar-bg);
+        --sl-color-bg-inline-code: rgb(255 255 255 / 10%);
+
+        --sl-color-white: var(--nu-color-text);
+        --sl-color-text: var(--nu-color-text-muted);
+        --sl-color-text-accent: var(--nu-purple-30);
+
+        --sl-color-gray-1: #e5e5e5;
+        --sl-color-gray-2: #a1a1aa;
+        --sl-color-gray-3: #9a9aa3;
+        --sl-color-gray-4: #52525b;
+        --sl-color-gray-5: #404040;
+        --sl-color-gray-6: #292929;
+        --sl-color-gray-7: #333;
+
+        --sl-color-hairline-light: var(--nu-border-color);
+        --sl-color-hairline: var(--nu-border-color);
+        --sl-color-hairline-shade: #18181b;
+
+        --sl-color-green-low: rgb(0 134 86 / 20%);
+        --sl-color-green: var(--nu-green);
+        --sl-color-green-high: #6ee7b7;
+        --sl-color-orange-low: rgb(255 197 32 / 20%);
+        --sl-color-orange: var(--nu-gold);
+        --sl-color-orange-high: #fde68a;
+        --sl-color-red-low: rgb(239 85 63 / 20%);
+        --sl-color-red: var(--nu-orange);
+        --sl-color-red-high: #fca5a5;
+        --sl-color-blue-low: rgb(80 145 205 / 20%);
+        --sl-color-blue: var(--nu-blue);
+        --sl-color-blue-high: #93c5fd;
+        --sl-color-purple-low: rgb(78 42 132 / 20%);
+        --sl-color-purple: var(--nu-purple-60);
+        --sl-color-purple-high: var(--nu-purple-30);
+    }
+
+    :root[data-theme="light"],
+    [data-theme="light"] ::backdrop {
+        --sl-color-accent-low: rgb(78 42 132 / 10%);
+        --sl-color-accent: var(--nu-purple-100);
+        --sl-color-accent-high: var(--nu-purple-120);
+
+        --sl-color-black: var(--nu-body-bg);
+        --sl-color-bg: var(--nu-body-bg);
+        --sl-color-bg-nav: var(--nu-topbar-bg);
+        --sl-color-bg-sidebar: var(--nu-sidebar-bg);
+        --sl-color-bg-inline-code: #eef0f3;
+
+        --sl-color-white: var(--nu-color-text);
+        --sl-color-text: var(--nu-color-text);
+        --sl-color-text-accent: var(--nu-purple-100);
+
+        --sl-color-gray-1: var(--nu-black-80);
+        --sl-color-gray-2: var(--nu-black-50);
+        --sl-color-gray-3: #6b7280;
+        --sl-color-gray-4: #d1d5db;
+        --sl-color-gray-5: #d1d5db;
+        --sl-color-gray-6: #ebedf0;
+        --sl-color-gray-7: #fff;
+
+        --sl-color-hairline-light: var(--nu-border-color);
+        --sl-color-hairline: var(--nu-border-color);
+        --sl-color-hairline-shade: #e5e7eb;
+
+        --sl-color-green-high: #065f46;
+        --sl-color-green: var(--nu-dark-green);
+        --sl-color-green-low: rgb(0 134 86 / 10%);
+        --sl-color-orange-high: #92400e;
+        --sl-color-orange: var(--nu-dark-gold);
+        --sl-color-orange-low: rgb(255 197 32 / 12%);
+        --sl-color-red-high: #991b1b;
+        --sl-color-red: var(--nu-dark-orange);
+        --sl-color-red-low: rgb(239 85 63 / 10%);
+        --sl-color-blue-high: #1e40af;
+        --sl-color-blue: var(--nu-blue);
+        --sl-color-blue-low: rgb(80 145 205 / 10%);
+        --sl-color-purple-high: var(--nu-purple-130);
+        --sl-color-purple: var(--nu-purple-100);
+        --sl-color-purple-low: var(--nu-purple-surface);
+    }
+
+    *,
+    *::before,
+    *::after {
+        border-radius: 0 !important;
+    }
+}

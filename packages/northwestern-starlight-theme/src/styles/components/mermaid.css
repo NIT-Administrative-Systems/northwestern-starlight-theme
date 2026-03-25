@@ -1,0 +1,86 @@
+/* ==========================================================================
+   Mermaid — Structural SVG Overrides
+
+   Only includes CSS that cannot be expressed through mermaid themeVariables:
+   font enforcement, HTML label backgrounds, and diagram-specific structural
+   fixes. Colors and contrast are handled by the TS config in mermaid.ts.
+   ========================================================================== */
+
+/* stylelint-disable selector-class-pattern, order/properties-order */
+
+/* Container — card-like border matching cards.css */
+pre.mermaid,
+.mermaid {
+    padding: 1.5rem;
+    border: 1px solid var(--nu-border-color) !important;
+}
+
+/* Font — mermaid applies font via inline style, CSS !important needed */
+.mermaid text {
+    font-family: var(--nu-font-body) !important;
+}
+
+/* HTML labels inherit color from parent instead of mermaid's inline style */
+.mermaid .nodeLabel p {
+    color: inherit !important;
+}
+
+/* Edge label HTML elements — mermaid uses <div> with inline background */
+.mermaid .edgeLabel,
+.mermaid .edgeLabel p {
+    color: var(--nu-color-text, #342f2e) !important;
+    background: var(--nu-card-bg, #fff) !important;
+}
+
+.mermaid .labelBkg {
+    color: var(--nu-color-text, #342f2e) !important;
+    background: var(--nu-card-bg, #fff) !important;
+}
+
+/* Class diagram: edge labels on purple bg */
+.mermaid svg.classDiagram .labelBkg,
+.mermaid svg.classDiagram .labelBkg .edgeLabel,
+.mermaid svg.classDiagram .labelBkg .edgeLabel p {
+    background: var(--nu-purple-100) !important;
+}
+
+:root:not([data-theme="light"]) .mermaid svg.classDiagram .labelBkg,
+:root:not([data-theme="light"]) .mermaid svg.classDiagram .labelBkg .edgeLabel,
+:root:not([data-theme="light"]) .mermaid svg.classDiagram .labelBkg .edgeLabel p {
+    background: var(--nu-purple-80) !important;
+}
+
+/* Class diagram: first attribute row header tint */
+.mermaid svg.classDiagram .node.default > .row-rect-odd:nth-child(2) path[fill*="hsl"] {
+    fill: #fff !important;
+}
+
+:root:not([data-theme="light"]) .mermaid svg.classDiagram .node.default > .row-rect-odd:nth-child(2) path[fill*="hsl"] {
+    fill: var(--nu-card-bg, #292929) !important;
+}
+
+/* ER diagram: HTML label text readability */
+.mermaid svg.erDiagram .edgeLabel,
+.mermaid svg.erDiagram .edgeLabel p,
+.mermaid svg.erDiagram .edgeLabel span {
+    color: var(--nu-color-text, #342f2e) !important;
+}
+
+/* ER attribute labels: dark text on light rows */
+.mermaid svg.erDiagram .label.attribute-type .nodeLabel,
+.mermaid svg.erDiagram .label.attribute-name .nodeLabel,
+.mermaid svg.erDiagram .label.attribute-keys .nodeLabel,
+.mermaid svg.erDiagram .label.attribute-comment .nodeLabel {
+    color: var(--nu-color-text, #342f2e) !important;
+}
+
+/* ER entity name headers: white text on purple */
+.mermaid svg.erDiagram .label.name .nodeLabel {
+    color: #fff !important;
+}
+
+/* Sequence diagram: actor label text outside the purple box */
+.mermaid [class*="actor-bottom"] [class*="actor"] tspan,
+.mermaid [class*="actor-top"] [class*="actor"] tspan {
+    fill: var(--nu-color-text, #342f2e) !important;
+}

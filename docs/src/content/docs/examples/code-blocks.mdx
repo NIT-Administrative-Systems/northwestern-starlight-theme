@@ -1,0 +1,184 @@
+---
+title: Code Blocks
+description: Official code block styles and Code component examples for the Northwestern theme.
+---
+
+import { Code } from "@astrojs/starlight/components";
+
+export const installCommand = `pnpm add @nu-appdev/northwestern-starlight-theme`;
+
+export const longCommand = `pnpm add @nu-appdev/northwestern-starlight-theme @astrojs/starlight astro mermaid sharp @astrojs/check`;
+
+export const configSnippet = `import starlight from "@astrojs/starlight";
+import { defineConfig } from "astro/config";
+import northwesternTheme from "@nu-appdev/northwestern-starlight-theme";
+
+export default defineConfig({
+    integrations: [
+        starlight({
+            plugins: [northwesternTheme()],
+            title: "My Docs",
+        }),
+    ],
+});`;
+
+export const cssSnippet = `:root {
+    --nu-purple-100: #4e2a84;
+    --nu-purple-80: #836eaa;
+    --nu-sidebar-bg: #f8f6fb;
+}
+
+[data-theme="dark"] {
+    --nu-sidebar-bg: #1d1328;
+}`;
+
+export const jsonSnippet = `{
+    "name": "@nu-appdev/northwestern-starlight-theme",
+    "type": "module",
+    "version": "0.1.0",
+    "peerDependencies": {
+        "@astrojs/starlight": "^0.38.0",
+        "astro": "^6.0.0"
+    }
+}`;
+
+export const markerSnippet = `export function buildTheme(options) {
+    const plugin = northwesternTheme(options);
+
+    return {
+        integrations: [plugin],
+        title: "Northwestern Docs",
+    };
+}`;
+
+export const diffSnippet = `export function updateNavigation(items) {
+    const primary = items.filter((item) => item.primary);
+    const secondary = items.filter((item) => !item.primary);
+
+    return {
+        primary,
+        secondary,
+    };
+}`;
+
+export const wrappedSnippet = `const install = "pnpm add @nu-appdev/northwestern-starlight-theme @astrojs/starlight astro mermaid sharp @astrojs/check";`;
+
+## Overview
+
+The themes ships with the Northwestern code block treatment by default. This page shows the supported `Code` component patterns that are most useful when authoring docs.
+
+## Terminal Frames
+
+Use the default terminal presentation for commands and shell output.
+
+<Code code={installCommand} lang="bash" title="bash" />
+
+<Code code={longCommand} lang="bash" title="bash" wrap={true} preserveIndent={false} hangingIndent={2} />
+
+## Code Frames
+
+Use `frame="code"` when you want the snippet to read like a file instead of a terminal command.
+
+If your site includes an `ec.config.mjs` file using `northwesternExpressiveCode()`, line numbers are available as an opt-in feature.
+
+Add `showLineNumbers` to a fenced code block when you want a numbered gutter:
+
+```ts showLineNumbers title="astro.config.ts"
+import starlight from "@astrojs/starlight";
+import { defineConfig } from "astro/config";
+import northwesternTheme from "@nu-appdev/northwestern-starlight-theme";
+
+export default defineConfig({
+    integrations: [
+        starlight({
+            plugins: [northwesternTheme()],
+            title: "My Docs",
+        }),
+    ],
+});
+```
+
+In the `<Code>` component, use the `showLineNumbers` prop directly.
+
+<Code code={configSnippet} lang="ts" title="astro.config.ts" frame="code" meta="showLineNumbers" />
+
+<Code code={cssSnippet} lang="css" title="tokens.css" frame="code" />
+
+## Frame Variants
+
+You can also remove the frame entirely when you want a quieter inline example.
+
+<Code code={jsonSnippet} lang="json" frame="none" />
+
+## Markers
+
+Markers are useful for focusing attention on specific lines or text ranges.
+
+<Code
+    code={markerSnippet}
+    lang="ts"
+    title="theme.ts"
+    frame="code"
+    mark={[2, "northwesternTheme", { range: "4-7", label: "output" }]}
+/>
+
+<Code
+    code={diffSnippet}
+    lang="ts"
+    title="navigation.ts"
+    frame="code"
+    del={[2, "secondary"]}
+    ins={[1, { range: "6-9", label: "new" }]}
+    mark="primary"
+/>
+
+## Wrapping
+
+Long snippets can wrap cleanly with `wrap`, `preserveIndent`, and `hangingIndent`.
+
+<Code
+    code={wrappedSnippet}
+    lang="ts"
+    title="install.ts"
+    frame="code"
+    wrap={true}
+    preserveIndent={true}
+    hangingIndent={3}
+/>
+
+## Class Hook
+
+The `class` prop can be used when you want a one-off variation for a specific example.
+
+<Code
+    code={wrappedSnippet}
+    lang="ts"
+    title="install.ts"
+    frame="code"
+    class="nu-code-block-accent"
+    wrap={true}
+    preserveIndent={true}
+    hangingIndent={3}
+/>
+
+<style>{`
+    .nu-code-block-accent .frame {
+        border-top-color: var(--nu-gold);
+    }
+
+    .nu-code-block-accent .copy button:hover::after {
+        background-color: var(--nu-gold);
+    }
+
+    :root:not([data-theme="light"]) .nu-code-block-accent .frame {
+        border-top-color: #b9a15f;
+    }
+
+    :root:not([data-theme="light"]) .nu-code-block-accent .copy button:hover {
+        border-color: #b9a15f;
+    }
+
+    :root:not([data-theme="light"]) .nu-code-block-accent .copy button:hover::after {
+        background-color: #b9a15f;
+    }
+`}</style>

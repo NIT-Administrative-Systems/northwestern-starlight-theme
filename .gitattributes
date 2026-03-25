@@ -1,0 +1,17 @@
+* text=auto eol=lf
+
+*.css diff=css
+*.md diff=markdown
+*.ts diff=typescript
+
+/.github export-ignore
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/.editorconfig export-ignore
+/.npmrc export-ignore
+/.nvmrc export-ignore
+/.stylelintrc.json export-ignore
+/biome.json export-ignore
+/knip.json export-ignore
+/art export-ignore
+/pnpm-lock.yaml export-ignore

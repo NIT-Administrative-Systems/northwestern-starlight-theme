@@ -1,0 +1,117 @@
+---
+title: Getting Started
+description: How to install and configure the Northwestern Starlight Theme.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+import { PackageManagers } from "starlight-package-managers";
+
+## Installation
+
+<PackageManagers pkg="@nu-appdev/northwestern-starlight-theme" pkgManagers={["pnpm", "npm", "yarn", "bun"]} />
+
+## Configuration
+
+Add the plugin to your Starlight config:
+
+```diff lang="ts" title="astro.config.ts"
++ import northwesternTheme from "@nu-appdev/northwestern-starlight-theme";
+
+  export default defineConfig({
+      integrations: [
+          starlight({
++             plugins: [northwesternTheme()],
+              title: "My Docs",
+          }),
+      ],
+  });
+```
+
+Colors, typography, navigation, and component styling apply automatically. See the [Style Guide](/examples/style-guide/) for a preview of every styled element.
+
+## Mermaid Diagrams (Optional)
+
+Install `astro-mermaid` and `mermaid`, then add the Northwestern mermaid integration **before** `starlight()`:
+
+<PackageManagers pkg="astro-mermaid mermaid" pkgManagers={["pnpm", "npm", "yarn", "bun"]} />
+
+```diff lang="ts" title="astro.config.ts"
++ import { northwesternMermaid } from "@nu-appdev/northwestern-starlight-theme/mermaid";
+  import northwesternTheme from "@nu-appdev/northwestern-starlight-theme";
+
+  export default defineConfig({
+      integrations: [
++         northwesternMermaid(),
+          starlight({
+              plugins: [northwesternTheme()],
+          }),
+      ],
+  });
+```
+
+The theme does not bundle either package. Without them installed, mermaid code blocks render as plain text.
+
+## Expressive Code Line Numbers (Optional)
+
+The theme configures GitHub syntax highlighting by default. For opt-in line numbers, add an `ec.config.mjs` at your docs project root:
+
+```js title="ec.config.mjs"
+import { defineEcConfig } from "@astrojs/starlight/expressive-code";
+import { northwesternExpressiveCode } from "@nu-appdev/northwestern-starlight-theme/expressive-code";
+
+export default defineEcConfig(northwesternExpressiveCode());
+```
+
+Authors can then use `showLineNumbers` on individual code blocks.
+
+## Migrating an Existing Site
+
+If your project already has manual Northwestern branding, remove the overrides that the theme now replaces.
+
+### Astro Config
+
+Replace any hand-written mermaid config:
+
+```diff lang="ts" title="astro.config.ts"
+- import mermaid from "astro-mermaid";
++ import { northwesternMermaid } from "@nu-appdev/northwestern-starlight-theme/mermaid";
+
+  export default defineConfig({
+      integrations: [
+-         mermaid(),
++         northwesternMermaid(),
+          starlight({
+```
+
+Remove component overrides the theme now provides:
+
+```diff lang="ts" title="astro.config.ts"
+  components: {
+-     EditLink: "./src/components/ConditionalEditLink.astro",
+-     Hero: "./src/components/Hero.astro",
+  },
+```
+
+Remove redundant font imports and theme CSS:
+
+```diff lang="ts" title="astro.config.ts"
+- customCss: [
+-     "./src/styles/custom.css",
+-     "./src/styles/layout.css",
+-     "@fontsource/poppins/400.css",
+-     "@fontsource/poppins/600.css",
+- ],
+```
+
+### Files to Delete
+
+Remove these if they exist only for Northwestern branding:
+
+- `src/components/ConditionalEditLink.astro`
+- `src/components/Hero.astro`
+- `src/styles/custom.css`
+- `src/styles/layout.css`
+
+### Dependencies
+
+You no longer need `@fontsource/poppins`. Keep `astro-mermaid` and `mermaid` if your site uses diagrams.

@@ -1,0 +1,201 @@
+/* ==========================================================================
+   Navigation — Header, Sidebar, Breadcrumbs
+
+   Encapsulates top navigation, sidebar navigation, search trigger alignment,
+   and active/hover states tied to Starlight navigation UI.
+   ========================================================================== */
+
+@layer northwestern {
+    .site-title,
+    .header a,
+    .social-icons a,
+    starlight-theme-select,
+    starlight-theme-select label,
+    starlight-theme-select select,
+    starlight-theme-select svg,
+    northwestern-theme-toggle,
+    northwestern-theme-toggle button,
+    northwestern-theme-toggle svg,
+    starlight-menu-button,
+    starlight-menu-button button {
+        color: var(--nu-topbar-text) !important;
+        fill: var(--nu-topbar-text) !important;
+    }
+
+    starlight-menu-button button,
+    northwestern-theme-toggle button,
+    .header northwestern-theme-toggle button {
+        background: rgb(255 255 255 / 15%) !important;
+        border: 1px solid rgb(255 255 255 / 25%) !important;
+        border-color: rgb(255 255 255 / 25%) !important;
+        box-shadow: none !important;
+    }
+
+    starlight-menu-button button:hover,
+    northwestern-theme-toggle button:hover,
+    .header northwestern-theme-toggle button:hover {
+        background: rgb(255 255 255 / 25%) !important;
+    }
+
+    @media (width < 50rem) {
+        site-search button {
+            color: var(--nu-topbar-text) !important;
+        }
+
+        site-search button svg {
+            fill: var(--nu-topbar-text) !important;
+        }
+
+        :root[data-theme="light"] button[data-close-modal] {
+            color: var(--nu-black-80) !important;
+        }
+    }
+
+    site-search button[data-open-modal] {
+        align-items: center;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        line-height: 1 !important;
+    }
+
+    site-search button[data-open-modal] > svg {
+        flex-shrink: 0;
+        align-self: center;
+    }
+
+    @media (width >= 50rem) {
+        site-search button[data-open-modal] > span {
+            position: relative;
+            top: 1px;
+        }
+
+        site-search button[data-open-modal] > kbd {
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+        }
+    }
+
+    mobile-starlight-toc .display-current {
+        color: var(--nu-topbar-text) !important;
+    }
+
+    mobile-starlight-toc .toggle {
+        border-color: var(--nu-border-color) !important;
+        transition:
+            border-color var(--nu-transition-fast),
+            background-color var(--nu-transition-fast);
+    }
+
+    mobile-starlight-toc .toggle:hover {
+        border-color: var(--nu-black-50) !important;
+    }
+
+    :root:not([data-theme="light"]) mobile-starlight-toc .toggle:hover {
+        border-color: var(--nu-black-20) !important;
+    }
+
+    /* Starlight owns these borders; force them onto the shared theme token. */
+    .header,
+    .sidebar-pane {
+        border-color: var(--nu-border-color) !important;
+    }
+
+    nav.sidebar a:hover {
+        background-color: var(--nu-purple-surface) !important;
+    }
+
+    nav.sidebar a[aria-current="page"] {
+        padding-left: 0.8rem;
+        font-weight: 700;
+        color: var(--nu-color-link) !important;
+        background-color: var(--nu-purple-surface) !important;
+        border-left: 3px solid var(--nu-color-link);
+    }
+
+    nav.sidebar a[aria-current="true"] {
+        font-weight: 600;
+        border-left: 3px solid var(--nu-color-link);
+    }
+
+    :root:not([data-theme="light"]) nav.sidebar a:hover {
+        background-color: var(--nu-hover-bg) !important;
+    }
+
+    :root:not([data-theme="light"]) nav.sidebar a[aria-current="page"] {
+        color: var(--nu-purple-30) !important;
+        background-color: var(--nu-purple-tint-strong) !important;
+        border-left-color: var(--nu-purple-30);
+    }
+
+    .right-sidebar-panel a {
+        border-left: 3px solid transparent;
+        transition:
+            border-color var(--nu-transition-fast),
+            padding-left var(--nu-transition-fast),
+            font-weight var(--nu-transition-fast);
+    }
+
+    .right-sidebar-panel a[aria-current="true"]::after {
+        display: none !important;
+    }
+
+    .right-sidebar-panel a[aria-current="true"] {
+        padding-left: 0.8rem;
+        font-weight: 600;
+        border-left-color: var(--sl-color-accent);
+    }
+
+    mobile-starlight-toc .dropdown a {
+        border-left: 3px solid transparent;
+        transition:
+            border-color var(--nu-transition-fast),
+            padding-left var(--nu-transition-fast),
+            background-color var(--nu-transition-fast);
+    }
+
+    mobile-starlight-toc .dropdown a[aria-current="true"]::after {
+        display: none !important;
+    }
+
+    mobile-starlight-toc .dropdown a[aria-current="true"] {
+        padding-left: 0.8rem;
+        font-weight: 600;
+        color: var(--nu-color-link) !important;
+        background-color: var(--nu-purple-surface) !important;
+        border-left-color: var(--nu-color-link);
+    }
+
+    :root:not([data-theme="light"]) mobile-starlight-toc .dropdown a[aria-current="true"] {
+        color: var(--nu-purple-30) !important;
+        background-color: var(--nu-purple-tint-strong) !important;
+        border-left-color: var(--nu-purple-30);
+    }
+
+    starlight-changelogs-versions-list {
+        display: none;
+    }
+
+    .not-content:has(starlight-changelogs-versions-list):not(:has(.links)) + h2 {
+        margin-top: 0;
+    }
+
+    .not-content:has(starlight-changelogs-versions-list) .links {
+        margin-block-start: 0 !important;
+    }
+
+    .sidebar-content a[href^="/changelog/version/"] span {
+        font-family: var(--sl-font-system-mono);
+        font-size: var(--sl-text-xs);
+        letter-spacing: -0.02em;
+    }
+
+    .sidebar-content a[href="/changelog/"] span {
+        font-size: var(--sl-text-xs);
+        letter-spacing: 0.05em;
+        opacity: 0.7;
+    }
+
+    .sidebar-content a[href="/changelog/"]:hover span {
+        opacity: 1;
+    }
+}

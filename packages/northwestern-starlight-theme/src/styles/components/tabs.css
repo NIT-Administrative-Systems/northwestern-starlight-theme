@@ -1,0 +1,103 @@
+/* ==========================================================================
+   Tabs — Code-Oriented Tab Panels
+
+   Encapsulates Starlight tab styling when tabs wrap code blocks, including
+   tab chrome, panel spacing, and embedded code-frame adjustments.
+   ========================================================================== */
+
+/* stylelint-disable custom-property-pattern */
+
+@layer northwestern {
+    starlight-tabs:has(.expressive-code) {
+        border: 1px solid var(--nu-border-color);
+        border-top: 4px solid var(--nu-purple-100);
+    }
+
+    starlight-tabs:has(.expressive-code) .tablist-wrapper {
+        padding: 0;
+        background: var(--nu-purple-surface);
+        border-bottom: 1px solid var(--nu-border-color);
+    }
+
+    starlight-tabs:has(.expressive-code) [role="tablist"] {
+        gap: 0;
+        border-bottom: none;
+    }
+
+    starlight-tabs:has(.expressive-code) [role="tab"] {
+        padding: 0.5rem 1rem;
+        font-family: var(--__sl-font-mono);
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--nu-black-80);
+        border-bottom: 2px solid transparent;
+    }
+
+    starlight-tabs:has(.expressive-code) [role="tab"][aria-selected="true"] {
+        color: var(--nu-purple-100);
+        border-bottom-color: var(--nu-purple-100);
+    }
+
+    starlight-tabs:has(.expressive-code) .expressive-code {
+        margin: 0 !important;
+    }
+
+    starlight-tabs:has(.expressive-code) .expressive-code .frame {
+        margin: 0 !important;
+        border: none !important;
+    }
+
+    starlight-tabs:has(.expressive-code) .expressive-code .frame.is-terminal .header,
+    starlight-tabs:has(.expressive-code) .expressive-code .frame.is-terminal .header::before,
+    starlight-tabs:has(.expressive-code) .expressive-code .frame.is-terminal .header::after,
+    starlight-tabs:has(.expressive-code) .expressive-code .frame:not(.has-title, .is-terminal) .header,
+    starlight-tabs:has(.expressive-code) .expressive-code .frame:not(.has-title, .is-terminal) .header::before,
+    starlight-tabs:has(.expressive-code) .expressive-code .frame:not(.has-title, .is-terminal) .header::after {
+        display: none !important;
+    }
+
+    starlight-tabs:has(.expressive-code) [role="tabpanel"] {
+        margin-top: 0 !important;
+    }
+
+    starlight-tabs:has(.expressive-code) [role="tabpanel"]:not(:has(p, ul, ol, h1, h2, h3, h4, h5, h6)) {
+        padding: 0 !important;
+    }
+
+    starlight-tabs:has(.expressive-code) [role="tabpanel"]:has(p, ul, ol, h1, h2, h3, h4, h5, h6) {
+        padding: 1rem 1.25rem !important;
+    }
+
+    starlight-tabs [role="tabpanel"] p + .expressive-code,
+    starlight-tabs [role="tabpanel"] ul + .expressive-code,
+    starlight-tabs [role="tabpanel"] ol + .expressive-code {
+        margin-top: 0.75rem !important;
+    }
+
+    starlight-tabs:has(.expressive-code) .expressive-code .copy {
+        top: 0.45rem !important;
+    }
+
+    starlight-tabs:has(.expressive-code) .expressive-code .frame.has-title .copy {
+        top: calc(0.45rem + 2.2rem) !important;
+    }
+
+    :root:not([data-theme="light"]) starlight-tabs:has(.expressive-code) {
+        border-top-color: var(--nu-purple-40);
+        box-shadow: none;
+    }
+
+    :root:not([data-theme="light"]) starlight-tabs:has(.expressive-code) .tablist-wrapper {
+        background: rgb(78 42 132 / 14%);
+        border-bottom-color: var(--nu-border-color);
+    }
+
+    :root:not([data-theme="light"]) starlight-tabs:has(.expressive-code) [role="tab"] {
+        color: var(--sl-color-gray-2);
+    }
+
+    :root:not([data-theme="light"]) starlight-tabs:has(.expressive-code) [role="tab"][aria-selected="true"] {
+        color: var(--nu-purple-30);
+        border-bottom-color: var(--nu-purple-30);
+    }
+}

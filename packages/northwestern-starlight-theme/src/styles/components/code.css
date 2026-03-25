@@ -1,0 +1,168 @@
+/* ==========================================================================
+   Code — Expressive Code Frames and Controls
+
+   Encapsulates standalone code block and terminal styling, including frame
+   chrome, headers, copy controls, and dark-mode variants.
+   ========================================================================== */
+
+@layer northwestern {
+    /* stylelint-disable custom-property-pattern, no-duplicate-selectors, declaration-block-no-duplicate-properties */
+
+    .expressive-code .frame {
+        overflow: hidden;
+        border: 1px solid var(--nu-border-color);
+        border-top: 4px solid var(--nu-purple-100);
+        box-shadow: none;
+    }
+
+    .expressive-code .frame.has-title:not(.is-terminal) {
+        border-top-width: 3px;
+    }
+
+    .expressive-code .header {
+        min-height: 0;
+    }
+
+    .expressive-code .frame.has-title:not(.is-terminal) .header,
+    .expressive-code .frame.is-terminal .header {
+        background: var(--nu-purple-surface);
+        border-bottom: 1px solid var(--nu-border-color);
+    }
+
+    .expressive-code .frame.has-title:not(.is-terminal) .title,
+    .expressive-code .frame.is-terminal .header .title {
+        font-family: var(--__sl-font-mono);
+        font-weight: 600;
+    }
+
+    .expressive-code .copy button {
+        border-radius: 0;
+    }
+
+    .expressive-code .frame.has-title:not(.is-terminal) .header {
+        display: flex;
+        align-items: end;
+        padding-inline-start: 0;
+    }
+
+    .expressive-code .frame.has-title:not(.is-terminal) .header::before {
+        content: none;
+    }
+
+    .expressive-code .frame.has-title:not(.is-terminal) .title {
+        padding: 0.5rem 0.9rem 0.45rem;
+        margin-block-start: 0;
+        font-size: 0.8rem;
+        color: var(--nu-black-80);
+        background: transparent;
+        border: 0;
+    }
+
+    .expressive-code .frame.has-title:not(.is-terminal) .title::after {
+        content: none;
+    }
+
+    .expressive-code .frame.is-terminal .header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.45rem 3.25rem 0.45rem 0.9rem;
+    }
+
+    .expressive-code .frame.is-terminal .header::before {
+        position: absolute;
+        top: 50%;
+        left: 0.9rem;
+        width: 6px;
+        height: 6px;
+        content: "";
+        background-color: #bbb4c7;
+        border-radius: 999px;
+        box-shadow:
+            10px 0 0 #bbb4c7,
+            20px 0 0 #bbb4c7;
+        opacity: 1;
+        mask-image: none;
+        mask-image: none;
+        transform: translateY(-50%);
+    }
+
+    .expressive-code .frame.is-terminal .header::after {
+        content: none;
+    }
+
+    .expressive-code .frame.is-terminal .header .title {
+        margin-left: 0;
+        font-size: 0.78rem;
+        letter-spacing: 0.02em;
+    }
+
+    .expressive-code .copy {
+        top: 0.45rem;
+        right: 0.45rem;
+        bottom: auto;
+        z-index: 2;
+    }
+
+    .expressive-code .frame.has-title .copy,
+    .expressive-code .frame.is-terminal .copy {
+        top: calc(0.45rem + 2.2rem);
+    }
+
+    .expressive-code .copy button {
+        width: 2rem;
+        height: 2rem;
+        background: rgb(255 255 255 / 92%);
+        border: 1px solid var(--nu-border-color);
+    }
+
+    .expressive-code .copy button:hover {
+        background: #fff;
+        border-color: var(--nu-black-50);
+    }
+
+    .expressive-code .copy button:hover::after {
+        background-color: var(--nu-purple-100);
+    }
+
+    .expressive-code pre {
+        padding-block: 0.2rem;
+        margin-block: 0 !important;
+    }
+
+    .expressive-code .gutter .ln {
+        color: #6e6e6e;
+    }
+
+    :root:not([data-theme="light"]) .expressive-code .frame {
+        border-top-color: var(--nu-purple-40);
+        box-shadow: none;
+    }
+
+    :root:not([data-theme="light"]) .expressive-code .header,
+    :root:not([data-theme="light"]) .expressive-code .frame.has-title:not(.is-terminal) .header {
+        background: rgb(78 42 132 / 14%);
+        border-bottom-color: var(--nu-border-color);
+    }
+
+    :root:not([data-theme="light"]) .expressive-code .frame.has-title:not(.is-terminal) .title {
+        color: var(--nu-color-text);
+    }
+
+    :root:not([data-theme="light"]) .expressive-code .frame.is-terminal .header::before {
+        background-color: #74668b;
+        box-shadow:
+            10px 0 0 #74668b,
+            20px 0 0 #74668b;
+    }
+
+    :root:not([data-theme="light"]) .expressive-code .copy button {
+        background: rgb(24 24 27 / 88%);
+        border-color: var(--nu-border-color);
+    }
+
+    :root:not([data-theme="light"]) .expressive-code .copy button:hover {
+        background: rgb(41 41 41 / 95%);
+        border-color: var(--nu-purple-40);
+    }
+}

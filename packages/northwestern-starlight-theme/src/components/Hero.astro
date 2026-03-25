@@ -1,0 +1,252 @@
+---
+import { Image } from "astro:assets";
+import themeConfig from "virtual:northwestern-theme/config";
+import { LinkButton } from "@astrojs/starlight/components";
+
+const PAGE_TITLE_ID = "_top";
+const { data } = Astro.locals.starlightRoute.entry;
+const { title = data.title, tagline, image, actions = [] } = data.hero || {};
+
+const imageAttrs = {
+    loading: "eager" as const,
+    decoding: "async" as const,
+    width: 400,
+    height: 400,
+    alt: image?.alt || "",
+};
+
+let darkImage: ImageMetadata | undefined;
+let lightImage: ImageMetadata | undefined;
+let rawHtml: string | undefined;
+if (image) {
+    if ("file" in image) {
+        darkImage = image.file;
+    } else if ("dark" in image) {
+        darkImage = image.dark;
+        lightImage = image.light;
+    } else {
+        rawHtml = image.html;
+    }
+}
+
+const hasImage = Boolean(darkImage || lightImage || rawHtml);
+const isSplit = hasImage && themeConfig.homepage.layout === "split";
+const showTitle = themeConfig.homepage.showTitle;
+---
+
+<div class:list={["hero", { "hero--split": isSplit }]}>
+    {
+        isSplit ? (
+            <>
+                <div class="sl-flex stack">
+                    <div class="sl-flex copy">
+                        {showTitle && <h1 id={PAGE_TITLE_ID} data-page-title set:html={title} />}
+                        {tagline && <div class="tagline" set:html={tagline} />}
+                    </div>
+                    {actions.length > 0 && (
+                        <div class="sl-flex actions">
+                            {actions.map(({ icon, link: href, text, variant }) => (
+                                <LinkButton href={href} variant={variant} icon={icon?.name || icon}>
+                                    {text}
+                                </LinkButton>
+                            ))}
+                        </div>
+                    )}
+                </div>
+                <div class="hero-image-container">
+                    {darkImage && (
+                        <Image
+                            src={darkImage}
+                            {...imageAttrs}
+                            class:list={["hero-image", { "light:sl-hidden": Boolean(lightImage) }]}
+                        />
+                    )}
+                    {lightImage && <Image src={lightImage} {...imageAttrs} class="hero-image dark:sl-hidden" />}
+                    {rawHtml && <div class="hero-html sl-flex" set:html={rawHtml} />}
+                </div>
+            </>
+        ) : (
+            <div class="sl-flex stack">
+                {hasImage && (
+                    <div class="hero-image-centered">
+                        {darkImage && (
+                            <Image
+                                src={darkImage}
+                                {...imageAttrs}
+                                class:list={["hero-image", { "light:sl-hidden": Boolean(lightImage) }]}
+                            />
+                        )}
+                        {lightImage && <Image src={lightImage} {...imageAttrs} class="hero-image dark:sl-hidden" />}
+                        {rawHtml && <div class="hero-html sl-flex" set:html={rawHtml} />}
+                    </div>
+                )}
+                <div class="sl-flex copy">
+                    <h1 id={PAGE_TITLE_ID} data-page-title set:html={title} />
+                    {tagline && <div class="tagline" set:html={tagline} />}
+                </div>
+                {actions.length > 0 && (
+                    <div class="sl-flex actions">
+                        {actions.map(({ icon, link: href, text, variant }) => (
+                            <LinkButton href={href} variant={variant} icon={icon?.name || icon}>
+                                {text}
+                            </LinkButton>
+                        ))}
+                    </div>
+                )}
+            </div>
+        )
+    }
+</div>
+
+<style>
+    /* ---- Base / Centered layout ---- */
+    .hero {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-block: clamp(2rem, calc(1rem + 10vmin), 8rem);
+    }
+
+    .stack {
+        flex-direction: column;
+        gap: clamp(1.5rem, calc(1.5rem + 1vw), 2.5rem);
+        text-align: center;
+        align-items: center;
+    }
+
+    .copy {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .copy > * {
+        max-width: 50ch;
+    }
+
+    h1 {
+        font-size: clamp(var(--sl-text-3xl), calc(0.25rem + 5vw), var(--sl-text-6xl));
+        line-height: var(--sl-line-height-headings);
+        font-weight: 600;
+        color: var(--nu-purple-100);
+    }
+
+    :root:not([data-theme="light"]) h1 {
+        color: var(--sl-color-white);
+    }
+
+    .tagline {
+        font-size: clamp(var(--sl-text-base), calc(0.0625rem + 1.5vw), var(--sl-text-lg));
+        color: var(--sl-color-gray-2);
+        max-width: 90vw;
+    }
+
+    .actions {
+        gap: 1rem;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .actions :global(a) {
+        width: auto;
+        justify-content: center;
+    }
+
+    .hero-image-centered {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hero-image-centered .hero-image,
+    .hero-image-centered .hero-html {
+        object-fit: contain;
+        width: min(90%, 500px);
+        height: auto;
+    }
+
+    @media (min-width: 50rem) {
+        .hero:not(.hero--split) .tagline {
+            white-space: nowrap;
+            max-width: none;
+        }
+
+        .actions {
+            flex-direction: row;
+            align-items: center;
+            width: auto;
+            max-width: none;
+        }
+
+        .actions :global(a) {
+            width: auto;
+        }
+    }
+
+    /* ---- Split layout ---- */
+    .hero--split {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding-block: clamp(2rem, calc(1rem + 8vmin), 6rem);
+    }
+
+    .hero--split .stack {
+        text-align: center;
+        align-items: center;
+        order: 2;
+    }
+
+    .hero--split .copy {
+        align-items: center;
+    }
+
+    .hero-image-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        order: 1;
+    }
+
+    .hero-image-container .hero-image,
+    .hero-image-container .hero-html {
+        object-fit: contain;
+        width: min(60%, 240px);
+        height: auto;
+    }
+
+    @media (min-width: 50rem) {
+        .hero--split {
+            grid-template-columns: 3fr 2fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .hero--split .stack {
+            text-align: start;
+            align-items: flex-start;
+            order: unset;
+        }
+
+        .hero-image-container {
+            order: unset;
+            padding: 2rem;
+        }
+
+        .hero--split .copy {
+            align-items: flex-start;
+        }
+
+        .hero--split .actions {
+            justify-content: flex-start;
+        }
+
+        .hero-image-container .hero-image,
+        .hero-image-container .hero-html {
+            width: 100%;
+            max-width: 280px;
+        }
+    }
+</style>

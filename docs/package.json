@@ -1,0 +1,22 @@
+{
+    "name": "docs",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "astro": "astro",
+        "build": "astro build",
+        "dev": "astro dev",
+        "preview": "astro preview",
+        "start": "astro dev"
+    },
+    "dependencies": {
+        "@astrojs/starlight": "^0.38.2",
+        "astro": "^6.0.8",
+        "astro-mermaid": "^2.0.1",
+        "mermaid": "^11.12.2",
+        "@nu-appdev/northwestern-starlight-theme": "workspace:*",
+        "sharp": "^0.34.1",
+        "starlight-changelogs": "^0.5.0",
+        "starlight-package-managers": "^0.12.0"
+    }
+}

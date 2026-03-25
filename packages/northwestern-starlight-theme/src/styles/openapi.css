@@ -1,0 +1,119 @@
+/* ==========================================================================
+   OpenAPI — Scoped overrides for starlight-openapi plugin
+
+   Encapsulates method badges plus OpenAPI content panels, rows, fields,
+   and controls rendered inside markdown content.
+   ========================================================================== */
+
+/* stylelint-disable selector-class-pattern */
+
+@layer northwestern {
+    .sl-badge.sl-openapi-method-get {
+        color: #fff !important;
+        background-color: hsl(204deg 90% 40%) !important;
+        border-color: hsl(204deg 90% 60%) !important;
+    }
+
+    .sl-badge.sl-openapi-method-post {
+        color: #fff !important;
+        background-color: hsl(104deg 90% 21%) !important;
+        border-color: hsl(104deg 90% 46%) !important;
+    }
+
+    .sl-badge.sl-openapi-method-put,
+    .sl-badge.sl-openapi-method-patch {
+        color: #fff !important;
+        background-color: hsl(34deg 90% 40%) !important;
+        border-color: hsl(34deg 90% 60%) !important;
+    }
+
+    .sl-badge.sl-openapi-method-delete {
+        color: #fff !important;
+        background-color: hsl(339deg 90% 35%) !important;
+        border-color: hsl(339deg 90% 60%) !important;
+    }
+
+    .sl-markdown-content .method-path {
+        gap: 0.75rem;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        font-family: var(--sl-font-system-mono, monospace);
+        background: var(--nu-card-bg);
+        border: 1px solid var(--nu-border-color);
+    }
+
+    .sl-markdown-content .method-path .method {
+        padding: 0.25rem 0.625rem;
+        font-family: var(--sl-font-system-mono, monospace);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .sl-markdown-content .method-path .path {
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .sl-markdown-content .panel {
+        background: var(--nu-card-bg);
+        border: 1px solid var(--nu-border-color);
+    }
+
+    .sl-markdown-content .key.not-content {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--nu-border-color);
+    }
+
+    .sl-markdown-content .key.not-content:last-child {
+        border-bottom: none;
+    }
+
+    .sl-markdown-content .key .name {
+        font-family: var(--sl-font-system-mono, monospace);
+        font-weight: 600;
+    }
+
+    .sl-markdown-content .type {
+        font-family: var(--sl-font-system-mono, monospace);
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--nu-purple-100);
+    }
+
+    :root:not([data-theme="light"]) .sl-markdown-content .type {
+        color: var(--nu-purple-40);
+    }
+
+    .sl-markdown-content .required {
+        font-family: var(--sl-font-system-mono, monospace);
+        font-size: 0.6875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .sl-markdown-content .panel select {
+        padding: 0.375rem 0.75rem;
+        font-family: var(--sl-font-system-mono, monospace);
+        font-size: 0.8125rem;
+        color: var(--nu-color-text);
+        background: var(--nu-card-bg);
+        border: 1px solid var(--nu-border-color);
+    }
+
+    .sl-markdown-content .panel details summary {
+        font-family: var(--sl-font-system-mono, monospace);
+        font-size: 0.8125rem;
+        cursor: pointer;
+    }
+
+    .sl-markdown-content .panel details summary:hover {
+        color: var(--nu-purple-100);
+    }
+
+    :root:not([data-theme="light"]) .sl-markdown-content .panel details summary:hover {
+        color: var(--nu-purple-40);
+    }
+}

@@ -1,0 +1,31 @@
+/* ==========================================================================
+   Cards — Card Surface Components
+
+   Encapsulates shared card-like surfaces including generic cards and Starlight
+   link cards, along with their hover border treatment.
+   ========================================================================== */
+
+@layer northwestern {
+    :root,
+    ::backdrop {
+        --nu-card-bg: #292929;
+    }
+
+    :root[data-theme="light"],
+    [data-theme="light"] ::backdrop {
+        --nu-card-bg: var(--nu-sidebar-bg);
+    }
+
+    .card,
+    .sl-link-card {
+        background-color: var(--nu-card-bg) !important;
+    }
+
+    .sl-link-card:hover {
+        border-color: var(--nu-purple-60) !important;
+    }
+
+    :root:not([data-theme="light"]) .sl-link-card:hover {
+        border-color: var(--nu-purple-40) !important;
+    }
+}

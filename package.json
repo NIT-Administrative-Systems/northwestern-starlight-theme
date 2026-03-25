@@ -1,0 +1,32 @@
+{
+    "private": true,
+    "scripts": {
+        "verify": "pnpm fix && pnpm check:deps && pnpm docs:build",
+        "verify:full": "pnpm verify && pnpm test:accessibility",
+        "fix": "biome check --write && stylelint \"packages/northwestern-starlight-theme/src/**/*.css\" --fix",
+        "check": "biome check",
+        "check:deps": "knip",
+        "docs:build": "pnpm --filter docs build",
+        "docs:dev": "pnpm --filter docs dev",
+        "docs:preview": "pnpm --filter docs preview",
+        "lint:css": "stylelint \"packages/northwestern-starlight-theme/src/**/*.css\"",
+        "test:accessibility": "playwright test tests/accessibility.spec.ts"
+    },
+    "devDependencies": {
+        "@axe-core/playwright": "^4.11.1",
+        "@biomejs/biome": "^2.4.8",
+        "@playwright/test": "^1.58.2",
+        "knip": "^6.0.5",
+        "playwright": "^1.58.2",
+        "stylelint": "^16.0.0",
+        "stylelint-config-recess-order": "^7.7.0",
+        "stylelint-config-standard": "^39.0.0",
+        "stylelint-order": "^8.1.1"
+    },
+    "engines": {
+        "node": ">= 22.0.0",
+        "npm": "please-use-pnpm",
+        "pnpm": ">= 10.0.0",
+        "yarn": "please-use-pnpm"
+    }
+}

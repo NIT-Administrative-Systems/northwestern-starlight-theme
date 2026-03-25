@@ -1,0 +1,53 @@
+name: 📚 Deploy Documentation
+
+env:
+  DOCS_CNAME: "starlight-theme.entapp.northwestern.edu"
+  NODE_VERSION: "24"
+  PNPM_VERSION: "10.x.x"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "packages/**"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-docs-${{ github.ref }}
+
+jobs:
+  deploy:
+    name: 🌐 Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Build docs
+        run: pnpm docs:build
+
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main' && github.repository == 'NIT-Administrative-Systems/northwestern-starlight-theme'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/dist
+          cname: ${{ env.DOCS_CNAME }}

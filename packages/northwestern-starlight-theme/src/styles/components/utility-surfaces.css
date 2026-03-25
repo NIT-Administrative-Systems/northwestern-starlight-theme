@@ -1,0 +1,41 @@
+/* ==========================================================================
+   Utility Surfaces — File Tree, Pagination, Banner
+
+   Encapsulates smaller shared surface treatments used by file trees,
+   pagination links, and the site banner.
+   ========================================================================== */
+
+@layer northwestern {
+    starlight-file-tree,
+    .pagination-links a {
+        background-color: var(--nu-card-bg) !important;
+    }
+
+    starlight-file-tree .highlight {
+        color: #fff !important;
+        background-color: var(--nu-purple-100) !important;
+    }
+
+    :root:not([data-theme="light"]) starlight-file-tree .highlight {
+        background-color: var(--nu-purple-80) !important;
+    }
+
+    .pagination-links a {
+        transition:
+            border-color var(--nu-transition-fast),
+            background-color var(--nu-transition-fast);
+    }
+
+    .pagination-links a:hover {
+        border-color: var(--nu-purple-60) !important;
+    }
+
+    :root:not([data-theme="light"]) .pagination-links a:hover {
+        border-color: var(--nu-purple-40) !important;
+    }
+
+    .sl-banner {
+        --sl-color-banner-bg: var(--nu-purple-100);
+        --sl-color-banner-text: #fff;
+    }
+}

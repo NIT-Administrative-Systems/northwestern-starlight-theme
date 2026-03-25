@@ -1,0 +1,28 @@
+/* ==========================================================================
+   Steps — Ordered Step Indicators
+
+   Encapsulates Starlight step marker styling, including numbered bullets and
+   connector lines across light and dark modes.
+   ========================================================================== */
+
+@layer northwestern {
+    .sl-steps > li::before {
+        font-family: var(--nu-font-heading);
+        font-weight: 700;
+        color: #fff !important;
+        background-color: var(--nu-purple-100) !important;
+        box-shadow: none !important;
+    }
+
+    :root:not([data-theme="light"]) .sl-steps > li::before {
+        background-color: var(--nu-purple-80) !important;
+    }
+
+    .sl-steps > li::after {
+        background-color: var(--nu-purple-20) !important;
+    }
+
+    :root:not([data-theme="light"]) .sl-steps > li::after {
+        background-color: var(--nu-purple-80) !important;
+    }
+}

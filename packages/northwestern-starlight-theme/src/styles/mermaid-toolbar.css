@@ -1,0 +1,163 @@
+/* ==========================================================================
+   Mermaid Toolbar — Diagram Interaction Layer
+
+   Encapsulates hover actions, fullscreen overlay controls, and the pan/zoom
+   viewport used by the Mermaid diagram interaction layer.
+   ========================================================================== */
+
+@layer northwestern {
+    .nu-mermaid-toolbar {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        z-index: 2;
+        display: flex;
+        gap: 0.25rem;
+        align-items: center;
+        opacity: 0;
+        transition: opacity var(--nu-transition-fast);
+    }
+
+    .mermaid:hover .nu-mermaid-toolbar,
+    .mermaid:focus-within .nu-mermaid-toolbar {
+        opacity: 1;
+    }
+
+    .nu-mermaid-btn {
+        box-sizing: border-box;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        padding: 0;
+        margin: 0 !important;
+        font: inherit;
+        line-height: 1;
+        color: var(--nu-color-text-muted);
+        cursor: pointer;
+        background: var(--nu-card-bg);
+        border: 1px solid var(--nu-border-color);
+        transition:
+            color var(--nu-transition-fast),
+            background var(--nu-transition-fast);
+    }
+
+    .nu-mermaid-btn svg {
+        display: block;
+        flex-shrink: 0;
+        width: 14px;
+        height: 14px;
+        pointer-events: none;
+    }
+
+    .nu-mermaid-btn:hover {
+        color: var(--nu-color-text);
+        background: #ebedf0;
+    }
+
+    :root:not([data-theme="light"]) .nu-mermaid-btn:hover {
+        background: #3a3a3a;
+    }
+
+    .nu-mermaid-btn.nu-mermaid-success {
+        color: var(--nu-color-success) !important;
+        background: #e6f5ee !important;
+        border-color: var(--nu-color-success) !important;
+    }
+
+    :root:not([data-theme="light"]) .nu-mermaid-btn.nu-mermaid-success {
+        background: #0d3d2a !important;
+    }
+
+    .nu-mermaid-overlay-controls .nu-mermaid-btn.nu-mermaid-success {
+        color: #fff !important;
+        background: var(--nu-color-success) !important;
+    }
+
+    .nu-mermaid-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        background: #f3f5f7;
+        transition: opacity 150ms ease;
+    }
+
+    :root:not([data-theme="light"]) .nu-mermaid-overlay {
+        background: #1c1c1f;
+    }
+
+    .nu-mermaid-overlay-controls {
+        display: flex;
+        gap: 0.25rem;
+        align-items: center;
+        height: var(--sl-nav-height);
+        padding: 0 1.5rem;
+        background: var(--nu-topbar-bg);
+    }
+
+    .nu-mermaid-overlay-controls .nu-mermaid-btn {
+        width: 1.75rem;
+        height: 1.75rem;
+        color: var(--nu-color-text-muted);
+        background: var(--nu-card-bg);
+        border: 1px solid var(--nu-border-color);
+    }
+
+    .nu-mermaid-overlay-controls .nu-mermaid-btn:hover {
+        color: var(--nu-color-text);
+        background: #ebedf0;
+    }
+
+    :root:not([data-theme="light"]) .nu-mermaid-overlay-controls .nu-mermaid-btn:hover {
+        background: #3a3a3a;
+    }
+
+    .nu-mermaid-separator {
+        width: 1px;
+        height: 1.25rem;
+        margin: 0 0.375rem !important;
+        background: rgb(255 255 255 / 30%);
+    }
+
+    .nu-mermaid-spacer {
+        flex: 1;
+    }
+
+    .nu-mermaid-overlay-controls .nu-mermaid-close {
+        color: #fff;
+        background: var(--nu-color-danger);
+        border-color: var(--nu-color-danger);
+    }
+
+    .nu-mermaid-overlay-controls .nu-mermaid-close:hover {
+        background: var(--nu-dark-orange);
+        border-color: var(--nu-dark-orange);
+    }
+
+    .nu-mermaid-viewport {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        cursor: grab;
+    }
+
+    .nu-mermaid-viewport:active {
+        cursor: grabbing;
+    }
+
+    .nu-mermaid-viewport svg {
+        transition: transform 0.1s ease;
+    }
+
+    .nu-mermaid-fullscreen {
+        display: inline-block;
+        padding: 0 !important;
+        background: transparent !important;
+        border: none !important;
+    }
+}
