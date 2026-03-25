@@ -34,8 +34,6 @@ const ICONS = {
         "M16 4h2a2 2 0 012 2v6a2 2 0 01-2 2h-8a2 2 0 01-2-2V6a2 2 0 012-2",
     ],
     code: ["M16 18l6-6-6-6", "M8 6l-6 6 6 6"],
-    fitWidth: ["M21 3H3v18h18V3z", "M9 3v18", "M15 3v18"],
-    fitHeight: ["M21 3H3v18h18V3z", "M3 9h18", "M3 15h18"],
 };
 
 function createSvgIcon(paths: string[], size = 14): SVGElement {
@@ -310,11 +308,9 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
         vbHeight = parts[3] || 600;
     }
 
-    function calcFitScale(mode: "both" | "width" | "height" = "both"): number {
+    function calcFitScale(): number {
         const maxW = window.innerWidth * 0.92;
         const maxH = (window.innerHeight - 120) * 0.92; // account for controls bar
-        if (mode === "width") return maxW / vbWidth;
-        if (mode === "height") return maxH / vbHeight;
         return Math.min(maxW / vbWidth, maxH / vbHeight);
     }
 
