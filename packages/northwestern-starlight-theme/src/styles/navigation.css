@@ -7,7 +7,8 @@
 
 @layer northwestern {
     .site-title,
-    .header a,
+    .header > a,
+    .header > nav a,
     .social-icons a,
     starlight-theme-select,
     starlight-theme-select label,
@@ -56,6 +57,13 @@
         padding-top: 0 !important;
         padding-bottom: 0 !important;
         line-height: 1 !important;
+    }
+
+    /* stylelint-disable-next-line selector-id-pattern -- Starlight's own ID */
+    #starlight__search input:focus {
+        --pagefind-ui-border: var(--nu-focus-border) !important;
+        outline: none !important;
+        box-shadow: 0 0 0 0.25rem var(--nu-focus-shadow-color) !important;
     }
 
     site-search button[data-open-modal] > svg {

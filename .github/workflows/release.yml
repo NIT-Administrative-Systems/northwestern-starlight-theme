@@ -120,7 +120,7 @@ jobs:
         run: |
           gh release create "$VERSION" \
             --title "$VERSION" \
-            --generate-notes \
+            --notes "See [CHANGELOG.md](https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/blob/main/packages/northwestern-starlight-theme/CHANGELOG.md) for details." \
             --verify-tag
 
       - name: Publish to npm

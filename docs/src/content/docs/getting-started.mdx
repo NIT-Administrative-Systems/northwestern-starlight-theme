@@ -92,9 +92,10 @@ Remove component overrides the theme now provides:
   },
 ```
 
-Remove redundant font imports and theme CSS:
+Remove redundant font imports, favicon, and theme CSS:
 
 ```diff lang="ts" title="astro.config.ts"
+- favicon: "/favicon.ico",
 - customCss: [
 -     "./src/styles/custom.css",
 -     "./src/styles/layout.css",
@@ -103,10 +104,13 @@ Remove redundant font imports and theme CSS:
 - ],
 ```
 
+The theme ships Northwestern's official favicon by default. To use your own instead, set `favicon` in your Starlight config as usual.
+
 ### Files to Delete
 
 Remove these if they exist only for Northwestern branding:
 
+- `public/favicon.ico` (or `public/favicon.svg`) — the theme provides this automatically
 - `src/components/ConditionalEditLink.astro`
 - `src/components/Hero.astro`
 - `src/styles/custom.css`

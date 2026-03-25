@@ -60,6 +60,34 @@ northwesternTheme({
 })
 ```
 
+### Image Width
+
+By default, hero images are capped at `500px` wide. For wider lockup images, increase it:
+
+```ts
+northwesternTheme({
+    homepage: {
+        showTitle: false,
+        imageWidth: "750px",
+    },
+})
+```
+
+The value must be in pixels (e.g., `"500px"`, `"750px"`, `"1000px"`).
+
+### Favicon
+
+The theme ships Northwestern's official favicon and applies it automatically. Remove any manual `favicon` entry from your Starlight config and delete the favicon from `public/` if present.
+
+To use your own favicon instead, set `favicon` in your Starlight config as usual:
+
+```ts
+starlight({
+    favicon: "/my-custom-favicon.png",
+    plugins: [northwesternTheme()],
+});
+```
+
 ### Dark/Light Image Variants
 
 Use separate images for each theme:

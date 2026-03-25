@@ -1,3 +1,7 @@
+import { copyFileSync, mkdirSync, readFileSync } from "node:fs";
+import type { IncomingMessage, ServerResponse } from "node:http";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import type { StarlightPlugin } from "@astrojs/starlight/types";
 
 export interface NorthwesternHomepageConfig {
@@ -17,6 +21,15 @@ export interface NorthwesternHomepageConfig {
      * @default true
      */
     showTitle?: boolean;
+
+    /**
+     * Maximum width of the hero image in the centered layout, in pixels.
+     *
+     * Use a larger value for wide lockup images (e.g., `"750px"`, `"1000px"`).
+     *
+     * @default "500px"
+     */
+    imageWidth?: string;
 }
 
 export interface NorthwesternThemeConfig {
@@ -53,12 +66,27 @@ const RESOLVED_VIRTUAL_MODULE_ID = `\0${VIRTUAL_MODULE_ID}`;
 
 export default function northwesternTheme(config: NorthwesternThemeConfig = {}): StarlightPlugin {
     const { homepage = {}, mermaid = true } = config;
-    const themeConfig = { homepage: { layout: homepage.layout ?? "centered", showTitle: homepage.showTitle ?? true } };
+    const themeConfig = {
+        homepage: {
+            layout: homepage.layout ?? "centered",
+            showTitle: homepage.showTitle ?? true,
+            imageWidth: homepage.imageWidth ?? "500px",
+        },
+    };
 
     return {
         name: "northwestern-starlight-theme",
         hooks: {
             async "config:setup"({ config: starlightConfig, updateConfig, addIntegration, logger }) {
+                // Apply default favicon if consumer hasn't set one
+                const consumerSetFavicon =
+                    starlightConfig.favicon &&
+                    (starlightConfig.favicon as unknown as { href: string }).href !== "/favicon.svg";
+
+                // Read favicon bytes once for the Vite plugin to serve
+                const faviconPath = join(dirname(fileURLToPath(import.meta.url)), "src", "favicon.png");
+                const faviconBytes = consumerSetFavicon ? null : readFileSync(faviconPath);
+
                 addIntegration({
                     name: "northwestern-theme-config",
                     hooks: {
@@ -77,14 +105,54 @@ export default function northwesternTheme(config: NorthwesternThemeConfig = {}):
                                                 }
                                             },
                                         },
+                                        // Serve the bundled favicon during dev — no file touches public/
+                                        ...(faviconBytes
+                                            ? [
+                                                  {
+                                                      name: "northwestern-theme-favicon",
+                                                      configureServer(server: {
+                                                          middlewares: {
+                                                              use(
+                                                                  fn: (
+                                                                      req: IncomingMessage,
+                                                                      res: ServerResponse,
+                                                                      next: () => void,
+                                                                  ) => void,
+                                                              ): void;
+                                                          };
+                                                      }) {
+                                                          server.middlewares.use((req, res, next) => {
+                                                              if (req.url === "/favicon.png") {
+                                                                  res.setHeader("Content-Type", "image/png");
+                                                                  res.setHeader(
+                                                                      "Cache-Control",
+                                                                      "public, max-age=31536000, immutable",
+                                                                  );
+                                                                  res.end(faviconBytes);
+                                                              } else {
+                                                                  next();
+                                                              }
+                                                          });
+                                                      },
+                                                  },
+                                              ]
+                                            : []),
                                     ],
                                 },
                             });
                         },
+                        // Copy favicon into build output so nothing touches public/
+                        "astro:build:done": ({ dir }) => {
+                            if (faviconBytes) {
+                                const dest = join(fileURLToPath(dir), "favicon.png");
+                                mkdirSync(dirname(dest), { recursive: true });
+                                copyFileSync(faviconPath, dest);
+                            }
+                        },
                     },
                 });
                 // Detect mermaid availability
-                let mermaidEnabled = mermaid !== false;
+                let mermaidEnabled = mermaid;
 
                 if (mermaidEnabled) {
                     const hasMermaid = await canResolve("astro-mermaid");
@@ -102,6 +170,7 @@ export default function northwesternTheme(config: NorthwesternThemeConfig = {}):
                 }
 
                 updateConfig({
+                    ...(consumerSetFavicon ? {} : { favicon: "/favicon.png" }),
                     components: {
                         ...(starlightConfig.components ?? {}),
                         Hero:
