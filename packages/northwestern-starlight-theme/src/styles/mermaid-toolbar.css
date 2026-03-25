@@ -31,6 +31,17 @@
         opacity: 1;
     }
 
+    /* Touch devices can't hover — keep toolbar visible */
+    @media (hover: none) {
+        .nu-mermaid-toolbar {
+            opacity: 0.8;
+        }
+
+        .mermaid:active .nu-mermaid-toolbar {
+            opacity: 1;
+        }
+    }
+
     .nu-mermaid-btn {
         box-sizing: border-box;
         display: inline-flex;
@@ -168,6 +179,7 @@
         align-items: center;
         justify-content: center;
         overflow: hidden;
+        touch-action: none;
         cursor: grab;
     }
 

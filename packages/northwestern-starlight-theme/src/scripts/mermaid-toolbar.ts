@@ -391,7 +391,72 @@ function openFullscreen(svg: SVGElement, container: HTMLElement, index: number) 
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
 
-    // Double-click to zoom in
+    // Touch: one-finger pan, pinch-to-zoom
+    let lastTouchDist = 0;
+    let lastTouchX = 0;
+    let lastTouchY = 0;
+    let isTouchPanning = false;
+
+    viewport.addEventListener(
+        "touchstart",
+        (e) => {
+            if (e.touches.length === 1) {
+                isTouchPanning = true;
+                lastTouchX = e.touches[0].clientX;
+                lastTouchY = e.touches[0].clientY;
+            } else if (e.touches.length === 2) {
+                isTouchPanning = false;
+                lastTouchDist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY,
+                );
+                lastTouchX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                lastTouchY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+            }
+            e.preventDefault();
+        },
+        { passive: false },
+    );
+
+    viewport.addEventListener(
+        "touchmove",
+        (e) => {
+            if (e.touches.length === 1 && isTouchPanning) {
+                panX += e.touches[0].clientX - lastTouchX;
+                panY += e.touches[0].clientY - lastTouchY;
+                lastTouchX = e.touches[0].clientX;
+                lastTouchY = e.touches[0].clientY;
+                updateTransform();
+            } else if (e.touches.length === 2) {
+                const dist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY,
+                );
+                const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+
+                if (lastTouchDist > 0) {
+                    zoomTo(scale * (dist / lastTouchDist));
+                    panX += midX - lastTouchX;
+                    panY += midY - lastTouchY;
+                    updateTransform();
+                }
+
+                lastTouchDist = dist;
+                lastTouchX = midX;
+                lastTouchY = midY;
+            }
+            e.preventDefault();
+        },
+        { passive: false },
+    );
+
+    viewport.addEventListener("touchend", () => {
+        isTouchPanning = false;
+        lastTouchDist = 0;
+    });
+
+    // Double-click/tap to zoom in
     viewport.addEventListener("dblclick", (e) => {
         e.preventDefault();
         zoomTo(scale * 1.5);
