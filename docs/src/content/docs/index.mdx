@@ -232,8 +232,12 @@ export default defineConfig({
     .nu-home-config-text p:not(.nu-home-eyebrow) {
         font-size: var(--sl-text-sm);
         line-height: 1.6;
-        color: var(--nu-color-text-muted);
+        color: #636060;
         margin: 0;
+    }
+
+    :root:not([data-theme="light"]) .nu-home-config-text p:not(.nu-home-eyebrow) {
+        color: var(--nu-color-text-muted);
     }
 
     .nu-home-config-code {

@@ -1,0 +1,320 @@
+---
+title: PropertyTable
+description: A structured display component for documenting configuration options, API parameters, component props, and type definitions.
+sidebar:
+    order: 1
+---
+
+import { PropertyTable, Property, PropertyGroup, Expandable } from "@nu-appdev/northwestern-starlight-theme/components";
+
+Document configuration options, API parameters, and component props with types, defaults, required flags, deprecation notices, and nested properties.
+
+## Import
+
+```mdx
+import { PropertyTable, Property, PropertyGroup, Expandable } from "@nu-appdev/northwestern-starlight-theme/components";
+```
+
+## Basic Usage
+
+<PropertyTable title="NorthwesternThemeConfig">
+    <Property name="homepage" type="NorthwesternHomepageConfig">
+        Homepage hero layout configuration. See below for nested options.
+    </Property>
+    <Property name="mermaid" type="boolean | object" default="true">
+        Mermaid diagram support. Set `false` to disable. Pass an object to override
+        the default mermaid config.
+    </Property>
+</PropertyTable>
+
+```mdx
+<PropertyTable title="NorthwesternThemeConfig">
+    <Property name="homepage" type="NorthwesternHomepageConfig">
+        Homepage hero layout configuration. See below for nested options.
+    </Property>
+    <Property name="mermaid" type="boolean | object" default="true">
+        Mermaid diagram support. Set `false` to disable. Pass an object to override
+        the default mermaid config.
+    </Property>
+</PropertyTable>
+```
+
+## Required Fields
+
+Use the `required` prop to display a "Required" badge.
+
+<PropertyTable title="POST /api/users">
+    <Property name="email" type="string" required>
+        The user's email address. Must be unique.
+    </Property>
+    <Property name="name" type="string" required>
+        Display name.
+    </Property>
+    <Property name="role" type='"admin" | "editor" | "viewer"' default='"viewer"'>
+        Permission level for the new user.
+    </Property>
+</PropertyTable>
+
+```mdx
+<PropertyTable title="POST /api/users">
+    <Property name="email" type="string" required>
+        The user's email address. Must be unique.
+    </Property>
+    <Property name="name" type="string" required>
+        Display name.
+    </Property>
+    <Property name="role" type='"admin" | "editor" | "viewer"' default='"viewer"'>
+        Permission level for the new user.
+    </Property>
+</PropertyTable>
+```
+
+### Optional Indicator
+
+Use `showOptional` on the table to label non-required properties.
+
+<PropertyTable showOptional>
+    <Property name="email" type="string" required>
+        The user's email address.
+    </Property>
+    <Property name="avatar" type="string">
+        URL to a profile image.
+    </Property>
+</PropertyTable>
+
+```mdx
+<PropertyTable showOptional>
+    <Property name="email" type="string" required>
+        The user's email address.
+    </Property>
+    <Property name="avatar" type="string">
+        URL to a profile image.
+    </Property>
+</PropertyTable>
+```
+
+## Nested Properties
+
+Use `<Expandable>` inside a `<Property>` to show child properties in a collapsible section.
+
+<PropertyTable>
+    <Property name="metadata" type="object">
+        Arbitrary key-value pairs.
+        <Expandable title="properties">
+            <Property name="department" type="string">
+                Organizational department.
+            </Property>
+            <Property name="netid" type="string">
+                Northwestern NetID.
+            </Property>
+        </Expandable>
+    </Property>
+</PropertyTable>
+
+```mdx
+<PropertyTable>
+    <Property name="metadata" type="object">
+        Arbitrary key-value pairs.
+        <Expandable title="properties">
+            <Property name="department" type="string">
+                Organizational department.
+            </Property>
+            <Property name="netid" type="string">
+                Northwestern NetID.
+            </Property>
+        </Expandable>
+    </Property>
+</PropertyTable>
+```
+
+## Deprecated Fields
+
+The `deprecated` prop strikes through the name and desaturates the row. The `since` prop adds a version badge.
+
+<PropertyTable>
+    <Property name="apiKey" type="string" deprecated>
+        **Deprecated.** Use `token` instead. Will be removed in v3.0.
+    </Property>
+    <Property name="token" type="string" required since="2.0">
+        Authentication token from the dashboard.
+    </Property>
+</PropertyTable>
+
+```mdx
+<PropertyTable>
+    <Property name="apiKey" type="string" deprecated>
+        **Deprecated.** Use `token` instead. Will be removed in v3.0.
+    </Property>
+    <Property name="token" type="string" required since="2.0">
+        Authentication token from the dashboard.
+    </Property>
+</PropertyTable>
+```
+
+## Table Variant
+
+`variant="table"` renders a columnar grid. Columns default to Prop / Type / Default, configurable via the `columns` prop.
+
+<PropertyTable variant="table" title="Dialog">
+    <Property name="open" type="boolean" />
+    <Property name="modal" type="boolean" default="true" />
+</PropertyTable>
+
+```mdx
+<PropertyTable variant="table" title="Dialog">
+    <Property name="open" type="boolean" />
+    <Property name="modal" type="boolean" default="true" />
+</PropertyTable>
+```
+
+### Table with Badges
+
+Badges display inline next to the property name.
+
+<PropertyTable variant="table">
+    <Property name="src" type="string" required />
+    <Property name="loading" type='"eager" | "lazy"' default='"lazy"' since="2.0" />
+    <Property name="srcSet" type="string" deprecated />
+</PropertyTable>
+
+On mobile, the table variant falls back to the list layout.
+
+### Custom Columns
+
+Control which columns appear and their labels with the `columns` prop. Pass field keys (`"name"`, `"type"`, `"default"`) or `{ key, label }` objects.
+
+<PropertyTable variant="table" columns={[{ key: "name", label: "Data attribute" }, { key: "type", label: "Values" }]}>
+    <Property name="[data-state]" type='"open" | "closed"' />
+    <Property name="[data-disabled]" type="Present when disabled" />
+</PropertyTable>
+
+```mdx
+<PropertyTable
+    variant="table"
+    columns={[
+        { key: "name", label: "Data attribute" },
+        { key: "type", label: "Values" },
+    ]}
+>
+    <Property name="[data-state]" type='"open" | "closed"' />
+    <Property name="[data-disabled]" type="Present when disabled" />
+</PropertyTable>
+```
+
+## Grouped Properties
+
+`<PropertyGroup>` adds subheading dividers to break large tables into sections.
+
+<PropertyTable title="ServerConfig">
+    <PropertyGroup title="Connection">
+        <Property name="host" type="string" default='"localhost"'>
+            Server hostname.
+        </Property>
+        <Property name="port" type="number" default="3000">
+            Port to listen on.
+        </Property>
+    </PropertyGroup>
+    <PropertyGroup title="Security">
+        <Property name="tls" type="boolean" default="false">
+            Enable TLS encryption.
+        </Property>
+    </PropertyGroup>
+</PropertyTable>
+
+```mdx
+<PropertyTable title="ServerConfig">
+    <PropertyGroup title="Connection">
+        <Property name="host" type="string" default='"localhost"'>
+            Server hostname.
+        </Property>
+        <Property name="port" type="number" default="3000">
+            Port to listen on.
+        </Property>
+    </PropertyGroup>
+    <PropertyGroup title="Security">
+        <Property name="tls" type="boolean" default="false">
+            Enable TLS encryption.
+        </Property>
+    </PropertyGroup>
+</PropertyTable>
+```
+
+## Without Title
+
+Omit `title` for inline property lists.
+
+<PropertyTable>
+    <Property name="verbose" type="boolean" default="false">
+        Enable verbose logging output.
+    </Property>
+    <Property name="timeout" type="number" default="30000">
+        Request timeout in milliseconds.
+    </Property>
+</PropertyTable>
+
+## `<PropertyTable>` Props
+
+**Implementation:** [`PropertyTable.astro`](https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/blob/main/packages/northwestern-starlight-theme/src/components/PropertyTable.astro)
+
+<PropertyTable>
+    <Property name="title" type="string">
+        Heading displayed in the card header.
+    </Property>
+    <Property name="variant" type='"list" | "table"' default='"list"'>
+        `"list"` renders stacked rows with descriptions. `"table"` renders a columnar grid.
+    </Property>
+    <Property name="columns" type='(string | { key, label })[]' default='["name", "type", "default"]'>
+        Columns for table variant. Each entry is a field key (`"name"`, `"type"`, `"default"`) or a `{ key, label }` object for custom headers.
+    </Property>
+    <Property name="showOptional" type="boolean" default="false">
+        Labels non-required, non-deprecated properties as "Optional."
+    </Property>
+</PropertyTable>
+
+## `<Property>` Props
+
+**Implementation:** [`Property.astro`](https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/blob/main/packages/northwestern-starlight-theme/src/components/Property.astro)
+
+<PropertyTable>
+    <Property name="name" type="string" required>
+        Property name, displayed in monospace.
+    </Property>
+    <Property name="type" type="string">
+        Type annotation in monospace. Supports union syntax like `"string | number"`.
+    </Property>
+    <Property name="default" type="string">
+        Default value, displayed in a purple-tinted badge.
+    </Property>
+    <Property name="required" type="boolean" default="false">
+        Displays a "Required" badge.
+    </Property>
+    <Property name="deprecated" type="boolean" default="false">
+        Strikes through the name and desaturates the row.
+    </Property>
+    <Property name="since" type="string">
+        Version added. Displays a teal badge.
+    </Property>
+</PropertyTable>
+
+## `<PropertyGroup>` Props
+
+**Implementation:** [`PropertyGroup.astro`](https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/blob/main/packages/northwestern-starlight-theme/src/components/PropertyGroup.astro)
+
+<PropertyTable>
+    <Property name="title" type="string" required>
+        Group heading text, rendered as a full-width subheading row.
+    </Property>
+</PropertyTable>
+
+## `<Expandable>` Props
+
+**Implementation:** [`Expandable.astro`](https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/blob/main/packages/northwestern-starlight-theme/src/components/Expandable.astro)
+
+<PropertyTable>
+    <Property name="title" type="string" default='"Show properties"'>
+        Label for the toggle.
+    </Property>
+    <Property name="open" type="boolean" default="false">
+        Start expanded.
+    </Property>
+</PropertyTable>
