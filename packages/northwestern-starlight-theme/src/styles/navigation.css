@@ -9,22 +9,25 @@
     .site-title,
     .header > a,
     .header > nav a,
-    .social-icons a,
-    starlight-theme-select,
-    starlight-theme-select label,
-    starlight-theme-select select,
-    starlight-theme-select svg,
-    northwestern-theme-toggle,
-    northwestern-theme-toggle button,
-    northwestern-theme-toggle svg,
+    .header .social-icons a,
     starlight-menu-button,
     starlight-menu-button button {
         color: var(--nu-topbar-text) !important;
         fill: var(--nu-topbar-text) !important;
     }
 
+    .header northwestern-theme-toggle,
+    .header northwestern-theme-toggle button,
+    .header northwestern-theme-toggle svg,
+    .header starlight-theme-select,
+    .header starlight-theme-select label,
+    .header starlight-theme-select select,
+    .header starlight-theme-select svg {
+        color: var(--nu-topbar-text) !important;
+        fill: var(--nu-topbar-text) !important;
+    }
+
     starlight-menu-button button,
-    northwestern-theme-toggle button,
     .header northwestern-theme-toggle button {
         background: rgb(255 255 255 / 15%) !important;
         border: 1px solid rgb(255 255 255 / 25%) !important;
@@ -33,16 +36,55 @@
     }
 
     starlight-menu-button button:hover,
-    northwestern-theme-toggle button:hover,
     .header northwestern-theme-toggle button:hover {
         background: rgb(255 255 255 / 25%) !important;
     }
 
     starlight-menu-button button:focus-visible,
-    northwestern-theme-toggle button:focus-visible,
     .header northwestern-theme-toggle button:focus-visible {
         outline: none !important;
         box-shadow: 0 0 0 2px rgb(255 255 255 / 60%) !important;
+    }
+
+    @media (width < 50rem) {
+        .sidebar-pane .actions {
+            align-items: center;
+        }
+
+        .sidebar-pane northwestern-theme-toggle button {
+            width: 2.5rem;
+            height: 2.5rem;
+            color: var(--nu-color-text) !important;
+            background: var(--nu-hover-bg) !important;
+            border: 1px solid var(--nu-border-color) !important;
+        }
+
+        .sidebar-pane northwestern-theme-toggle svg {
+            fill: var(--nu-color-text) !important;
+        }
+
+        .sidebar-pane .social-icons {
+            align-items: center;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .sidebar-pane .social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            padding: 0 !important;
+            margin: 0 !important;
+            color: var(--nu-color-text) !important;
+            background: var(--nu-hover-bg);
+            border: 1px solid var(--nu-border-color);
+        }
+
+        .sidebar-pane .social-icons svg {
+            fill: var(--nu-color-text) !important;
+        }
     }
 
     @media (width < 50rem) {
@@ -115,21 +157,24 @@
         border-color: var(--nu-border-color) !important;
     }
 
+    nav.sidebar a {
+        border-left: 3px solid transparent;
+    }
+
     nav.sidebar a:hover {
         background-color: var(--nu-purple-surface) !important;
     }
 
     nav.sidebar a[aria-current="page"] {
-        padding-left: 0.8rem;
         font-weight: 700;
         color: var(--nu-color-link) !important;
         background-color: var(--nu-purple-surface) !important;
-        border-left: 3px solid var(--nu-color-link);
+        border-left-color: var(--nu-color-link);
     }
 
     nav.sidebar a[aria-current="true"] {
         font-weight: 600;
-        border-left: 3px solid var(--nu-color-link);
+        border-left-color: var(--nu-color-link);
     }
 
     :root:not([data-theme="light"]) nav.sidebar a:hover {
@@ -146,7 +191,6 @@
         border-left: 3px solid transparent;
         transition:
             border-color var(--nu-transition-fast),
-            padding-left var(--nu-transition-fast),
             font-weight var(--nu-transition-fast);
     }
 
@@ -155,7 +199,6 @@
     }
 
     .right-sidebar-panel a[aria-current="true"] {
-        padding-left: 0.8rem;
         font-weight: 600;
         border-left-color: var(--sl-color-accent);
     }

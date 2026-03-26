@@ -3,7 +3,25 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { StarlightPlugin } from "@astrojs/starlight/types";
+import rehypeTableScroll from "./src/rehype-table-scroll.ts";
 
+/**
+ * Configuration for the homepage hero section.
+ *
+ * Controls hero layout, title visibility, and image sizing. Passed as the
+ * `homepage` property of {@link NorthwesternThemeConfig}.
+ *
+ * @example
+ * ```ts
+ * northwesternTheme({
+ *     homepage: {
+ *         layout: "split",
+ *         showTitle: false,
+ *         imageWidth: "750px",
+ *     },
+ * })
+ * ```
+ */
 export interface NorthwesternHomepageConfig {
     /**
      * Hero layout style.
@@ -32,19 +50,46 @@ export interface NorthwesternHomepageConfig {
     imageWidth?: string;
 }
 
+/**
+ * Top-level configuration for the Northwestern Starlight theme plugin.
+ *
+ * Pass to {@link northwesternTheme} when registering the plugin in your
+ * Starlight config. All properties are optional and have sensible defaults.
+ *
+ * @example
+ * ```ts
+ * // astro.config.ts
+ * import northwesternTheme from "@nu-appdev/northwestern-starlight-theme";
+ *
+ * export default defineConfig({
+ *     integrations: [
+ *         starlight({
+ *             plugins: [northwesternTheme({ homepage: { layout: "split" } })],
+ *         }),
+ *     ],
+ * });
+ * ```
+ *
+ * @see {@link NorthwesternHomepageConfig} for homepage hero options
+ */
 export interface NorthwesternThemeConfig {
     /**
      * Homepage hero layout configuration.
+     *
+     * @see {@link NorthwesternHomepageConfig}
      */
     homepage?: NorthwesternHomepageConfig;
 
     /**
      * Mermaid diagram support.
      *
-     * - `true` (default) — auto-detect: enables mermaid if `astro-mermaid` and `mermaid`
+     * - `true` (default) — auto-detect: enables Mermaid if `astro-mermaid` and `mermaid`
      *   are installed, skips silently if they are not
-     * - `false` — disables mermaid entirely
-     * - `object` — enables mermaid with custom config (merged with Northwestern defaults)
+     * - `false` — disables Mermaid entirely
+     * - `object` — enables Mermaid with custom {@link https://mermaid.js.org/config/schema-docs/config.html | MermaidConfig}
+     *   merged with Northwestern defaults
+     *
+     * @default true
      */
     mermaid?: boolean | Record<string, unknown>;
 }
@@ -64,6 +109,33 @@ async function canResolve(id: string): Promise<boolean> {
 const VIRTUAL_MODULE_ID = "virtual:northwestern-theme/config";
 const RESOLVED_VIRTUAL_MODULE_ID = `\0${VIRTUAL_MODULE_ID}`;
 
+/**
+ * Create a Northwestern-branded Starlight theme plugin.
+ *
+ * Registers Northwestern typography (Akkurat Pro, Poppins), purple color palette,
+ * component overrides (Hero, ThemeToggle, EditLink), and optional Mermaid diagram
+ * support with branded color schemes.
+ *
+ * @param config - Theme configuration. All properties optional.
+ * @returns A Starlight plugin to pass to `plugins` in your Starlight config.
+ *
+ * @example Basic usage (all defaults)
+ * ```ts
+ * starlight({ plugins: [northwesternTheme()] })
+ * ```
+ *
+ * @example Split hero with Mermaid disabled
+ * ```ts
+ * starlight({
+ *     plugins: [
+ *         northwesternTheme({
+ *             homepage: { layout: "split", showTitle: false },
+ *             mermaid: false,
+ *         }),
+ *     ],
+ * })
+ * ```
+ */
 export default function northwesternTheme(config: NorthwesternThemeConfig = {}): StarlightPlugin {
     const { homepage = {}, mermaid = true } = config;
     const themeConfig = {
@@ -92,6 +164,9 @@ export default function northwesternTheme(config: NorthwesternThemeConfig = {}):
                     hooks: {
                         "astro:config:setup": ({ updateConfig: updateAstroConfig }) => {
                             updateAstroConfig({
+                                markdown: {
+                                    rehypePlugins: [rehypeTableScroll],
+                                },
                                 vite: {
                                     plugins: [
                                         {
@@ -151,7 +226,7 @@ export default function northwesternTheme(config: NorthwesternThemeConfig = {}):
                         },
                     },
                 });
-                // Detect mermaid availability
+                // Detect Mermaid availability
                 let mermaidEnabled = mermaid;
 
                 if (mermaidEnabled) {
@@ -159,7 +234,7 @@ export default function northwesternTheme(config: NorthwesternThemeConfig = {}):
 
                     if (!hasMermaid) {
                         if (typeof mermaid === "object") {
-                            // User explicitly configured mermaid but it's not installed
+                            // User explicitly configured Mermaid but it's not installed
                             logger.warn(
                                 'Mermaid config was provided but "astro-mermaid" and "mermaid" are not installed.\n' +
                                     "  Run: pnpm add astro-mermaid mermaid",
@@ -190,6 +265,9 @@ export default function northwesternTheme(config: NorthwesternThemeConfig = {}):
                         "@nu-appdev/northwestern-starlight-theme/src/styles/theme.css",
                         "@nu-appdev/northwestern-starlight-theme/src/styles/navigation.css",
                         "@nu-appdev/northwestern-starlight-theme/src/styles/content.css",
+                        "@nu-appdev/northwestern-starlight-theme/src/styles/components/blockquotes.css",
+                        "@nu-appdev/northwestern-starlight-theme/src/styles/components/footnotes.css",
+                        "@nu-appdev/northwestern-starlight-theme/src/styles/components/tables.css",
                         "@nu-appdev/northwestern-starlight-theme/src/styles/components/cards.css",
                         "@nu-appdev/northwestern-starlight-theme/src/styles/components/utility-surfaces.css",
                         "@nu-appdev/northwestern-starlight-theme/src/styles/components/steps.css",
@@ -198,6 +276,7 @@ export default function northwesternTheme(config: NorthwesternThemeConfig = {}):
                         "@nu-appdev/northwestern-starlight-theme/src/styles/components/mermaid.css",
                         "@nu-appdev/northwestern-starlight-theme/src/styles/mermaid-toolbar.css",
                         "@nu-appdev/northwestern-starlight-theme/src/styles/openapi.css",
+                        "@nu-appdev/northwestern-starlight-theme/src/styles/a11y.css",
                         ...(starlightConfig.customCss ?? []),
                     ],
                     expressiveCode: {

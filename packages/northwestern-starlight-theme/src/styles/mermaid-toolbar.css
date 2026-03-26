@@ -8,8 +8,8 @@
 @layer northwestern {
     .nu-mermaid-toolbar {
         position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
+        top: 0;
+        right: 1rem;
         z-index: 2;
         display: flex;
         gap: 1px;
@@ -110,6 +110,7 @@
         z-index: 9999;
         display: flex;
         flex-direction: column;
+        outline: none;
         background: #f3f5f7;
         transition: opacity 200ms ease;
     }
@@ -124,8 +125,8 @@
         flex-shrink: 0;
         gap: 0.25rem;
         align-items: center;
-        height: var(--sl-nav-height);
-        padding: 0 1.5rem;
+        min-height: var(--sl-nav-height);
+        padding: 0.5rem var(--sl-nav-pad-x, 1.5rem);
         background: var(--nu-topbar-bg);
         border-bottom: 1px solid var(--nu-border-color);
     }
@@ -171,13 +172,27 @@
 
     .nu-mermaid-overlay-controls .nu-mermaid-close {
         color: #fff;
-        background: rgb(255 255 255 / 20%);
-        border-color: rgb(255 255 255 / 30%);
+        background: rgb(255 255 255 / 15%);
+        border-color: rgb(255 255 255 / 25%);
     }
 
     .nu-mermaid-overlay-controls .nu-mermaid-close:hover {
-        background: rgb(255 255 255 / 35%);
-        border-color: rgb(255 255 255 / 40%);
+        background: rgb(255 255 255 / 25%);
+    }
+
+    @media (width < 50rem) {
+        .nu-mermaid-overlay-controls [data-action="zoom-in"],
+        .nu-mermaid-overlay-controls [data-action="zoom-out"],
+        .nu-mermaid-overlay-controls [data-action="zoom-reset"],
+        .nu-mermaid-overlay-controls .nu-mermaid-separator {
+            display: none;
+        }
+
+        .nu-mermaid-overlay-controls .nu-mermaid-close {
+            width: var(--sl-menu-button-size, 2rem);
+            height: var(--sl-menu-button-size, 2rem);
+            padding: 0;
+        }
     }
 
     .nu-mermaid-viewport {
@@ -188,6 +203,12 @@
         overflow: hidden;
         touch-action: none;
         cursor: grab;
+        background-image: radial-gradient(circle, rgb(0 0 0 / 5%) 0.75px, transparent 0.75px);
+        background-size: 28px 28px;
+    }
+
+    :root:not([data-theme="light"]) .nu-mermaid-viewport {
+        background-image: radial-gradient(circle, rgb(255 255 255 / 5%) 0.75px, transparent 0.75px);
     }
 
     .nu-mermaid-viewport:active {
@@ -216,7 +237,6 @@
         color: rgb(255 255 255 / 70%);
         pointer-events: none;
         background: rgb(0 0 0 / 35%);
-        border-radius: 0.25rem;
 
         /* stylelint-disable-next-line property-no-vendor-prefix -- Safari requires prefix */
         -webkit-backdrop-filter: blur(6px);
@@ -226,5 +246,38 @@
     :root[data-theme="light"] .nu-mermaid-zoom-badge {
         color: rgb(0 0 0 / 55%);
         background: rgb(255 255 255 / 50%);
+    }
+
+    .nu-mermaid-toast {
+        position: absolute;
+        right: 1rem;
+        bottom: 3rem;
+        z-index: 1;
+        padding: 0.5rem 0.875rem;
+        font-family: var(--nu-font-body, sans-serif);
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: #fff;
+        pointer-events: none;
+        background: color-mix(in srgb, var(--nu-color-success) 85%, #fff);
+        opacity: 0;
+        transform: translateY(4px);
+        transition:
+            opacity 200ms ease,
+            transform 200ms ease;
+    }
+
+    .nu-mermaid-toast-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    @media (width < 50rem) {
+        .nu-mermaid-toast {
+            right: 1rem;
+            bottom: 4rem;
+            left: 1rem;
+            text-align: center;
+        }
     }
 }

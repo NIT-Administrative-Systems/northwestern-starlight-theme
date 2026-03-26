@@ -1,7 +1,7 @@
 /* ==========================================================================
    Mermaid — Structural SVG Overrides
 
-   Only includes CSS that cannot be expressed through mermaid themeVariables:
+   Only includes CSS that cannot be expressed through Mermaid themeVariables:
    font enforcement, HTML label backgrounds, and diagram-specific structural
    fixes. Colors and contrast are handled by the TS config in mermaid.ts.
    ========================================================================== */
@@ -15,17 +15,17 @@ pre.mermaid,
     border: 1px solid var(--nu-border-color) !important;
 }
 
-/* Font — mermaid applies font via inline style, CSS !important needed */
+/* Font — Mermaid applies font via inline style, CSS !important needed */
 .mermaid text {
     font-family: var(--nu-font-body) !important;
 }
 
-/* HTML labels inherit color from parent instead of mermaid's inline style */
+/* HTML labels inherit color from parent instead of Mermaid's inline style */
 .mermaid .nodeLabel p {
     color: inherit !important;
 }
 
-/* Edge label HTML elements — mermaid uses <div> with inline background */
+/* Edge label HTML elements — Mermaid uses <div> with inline background */
 .mermaid .edgeLabel,
 .mermaid .edgeLabel p {
     color: var(--nu-color-text, #342f2e) !important;
