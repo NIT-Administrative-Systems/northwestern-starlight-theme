@@ -1,8 +1,5 @@
 /* ==========================================================================
    Mermaid Toolbar — Diagram Interaction Layer
-
-   Encapsulates hover actions, fullscreen overlay controls, and the pan/zoom
-   viewport used by the Mermaid diagram interaction layer.
    ========================================================================== */
 
 @layer northwestern {
@@ -31,7 +28,6 @@
         opacity: 1;
     }
 
-    /* Touch devices can't hover — keep toolbar visible */
     @media (hover: none) {
         .nu-mermaid-toolbar {
             opacity: 0.8;

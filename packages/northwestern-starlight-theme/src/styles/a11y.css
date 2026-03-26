@@ -3,7 +3,6 @@
    ========================================================================== */
 
 @layer northwestern {
-    /* High contrast: heavier borders, no muted text, system color focus rings */
     @media (prefers-contrast: more) {
         :root,
         ::backdrop {
@@ -22,7 +21,6 @@
             --nu-focus-ring: Highlight;
         }
 
-        /* Force visible borders on elements that rely on subtle color differences */
         .sl-markdown-content table:not(:where(.not-content *)) > thead > tr > th,
         .sl-markdown-content table:not(:where(.not-content *)) > tbody > tr > td {
             border-width: 2px;
@@ -41,7 +39,6 @@
         }
     }
 
-    /* Reduced transparency: replace translucent surfaces with solid equivalents */
     @media (prefers-reduced-transparency: reduce) {
         :root,
         ::backdrop {

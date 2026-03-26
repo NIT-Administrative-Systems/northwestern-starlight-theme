@@ -1,8 +1,5 @@
 /* ==========================================================================
    OpenAPI — Scoped overrides for starlight-openapi plugin
-
-   Encapsulates method badges plus OpenAPI content panels, rows, fields,
-   and controls rendered inside markdown content.
    ========================================================================== */
 
 /* stylelint-disable selector-class-pattern */

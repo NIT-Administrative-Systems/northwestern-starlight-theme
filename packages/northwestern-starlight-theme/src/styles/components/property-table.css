@@ -5,8 +5,6 @@
 /* stylelint-disable selector-class-pattern */
 
 @layer northwestern {
-    /* ---- Container card ---- */
-
     .nu-property-table {
         margin: 1.5rem 0;
         overflow: hidden;
@@ -46,8 +44,6 @@
     .nu-property-table:has(.nu-property-table__body:empty) {
         display: none;
     }
-
-    /* ---- Property row ---- */
 
     .nu-property {
         padding: 0.875rem 1rem;
@@ -121,7 +117,6 @@
         opacity: 1;
     }
 
-    /* Hide parent anchor when hovering over expandable nested area */
     .nu-property:has(.nu-expandable:hover) > .nu-property__head .nu-property__anchor {
         opacity: 0;
     }
@@ -256,8 +251,6 @@
         border-color: var(--nu-border-color);
     }
 
-    /* ---- Description ---- */
-
     .nu-property__description {
         margin: 0.25rem 0 0;
         font-size: var(--sl-text-sm);
@@ -277,7 +270,6 @@
         margin-bottom: 0;
     }
 
-    /* Keep inline code legible inside muted description text, but not nested Property components */
     .nu-property__description code:not(.nu-property__name, .nu-property__type) {
         padding: 0.1rem 0.3rem;
         color: var(--nu-color-text);
@@ -287,8 +279,6 @@
     :root:not([data-theme="light"]) .nu-property__description code:not(.nu-property__name, .nu-property__type) {
         background-color: rgb(255 255 255 / 6%);
     }
-
-    /* ---- Optional indicator ---- */
 
     .nu-property-table--show-optional .nu-property:not(.nu-property--required, .nu-property--deprecated)
         .nu-property__prop-col::after {
@@ -302,8 +292,6 @@
         color: var(--nu-color-text-muted);
         content: "Optional";
     }
-
-    /* ---- Deprecated state ---- */
 
     .nu-property--deprecated .nu-property__name {
         color: var(--nu-color-text-muted);
@@ -319,8 +307,6 @@
     :root:not([data-theme="light"]) .nu-property--deprecated .nu-property__type {
         color: var(--nu-color-text-muted);
     }
-
-    /* ---- Property group divider ---- */
 
     .nu-property-group + .nu-property-group,
     .nu-property + .nu-property-group {
@@ -344,12 +330,9 @@
         border-inline-start-color: var(--nu-purple-60);
     }
 
-    /* In table variant, group title spans the full grid */
     .nu-property-table--table .nu-property-group__title {
         grid-column: 1 / -1;
     }
-
-    /* ---- Expandable ---- */
 
     .nu-expandable {
         margin-top: 0.625rem;
@@ -412,13 +395,9 @@
         border-top-color: rgb(255 255 255 / 6%);
     }
 
-    /* ---- List variant: default-col is inline with the rest ---- */
-
     .nu-property-table:not(.nu-property-table--table) .nu-property__default-col:empty {
         display: none;
     }
-
-    /* ---- Table variant ---- */
 
     .nu-property-table__columns {
         display: grid;
@@ -455,7 +434,6 @@
         padding: 0.625rem 1rem;
     }
 
-    /* Better ratios for the common 3-column case (Prop / Type / Default) */
     .nu-property-table--table[style*="--nu-pt-columns: 3"] .nu-property {
         grid-template-columns: 1.2fr 1.5fr 0.8fr;
     }
@@ -487,7 +465,6 @@
         display: none;
     }
 
-    /* Hide columns not in data-columns */
     .nu-property-table--table:not([data-columns*="type"]) .nu-property__type {
         display: none;
     }
@@ -496,7 +473,6 @@
         display: none;
     }
 
-    /* Default column: strip badge styling, show as plain monospace text */
     .nu-property-table--table .nu-property__default-col .nu-property__badge--default {
         padding: 0;
         font-weight: 400;
@@ -512,15 +488,12 @@
         color: var(--nu-color-text-muted);
     }
 
-    /* Em-dash when no default value */
     .nu-property-table--table .nu-property__default-col:empty::after {
         font-family: var(--sl-font-system-mono);
         font-size: var(--sl-text-sm);
         color: var(--nu-border-color);
         content: "—";
     }
-
-    /* ---- Table variant — mobile fallback to list layout ---- */
 
     @media (width <= 30rem) {
         .nu-property-table__columns {
@@ -578,8 +551,6 @@
             content: none;
         }
     }
-
-    /* ---- List variant — mobile ---- */
 
     @media (width <= 30rem) {
         .nu-property-table:not(.nu-property-table--table) .nu-property__head {

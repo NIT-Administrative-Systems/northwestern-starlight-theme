@@ -1,11 +1,7 @@
 /* ==========================================================================
    Theme — Starlight Variable Mapping
-
-   Encapsulates the mapping from Northwestern design tokens onto Starlight's
-   theme variables, plus global paint and border-radius overrides.
    ========================================================================== */
 
-/* Unlayered — paints immediately to prevent white flash on load */
 html {
     background-color: #18181b;
 }

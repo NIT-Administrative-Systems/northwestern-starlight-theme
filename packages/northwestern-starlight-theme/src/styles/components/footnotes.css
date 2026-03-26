@@ -3,7 +3,6 @@
    ========================================================================== */
 
 @layer northwestern {
-    /* Footnote references — superscript markers with brackets */
     .sl-markdown-content a[data-footnote-ref] {
         font-weight: 600;
         line-height: 1;
@@ -33,12 +32,10 @@
         border-top: 1px solid var(--nu-border-color);
     }
 
-    /* Hide the default <hr> that remark-gfm inserts before footnotes */
     .sl-markdown-content section[data-footnotes] > :first-child:is(hr) {
         display: none;
     }
 
-    /* Collapse the heading wrapper around the sr-only "Footnotes" label */
     .sl-markdown-content section[data-footnotes] > .sl-heading-wrapper {
         position: absolute;
         width: 1px;
