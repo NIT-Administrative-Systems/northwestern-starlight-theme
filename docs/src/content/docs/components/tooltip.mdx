@@ -86,6 +86,30 @@ Use your <Term of="NetID" /> to log in via <Term of="SSO" />.
 <Term of="NetID">university credentials</Term>
 ```
 
+## Rich Content
+
+Use the `tip` named slot for HTML/MDX content instead of the `tip` string prop. The default slot remains the trigger.
+
+<Demo>
+    <Tooltip>
+        FERPA
+        <Fragment slot="tip">
+            <strong>Family Educational Rights and Privacy Act</strong>
+        </Fragment>
+    </Tooltip>
+</Demo>
+
+```mdx
+<Tooltip>
+    FERPA
+    <Fragment slot="tip">
+        <strong>Family Educational Rights and Privacy Act</strong>
+    </Fragment>
+</Tooltip>
+```
+
+The `tip` string prop still works for plain text. Use the slot when you need links, code, emphasis, or multi-line content.
+
 ## Variants
 
 Semantic variants match Starlight's Aside types: `note`, `tip`, `caution`, `danger`.
@@ -120,8 +144,8 @@ Semantic variants match Starlight's Aside types: `note`, `tip`, `caution`, `dang
 **Implementation:** [`Tooltip.astro`](https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/blob/main/packages/northwestern-starlight-theme/src/components/Tooltip.astro)
 
 <PropertyTable>
-    <Property name="tip" type="string" required>
-        Definition text shown in the tooltip.
+    <Property name="tip" type="string">
+        Definition text. Use the `tip` named slot instead for rich HTML/MDX content.
     </Property>
     <Property name="side" type='"top" | "bottom"' default='"top"'>
         Position relative to the trigger.

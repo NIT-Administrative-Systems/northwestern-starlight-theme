@@ -5,8 +5,8 @@ import "../styles/components/tooltip.css";
 type TooltipVariant = "note" | "tip" | "caution" | "danger";
 
 interface Props {
-    /** Definition text shown in the tooltip. */
-    tip: string;
+    /** Definition text shown in the tooltip. Ignored when the content slot is used. */
+    tip?: string;
     /** Preferred position. */
     side?: "top" | "bottom";
     /** Render the trigger with a dotted underline indicator. */
@@ -28,6 +28,8 @@ const VARIANT_COLORS: Record<TooltipVariant, string> = {
 const { tip, side = "top", underline = true, variant, color } = Astro.props;
 const id = `nu-tip-${Math.random().toString(36).slice(2, 9)}`;
 
+const hasTipSlot = Astro.slots.has("tip");
+
 const resolvedColor = color ?? (variant ? VARIANT_COLORS[variant] : undefined);
 
 let colorStyles: string | undefined;
@@ -46,7 +48,7 @@ if (resolvedColor) {
 >
     <span class="nu-tooltip__trigger" tabindex="0" aria-describedby={id}><slot /></span>
     <span class="nu-tooltip__content" role="tooltip" id={id} popover="manual">
-        {tip}
+        {hasTipSlot ? <slot name="tip" /> : tip}
         <span class="nu-tooltip__arrow"></span>
     </span>
 </span>
