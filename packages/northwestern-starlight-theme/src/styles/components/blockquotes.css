@@ -1,0 +1,37 @@
+/* ==========================================================================
+   Blockquotes — Styled quotations with cite/footer support
+   ========================================================================== */
+
+@layer northwestern {
+    .sl-markdown-content blockquote:not(:where(.not-content *)) {
+        padding: 1rem 1.5rem;
+        margin: 2rem 0;
+        color: var(--nu-color-text);
+        background: rgb(228 224 238 / 42%);
+        border-inline-start: 10px solid var(--nu-purple-100);
+    }
+
+    .sl-markdown-content blockquote:not(:where(.not-content *)) p:last-child {
+        margin-bottom: 0;
+    }
+
+    .sl-markdown-content blockquote:not(:where(.not-content *)) cite,
+    .sl-markdown-content blockquote:not(:where(.not-content *)) footer {
+        display: block;
+        margin-top: 0.75rem;
+        font-size: var(--sl-text-sm);
+        font-style: normal;
+        font-weight: 700;
+        color: var(--nu-color-link);
+    }
+
+    :root:not([data-theme="light"]) .sl-markdown-content blockquote:not(:where(.not-content *)) {
+        background: rgb(48 16 78 / 35%);
+        border-inline-start-color: var(--nu-purple-40);
+    }
+
+    :root:not([data-theme="light"]) .sl-markdown-content blockquote:not(:where(.not-content *)) cite,
+    :root:not([data-theme="light"]) .sl-markdown-content blockquote:not(:where(.not-content *)) footer {
+        color: var(--nu-purple-30);
+    }
+}
