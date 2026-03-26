@@ -151,7 +151,6 @@
         border-color: var(--nu-black-20) !important;
     }
 
-    /* Starlight owns these borders; force them onto the shared theme token. */
     .header,
     .sidebar-pane {
         border-color: var(--nu-border-color) !important;

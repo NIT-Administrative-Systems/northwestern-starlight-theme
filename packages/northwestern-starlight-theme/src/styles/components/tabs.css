@@ -1,8 +1,5 @@
 /* ==========================================================================
    Tabs — Code-Oriented Tab Panels
-
-   Encapsulates Starlight tab styling when tabs wrap code blocks, including
-   tab chrome, panel spacing, and embedded code-frame adjustments.
    ========================================================================== */
 
 /* stylelint-disable custom-property-pattern */

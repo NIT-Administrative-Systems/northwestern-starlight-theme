@@ -1,8 +1,1 @@
-/* ==========================================================================
-   Layers — Theme Cascade Order
-
-   Encapsulates the cascade layer ordering shared by Starlight and the
-   Northwestern theme so later files can rely on a stable layer stack.
-   ========================================================================== */
-
 @layer starlight, northwestern;
