@@ -151,6 +151,32 @@ The `deprecated` prop strikes through the name and desaturates the row. The `sin
 </PropertyTable>
 ```
 
+## Linked Types
+
+`typeHref` makes the type annotation a clickable link, useful for linking to type definitions or external documentation.
+
+<PropertyTable title="config/services.php">
+    <Property name="mailables" type="Illuminate\Mail\Mailable" typeHref="https://laravel.com/docs/mail#generating-mailables">
+        Mailable class for outbound email.
+    </Property>
+    <Property name="notifications" type="Illuminate\Notifications\Notification" typeHref="https://laravel.com/docs/notifications">
+        Notification channel configuration.
+    </Property>
+    <Property name="queue" type="Illuminate\Queue\QueueManager" typeHref="https://laravel.com/docs/queues">
+        Queue connection and driver settings.
+    </Property>
+</PropertyTable>
+
+```mdx
+<Property
+    name="mailables"
+    type="Illuminate\Mail\Mailable"
+    typeHref="https://laravel.com/docs/mail#generating-mailables"
+>
+    Mailable class for outbound email.
+</Property>
+```
+
 ## Table Variant
 
 `variant="table"` renders a columnar grid. Columns default to Prop / Type / Default, configurable via the `columns` prop.
@@ -281,6 +307,9 @@ Omit `title` for inline property lists.
     </Property>
     <Property name="type" type="string">
         Type annotation in monospace. Supports union syntax like `"string | number"`.
+    </Property>
+    <Property name="typeHref" type="string">
+        URL to link the type annotation to. Makes the type clickable.
     </Property>
     <Property name="default" type="string">
         Default value, displayed in a purple-tinted badge.
