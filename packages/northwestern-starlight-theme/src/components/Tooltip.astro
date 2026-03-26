@@ -104,15 +104,30 @@ if (resolvedColor) {
                 const rect = trigger!.getBoundingClientRect();
                 const side = wrapper.classList.contains("nu-tooltip--bottom") ? "bottom" : "top";
                 const gap = 8;
+                const pad = 8;
+                const vw = document.documentElement.clientWidth;
 
-                content!.style.left = `${rect.left + rect.width / 2}px`;
+                // Position centered on trigger, then clamp to viewport
+                content!.style.transform = "";
+                content!.style.left = "0";
+                content!.style.top = side === "top"
+                    ? `${rect.top - gap}px`
+                    : `${rect.bottom + gap}px`;
 
-                if (side === "top") {
-                    content!.style.top = `${rect.top - gap}px`;
-                    content!.style.transform = "translate(-50%, -100%)";
-                } else {
-                    content!.style.top = `${rect.bottom + gap}px`;
-                    content!.style.transform = "translate(-50%, 0)";
+                const tipWidth = content!.offsetWidth;
+                let left = rect.left + rect.width / 2 - tipWidth / 2;
+                left = Math.max(pad, Math.min(left, vw - tipWidth - pad));
+
+                content!.style.left = `${left}px`;
+                content!.style.transform = side === "top" ? "translateY(-100%)" : "";
+
+                // Shift arrow to stay centered on trigger
+                const arrow = content!.querySelector<HTMLElement>(".nu-tooltip__arrow");
+                if (arrow) {
+                    const tipCenter = left + tipWidth / 2;
+                    const triggerCenter = rect.left + rect.width / 2;
+                    const offset = triggerCenter - tipCenter;
+                    arrow.style.left = `calc(50% + ${offset}px)`;
                 }
             }
 
