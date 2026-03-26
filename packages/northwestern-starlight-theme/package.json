@@ -27,9 +27,21 @@
         "provenance": true
     },
     "exports": {
-        ".": "./index.ts",
-        "./expressive-code": "./expressive-code.mjs",
-        "./mermaid": "./mermaid.ts",
+        ".": {
+            "types": "./index.ts",
+            "import": "./index.ts"
+        },
+        "./expressive-code": {
+            "import": "./expressive-code.mjs"
+        },
+        "./mermaid": {
+            "types": "./mermaid.ts",
+            "import": "./mermaid.ts"
+        },
+        "./components": {
+            "types": "./src/components/index.ts",
+            "import": "./src/components/index.ts"
+        },
         "./src/styles/components/*": "./src/styles/components/*",
         "./src/components/*": "./src/components/*",
         "./src/scripts/*": "./src/scripts/*",
@@ -59,5 +71,8 @@
         "mermaid": {
             "optional": true
         }
+    },
+    "devDependencies": {
+        "@types/hast": "^3.0.4"
     }
 }
