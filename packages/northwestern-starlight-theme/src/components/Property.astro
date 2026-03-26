@@ -16,10 +16,10 @@ interface Props {
     since?: string;
 }
 
-if (!globalThis.__nuPropertySlugs || !(globalThis.__nuPropertySlugs.counts instanceof Map)) {
+if (!globalThis.__nuPropertySlugs) {
     globalThis.__nuPropertySlugs = { page: "", counts: new Map<string, number>() };
 }
-const pageSlugState = globalThis.__nuPropertySlugs as { page: string; counts: Map<string, number> };
+const pageSlugState = globalThis.__nuPropertySlugs;
 const currentPage = Astro.url.pathname;
 if (pageSlugState.page !== currentPage) {
     pageSlugState.page = currentPage;

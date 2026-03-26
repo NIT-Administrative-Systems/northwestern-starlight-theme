@@ -1,3 +1,12 @@
+declare global {
+    var __nuPropertySlugs:
+        | {
+              page: string;
+              counts: Map<string, number>;
+          }
+        | undefined;
+}
+
 declare module "virtual:northwestern-theme/config" {
     const config: {
         homepage: {
@@ -8,3 +17,5 @@ declare module "virtual:northwestern-theme/config" {
     };
     export default config;
 }
+
+export {};

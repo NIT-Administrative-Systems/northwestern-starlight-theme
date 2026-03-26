@@ -1,4 +1,4 @@
-/** Module-level glossary store. Populated by Glossary, read by Term during the same Astro build pass. */
+/** Module-level glossary store. Populated by `<Glossary/>`, read by Term during the same Astro build pass. */
 const terms = new Map<string, string>();
 
 export function setTerms(entries: Record<string, string>): void {
