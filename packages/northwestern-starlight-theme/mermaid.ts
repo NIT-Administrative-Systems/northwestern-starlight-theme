@@ -343,13 +343,13 @@ function createThemeVariables(mode: NorthwesternMermaidMode): ThemeVariables {
 
         xyChart: {
             plotColorPalette: chartPalette.join(","),
-            titleColor: dark ? "#342f2e" : palette.text,
-            xAxisLabelColor: dark ? "#342f2e" : palette.text,
-            yAxisLabelColor: dark ? "#342f2e" : palette.text,
-            xAxisTitleColor: dark ? "#342f2e" : palette.text,
-            yAxisTitleColor: dark ? "#342f2e" : palette.text,
-            xAxisLineColor: "#ccc",
-            yAxisLineColor: "#ccc",
+            titleColor: palette.text,
+            xAxisLabelColor: palette.text,
+            yAxisLabelColor: palette.text,
+            xAxisTitleColor: palette.text,
+            yAxisTitleColor: palette.text,
+            xAxisLineColor: dark ? palette.border : "#ccc",
+            yAxisLineColor: dark ? palette.border : "#ccc",
         },
     };
 }
@@ -382,13 +382,13 @@ export function createNorthwesternMermaidConfig(mode: NorthwesternMermaidMode): 
             themeVariables: createThemeVariables(mode),
             xyChart: {
                 plotColorPalette: chartPalette.join(","),
-                titleColor: mode === "dark" ? "#342f2e" : palette.text,
-                xAxisLabelColor: mode === "dark" ? "#342f2e" : palette.text,
-                yAxisLabelColor: mode === "dark" ? "#342f2e" : palette.text,
-                xAxisTitleColor: mode === "dark" ? "#342f2e" : palette.text,
-                yAxisTitleColor: mode === "dark" ? "#342f2e" : palette.text,
-                xAxisLineColor: "#ccc",
-                yAxisLineColor: "#ccc",
+                titleColor: palette.text,
+                xAxisLabelColor: palette.text,
+                yAxisLabelColor: palette.text,
+                xAxisTitleColor: palette.text,
+                yAxisTitleColor: palette.text,
+                xAxisLineColor: mode === "dark" ? palette.border : "#ccc",
+                yAxisLineColor: mode === "dark" ? palette.border : "#ccc",
             },
         },
     };
