@@ -189,6 +189,12 @@ export default defineConfig({
         height: 20px;
         flex-shrink: 0;
         color: var(--nu-purple-100);
+        transition: transform var(--nu-transition-default), color var(--nu-transition-default);
+    }
+
+    .nu-home-feature:hover .nu-feature-icon {
+        transform: scale(1.1) rotate(-4deg);
+        color: var(--nu-purple-80);
     }
 
     :root:not([data-theme="light"]) .nu-feature-icon {
