@@ -1,0 +1,99 @@
+---
+title: Kbd
+description: Keyboard shortcut display with styled key caps and platform-aware modifiers.
+sidebar:
+    order: 3
+---
+
+import { Kbd, PropertyTable, Property, PropertyGroup } from "@nu-appdev/northwestern-starlight-theme/components";
+import Demo from "../../../components/Demo.astro";
+
+Render keyboard shortcuts as styled key caps. Parses `+`-separated combinations, maps key names to symbols (⌘, ⇧, ⌥), and swaps modifiers per platform.
+
+## Import
+
+```mdx
+import { Kbd } from "@nu-appdev/northwestern-starlight-theme/components";
+```
+
+## Basic Usage
+
+Pass key combinations as children, separated by `+`.
+
+<Demo>
+    Copy: <Kbd>Ctrl+C</Kbd> · Paste: <Kbd>Ctrl+V</Kbd> · Undo: <Kbd>Ctrl+Z</Kbd>
+</Demo>
+
+```mdx
+<Kbd>Ctrl+C</Kbd>
+<Kbd>Ctrl+V</Kbd>
+<Kbd>Ctrl+Z</Kbd>
+```
+
+## Platform-Aware Modifiers
+
+Use `Mod`, `Command`, `Ctrl`, `Alt`, or `Option` in the key string. Platform is detected automatically — Mac users see ⌘, Windows/Linux users see Ctrl.
+
+<Demo>
+    Open search: <Kbd>Mod+K</Kbd> · Command palette: <Kbd>Mod+Shift+P</Kbd> · Inspector: <Kbd>Alt+Shift+I</Kbd>
+</Demo>
+
+```mdx
+<Kbd>Mod+K</Kbd>
+<Kbd>Mod+Shift+P</Kbd>
+<Kbd>Alt+Shift+I</Kbd>
+```
+
+## Key Symbol Mapping
+
+Key names are mapped to standard symbols. Unrecognized names render as-is (<Kbd>A</Kbd>, <Kbd>F12</Kbd>). Modifier symbols change per platform.
+
+<PropertyTable variant="table" columns={[{ key: "name", label: "Name" }, { key: "type", label: "Mac" }, { key: "default", label: "Windows / Linux" }]}>
+    <PropertyGroup title="Modifiers">
+        <Property name="Command / Cmd / Meta" type="⌘" default="Ctrl" />
+        <Property name="Control / Ctrl" type="⌃" default="Ctrl" />
+        <Property name="Option / Alt" type="⌥" default="Alt" />
+        <Property name="Shift" type="⇧" default="Shift" />
+        <Property name="Mod" type="⌘" default="Ctrl" />
+    </PropertyGroup>
+    <PropertyGroup title="Actions">
+        <Property name="Enter / Return" type="↵" />
+        <Property name="Backspace" type="⌫" />
+        <Property name="Delete" type="⌦" />
+        <Property name="Escape / Esc" type="Esc" />
+        <Property name="Tab" type="⇥" />
+        <Property name="Space" type="␣" />
+        <Property name="CapsLock" type="⇪" />
+    </PropertyGroup>
+    <PropertyGroup title="Navigation">
+        <Property name="Up / Down / Left / Right" type="↑ ↓ ← →" />
+        <Property name="PageUp / PageDown" type="⇞ ⇟" />
+        <Property name="Home / End" type="↖ ↘" />
+    </PropertyGroup>
+</PropertyTable>
+
+## Explicit Keys Array
+
+Use the `keys` array to specify each key explicitly.
+
+<Demo>
+    <Kbd keys={["Ctrl", "Shift", "I"]} /> · <Kbd keys={["Command", "K"]} />
+</Demo>
+
+```mdx
+<Kbd keys={["Ctrl", "Shift", "I"]} />
+<Kbd keys={["Command", "K"]} />
+```
+
+## `<Kbd>` Props
+
+**Implementation:** [`Kbd.astro`](https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/blob/main/packages/northwestern-starlight-theme/src/components/Kbd.astro)
+
+<PropertyTable>
+    <Property name="children" type="string">
+        Key combination string. Parsed on `+` into individual keys. Key names are mapped to symbols.
+    </Property>
+    <Property name="keys" type="string[]">
+        Explicit array of key names. Overrides children parsing.
+    </Property>
+</PropertyTable>

@@ -3,6 +3,8 @@ title: Customization
 description: How to customize the Northwestern Starlight Theme.
 ---
 
+import { PropertyTable, Property } from "@nu-appdev/northwestern-starlight-theme/components";
+
 ## Homepage Hero
 
 The theme provides a branded Hero component for splash pages. Configure it through standard Starlight frontmatter in your `index.mdx`:
@@ -117,11 +119,11 @@ starlight({
 
 The theme overrides three Starlight components by default:
 
-| Component | Theme Version | Purpose |
-|-----------|---------------|---------|
-| `Hero` | Centered layout with wide image support | Branded splash page |
-| `EditLink` | ConditionalEditLink | Hides edit link on homepage |
-| `ThemeSelect` | ThemeToggle | Animated sun/moon toggle |
+<PropertyTable variant="table" columns={[{ key: "name", label: "Component" }, { key: "type", label: "Theme Version" }, { key: "default", label: "Purpose" }]}>
+    <Property name="Hero" type="Centered layout + wide image" default="Branded splash page" />
+    <Property name="EditLink" type="ConditionalEditLink" default="Hides edit link on homepage" />
+    <Property name="ThemeSelect" type="ThemeToggle" default="Animated sun/moon toggle" />
+</PropertyTable>
 
 All three respect existing overrides. If you set `Hero`, `EditLink`, or `ThemeSelect` in your Starlight `components` config, the theme keeps your version.
 
@@ -194,26 +196,26 @@ The theme defines Northwestern design tokens as CSS custom properties. You can r
 
 ### Purple Scale
 
-| Variable          | Value     | Usage                 |
-| ----------------- | --------- | --------------------- |
-| `--nu-purple-100` | `#4e2a84` | Brand primary         |
-| `--nu-purple-120` | `#401f68` | Navigation background |
-| `--nu-purple-40`  | `#a495c3` | Dark mode accent      |
+<PropertyTable variant="table" columns={[{ key: "name", label: "Variable" }, { key: "type", label: "Value" }, { key: "default", label: "Usage" }]}>
+    <Property name="--nu-purple-100" type="#4e2a84" default="Brand primary" />
+    <Property name="--nu-purple-120" type="#401f68" default="Navigation background" />
+    <Property name="--nu-purple-40" type="#a495c3" default="Dark mode accent" />
+</PropertyTable>
 
 See `src/styles/variables.css` in the theme package for the full token list.
 
 ### Typography
 
-| Variable            | Value                                  |
-| ------------------- | -------------------------------------- |
-| `--nu-font-body`    | Akkurat Pro, system fallbacks          |
-| `--nu-font-heading` | Poppins, Akkurat Pro, system fallbacks |
+<PropertyTable variant="table" columns={[{ key: "name", label: "Variable" }, { key: "type", label: "Value" }]}>
+    <Property name="--nu-font-body" type="Akkurat Pro, system fallbacks" />
+    <Property name="--nu-font-heading" type="Poppins, Akkurat Pro, system fallbacks" />
+</PropertyTable>
 
 ### Semantic Colors
 
-| Variable             | Value     | Usage          |
-| -------------------- | --------- | -------------- |
-| `--nu-color-success` | `#008656` | Success states |
-| `--nu-color-info`    | `#5091cd` | Info states    |
-| `--nu-color-warning` | `#ffc520` | Warning states |
-| `--nu-color-danger`  | `#ef553f` | Danger states  |
+<PropertyTable variant="table" columns={[{ key: "name", label: "Variable" }, { key: "type", label: "Value" }, { key: "default", label: "Usage" }]}>
+    <Property name="--nu-color-success" type="#008656" default="Success states" />
+    <Property name="--nu-color-info" type="#5091cd" default="Info states" />
+    <Property name="--nu-color-warning" type="#ffc520" default="Warning states" />
+    <Property name="--nu-color-danger" type="#ef553f" default="Danger states" />
+</PropertyTable>

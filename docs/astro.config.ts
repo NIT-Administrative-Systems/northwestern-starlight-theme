@@ -23,6 +23,10 @@ export default defineConfig({
                     items: ["getting-started", "customization"],
                 },
                 {
+                    label: "Components",
+                    autogenerate: { directory: "components" },
+                },
+                {
                     label: "Examples",
                     autogenerate: { directory: "examples" },
                 },

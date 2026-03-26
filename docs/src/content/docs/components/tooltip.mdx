@@ -1,0 +1,164 @@
+---
+title: Tooltip
+description: Inline hover definitions for acronyms, terms, and technical vocabulary.
+sidebar:
+    order: 2
+---
+
+import { Tooltip, Glossary, Term, PropertyTable, Property } from "@nu-appdev/northwestern-starlight-theme/components";
+import Demo from "../../../components/Demo.astro";
+
+Attach definitions to acronyms and technical terms. Hover or focus a trigger to see the definition in a floating popup. Use `<Tooltip>` for one-off definitions, or `<Glossary>` + `<Term>` to define terms once and reference them by key.
+
+## Import
+
+```mdx
+import { Tooltip, Glossary, Term } from "@nu-appdev/northwestern-starlight-theme/components";
+```
+
+## Basic Usage
+
+Pass a definition string with the `tip` prop.
+
+<Demo>
+    All users must comply with <Tooltip tip="Family Educational Rights and Privacy Act">FERPA</Tooltip> regulations when handling student records.
+</Demo>
+
+```mdx
+<Tooltip tip="Family Educational Rights and Privacy Act">FERPA</Tooltip>
+```
+
+## Positioning
+
+Tooltips appear above the trigger by default. Use `side="bottom"` to position below.
+
+<Demo>
+    Above (default): <Tooltip tip="Family Educational Rights and Privacy Act">FERPA</Tooltip> · Below: <Tooltip tip="Web Content Accessibility Guidelines" side="bottom">WCAG</Tooltip>
+</Demo>
+
+```mdx
+<Tooltip tip="Web Content Accessibility Guidelines" side="bottom">WCAG</Tooltip>
+```
+
+## Without Underline
+
+Set `underline={false}` to remove the dotted underline.
+
+<Demo>
+    With underline: <Tooltip tip="Application Programming Interface">API</Tooltip> · Without: <Tooltip tip="Application Programming Interface" underline={false}>API</Tooltip>
+</Demo>
+
+```mdx
+<Tooltip tip="Application Programming Interface" underline={false}>API</Tooltip>
+```
+
+## Glossary
+
+Define terms once with `<Glossary>`, reference them with `<Term>`.
+
+<Glossary terms={{
+    SSO: "Single Sign-On",
+    NetID: "Northwestern Network Identification, used for authentication",
+}} />
+
+<Demo>
+    Use your <Term of="NetID" /> to log in via <Term of="SSO" />.
+</Demo>
+
+```mdx
+<Glossary terms={{
+    SSO: "Single Sign-On",
+    NetID: "Northwestern Network Identification, used for authentication",
+}} />
+
+Use your <Term of="NetID" /> to log in via <Term of="SSO" />.
+```
+
+### Custom Trigger Text
+
+`<Term>` renders the key as trigger text by default. Pass children to override.
+
+<Demo>
+    Students authenticate with their <Term of="NetID">university credentials</Term>.
+</Demo>
+
+```mdx
+<Term of="NetID">university credentials</Term>
+```
+
+## Variants
+
+Semantic variants match Starlight's Aside types: `note`, `tip`, `caution`, `danger`.
+
+<Demo>
+    <Tooltip tip="Web Content Accessibility Guidelines 2.2" variant="note">note</Tooltip> · <Tooltip tip="Automated test results from the CI pipeline" variant="tip">tip</Tooltip> · <Tooltip tip="Federal law protecting student education records" variant="caution">caution</Tooltip> · <Tooltip tip="Outlines security incident procedures" variant="danger">danger</Tooltip>
+</Demo>
+
+```mdx
+<Tooltip tip="Explanation here" variant="note">note</Tooltip>
+<Tooltip tip="Explanation here" variant="tip">tip</Tooltip>
+<Tooltip tip="Explanation here" variant="caution">caution</Tooltip>
+<Tooltip tip="Explanation here" variant="danger">danger</Tooltip>
+```
+
+### Custom Color
+
+`color` sets a custom background. Text color is computed at build time with [khroma](https://www.npmjs.com/package/khroma) for WCAG contrast.
+
+<Demo>
+    <Tooltip tip="Northwestern's primary brand color" color="#4e2a84">purple</Tooltip> · <Tooltip tip="Custom teal accent" color="#7fcecd">teal</Tooltip> · <Tooltip tip="Dark background" color="#1a1a1a">dark</Tooltip>
+</Demo>
+
+```mdx
+<Tooltip tip="Northwestern's primary brand color" color="#4e2a84">purple</Tooltip>
+<Tooltip tip="Custom teal accent" color="#7fcecd">teal</Tooltip>
+<Tooltip tip="Dark background" color="#1a1a1a">dark</Tooltip>
+```
+
+## `<Tooltip>` Props
+
+**Implementation:** [`Tooltip.astro`](https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/blob/main/packages/northwestern-starlight-theme/src/components/Tooltip.astro)
+
+<PropertyTable>
+    <Property name="tip" type="string" required>
+        Definition text shown in the tooltip.
+    </Property>
+    <Property name="side" type='"top" | "bottom"' default='"top"'>
+        Position relative to the trigger.
+    </Property>
+    <Property name="underline" type="boolean" default="true">
+        Dotted underline on the trigger text.
+    </Property>
+    <Property name="variant" type='"note" | "tip" | "caution" | "danger"'>
+        Semantic color variant matching Starlight's Aside types.
+    </Property>
+    <Property name="color" type="string">
+        Custom background color. Overrides `variant`. Text color is auto-computed for WCAG contrast with [khroma](https://www.npmjs.com/package/khroma).
+    </Property>
+</PropertyTable>
+
+## `<Glossary>` Props
+
+**Implementation:** [`Glossary.astro`](https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/blob/main/packages/northwestern-starlight-theme/src/components/Glossary.astro)
+
+<PropertyTable>
+    <Property name="terms" type="Record<string, string>" required>
+        Map of term keys to definitions. Place above any `<Term>` references on the page.
+    </Property>
+</PropertyTable>
+
+## `<Term>` Props
+
+**Implementation:** [`Term.astro`](https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/blob/main/packages/northwestern-starlight-theme/src/components/Term.astro)
+
+<PropertyTable>
+    <Property name="of" type="string" required>
+        Key matching a `<Glossary>` entry.
+    </Property>
+    <Property name="side" type='"top" | "bottom"' default='"top"'>
+        Position relative to the trigger.
+    </Property>
+    <Property name="underline" type="boolean" default="true">
+        Dotted underline on the trigger text.
+    </Property>
+</PropertyTable>

@@ -29,6 +29,10 @@ Content below an h5 heading.
 
 Content below an h6 heading.
 
+#### A Heading That Wraps to Multiple Lines Because the Title Describes a Complex Configuration Scenario
+
+Content below a long heading. Verify the anchor link icon stays aligned and Poppins font wraps without clipping.
+
 ### Inline Elements
 
 Regular paragraph text in Akkurat Pro. This text contains **bold**, *italic*, `inline code`, ~~strikethrough~~, and [a link](/getting-started/). Links render as bold purple with a dashed underline that turns solid on hover.
@@ -42,6 +46,14 @@ Regular paragraph text in Akkurat Pro. This text contains **bold**, *italic*, `i
 > Blockquotes use a thick purple left border with a tinted background.
 >
 > > Nested blockquotes indent further with the same styling.
+
+> Code inside a blockquote:
+>
+> ```bash
+> pnpm add @nu-appdev/northwestern-starlight-theme
+> ```
+>
+> The frame borders should coexist with the blockquote border.
 
 ### Footnotes
 
@@ -67,6 +79,18 @@ Top-level items use solid purple square bullets. Nested items use outline square
   - Another nested item
     - Third level nesting
 - Third item
+
+### Deep Nesting
+
+- Level 1 with solid square bullet
+  - Level 2 with outline square
+    - Level 3 inherits level 2 styling
+      - Level 4 tests whether bullet styles degrade
+  - Back to level 2
+- Mixed list types:
+  1. Ordered inside unordered
+  2. Second ordered item
+     - Unordered inside ordered inside unordered
 
 ### Ordered
 
@@ -303,6 +327,14 @@ export default defineConfig({
 | Sidebar | `#fff` | `#1e1e1e` |
 | Navigation | `#401f68` | `#401f68` |
 
+### Wide Table
+
+| Token | Light | Dark | Fallback | Usage | Component | Notes | Source |
+|-------|-------|------|----------|-------|-----------|-------|--------|
+| `--nu-purple-100` | `#4e2a84` | `#4e2a84` | `rebeccapurple` | Brand primary | All | Northwestern Purple | `variables.css` |
+| `--nu-purple-40` | `#a495c3` | `#a495c3` | `#9370db` | Dark accent | Links, badges | Lighter for contrast | `variables.css` |
+| `--nu-border-color` | `#ccc` | `#3a3a3a` | `#e5e7eb` | Borders | Tables, HR, cards | Neutral gray | `variables.css` |
+
 ---
 
 ## Horizontal Rule
@@ -311,7 +343,25 @@ Content above a horizontal rule.
 
 ---
 
-Content below a horizontal rule. Rules render as a 3px gray bar.
+Content below a horizontal rule.
+
+---
+
+## Adjacent Components
+
+These components are stacked with no separators to demonstrate margin collapse and spacing between different styled blocks.
+
+<Aside type="tip">An aside immediately before a code block.</Aside>
+
+```ts
+const theme = northwesternTheme({ homepage: { layout: "split" } });
+```
+
+> A blockquote immediately after a code block. Margins between these three elements should be consistent.
+
+| Left | Right |
+|------|-------|
+| Table immediately after a blockquote | Check spacing |
 
 ---
 
