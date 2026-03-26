@@ -15,6 +15,6 @@
         "declarationMap": true,
         "composite": true
     },
-    "include": ["index.ts", "mermaid.ts", "src/**/*.ts"],
+    "include": ["index.ts", "mermaid.ts", "src/**/*.ts", "src/**/*.astro", "src/**/*.d.ts"],
     "exclude": ["node_modules", "dist"]
 }
