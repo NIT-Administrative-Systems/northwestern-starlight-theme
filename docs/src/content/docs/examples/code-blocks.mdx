@@ -65,7 +65,7 @@ export const wrappedSnippet = `const install = "pnpm add @nu-appdev/northwestern
 
 ## Overview
 
-The themes ships with the Northwestern code block treatment by default. This page shows the supported `Code` component patterns that are most useful when authoring docs.
+The theme ships with Northwestern code block styling. This page covers the `Code` component patterns most useful when authoring docs.
 
 ## Terminal Frames
 
@@ -77,7 +77,7 @@ Use the default terminal presentation for commands and shell output.
 
 ## Code Frames
 
-Use `frame="code"` when you want the snippet to read like a file instead of a terminal command.
+`frame="code"` renders the snippet as a file instead of a terminal command.
 
 If your site includes an `ec.config.mjs` file using `northwesternExpressiveCode()`, line numbers are available as an opt-in feature.
 
@@ -106,13 +106,13 @@ In the `<Code>` component, use the `showLineNumbers` prop directly.
 
 ## Frame Variants
 
-You can also remove the frame entirely when you want a quieter inline example.
+`frame="none"` removes the frame for quieter inline examples.
 
 <Code code={jsonSnippet} lang="json" frame="none" />
 
 ## Markers
 
-Markers are useful for focusing attention on specific lines or text ranges.
+Markers highlight specific lines or text ranges.
 
 <Code
     code={markerSnippet}
@@ -148,7 +148,7 @@ Long snippets can wrap cleanly with `wrap`, `preserveIndent`, and `hangingIndent
 
 ## Class Hook
 
-The `class` prop can be used when you want a one-off variation for a specific example.
+The `class` prop applies a one-off style variation to a specific example.
 
 <Code
     code={wrappedSnippet}
