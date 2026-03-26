@@ -120,7 +120,7 @@ function parseSvgDimensions(svg: SVGElement): { width: number; height: number } 
     const viewBox = svg.getAttribute("viewBox");
     if (viewBox) {
         const [, , w, h] = viewBox.split(/[\s,]+/).map(Number);
-        if (w && h) return { width: w, height: h };
+        if (w > 0 && h > 0) return { width: w, height: h };
     }
     return { width: 800, height: 600 };
 }
