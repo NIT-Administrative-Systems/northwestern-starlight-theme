@@ -200,9 +200,9 @@ export async function writeToClipboard(text: string, triggerButton: HTMLButtonEl
         textarea.style.cssText = "position:absolute;left:-9999px;opacity:0;height:0";
         host.appendChild(textarea);
         textarea.select();
-        document.execCommand("copy");
+        const success = document.execCommand("copy");
         textarea.remove();
-        flashSuccess(triggerButton, "Copied!");
+        if (success) flashSuccess(triggerButton, "Copied!");
     }
 }
 
