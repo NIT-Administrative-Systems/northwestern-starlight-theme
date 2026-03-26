@@ -1,0 +1,113 @@
+/* ==========================================================================
+   Tooltip — Inline hover/focus definitions
+   ========================================================================== */
+
+/* stylelint-disable selector-class-pattern */
+
+@layer northwestern {
+    .nu-tooltip {
+        position: relative;
+        display: inline;
+        cursor: help;
+    }
+
+    .nu-tooltip__trigger {
+        position: relative;
+    }
+
+    .nu-tooltip--underline .nu-tooltip__trigger {
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-decoration-style: dotted;
+        text-decoration-color: var(--nu-color-text-muted);
+        text-underline-offset: 3px;
+        transition: text-decoration-color var(--nu-transition-fast);
+    }
+
+    .nu-tooltip--underline:hover .nu-tooltip__trigger,
+    .nu-tooltip--underline:focus-within .nu-tooltip__trigger {
+        text-decoration-color: var(--sl-color-text-accent);
+    }
+
+    .nu-tooltip__content {
+        position: fixed;
+        z-index: 1000;
+        box-sizing: border-box;
+        width: max-content;
+        max-width: 280px;
+        padding: 0.375rem 0.625rem;
+        margin: 0;
+        font-family: var(--nu-font-body);
+        font-size: var(--sl-text-xs);
+        font-weight: 400;
+        line-height: 1.5;
+        color: var(--nu-color-text);
+        text-align: left;
+        background-color: var(--nu-card-bg);
+        border: 1px solid var(--nu-border-color);
+        box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+        opacity: 0;
+        transition: opacity var(--nu-transition-fast);
+    }
+
+    :root:not([data-theme="light"]) .nu-tooltip__content {
+        box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+    }
+
+    .nu-tooltip__content[popover] {
+        inset: unset;
+        overflow: visible;
+    }
+
+    .nu-tooltip__content:popover-open {
+        opacity: 1;
+    }
+
+    .nu-tooltip__content::backdrop {
+        display: none;
+    }
+
+    .nu-tooltip__arrow {
+        position: absolute;
+        left: 50%;
+        width: 8px;
+        height: 8px;
+        background-color: var(--nu-card-bg);
+        border-color: var(--nu-border-color);
+        border-style: solid;
+        transform: translateX(-50%) rotate(45deg);
+    }
+
+    .nu-tooltip--top .nu-tooltip__arrow {
+        bottom: -5px;
+        border-top: none;
+        border-right-width: 1px;
+        border-bottom-width: 1px;
+        border-left: none;
+    }
+
+    .nu-tooltip--bottom .nu-tooltip__arrow {
+        top: -5px;
+        border-top-width: 1px;
+        border-right: none;
+        border-bottom: none;
+        border-left-width: 1px;
+    }
+
+    .nu-tooltip--custom .nu-tooltip__content {
+        color: var(--nu-tip-text);
+        background-color: var(--nu-tip-bg);
+        border-color: var(--nu-tip-border);
+        box-shadow: none;
+    }
+
+    .nu-tooltip--custom .nu-tooltip__arrow {
+        background-color: var(--nu-tip-arrow);
+        border-color: var(--nu-tip-border);
+    }
+
+    .nu-tooltip__trigger:focus-visible {
+        outline: 2px solid var(--nu-focus-ring);
+        outline-offset: 2px;
+    }
+}

@@ -1,0 +1,11 @@
+---
+import { setTerms } from "./glossary-store.ts";
+
+interface Props {
+    /** Map of term keys to definitions. */
+    terms: Record<string, string>;
+}
+
+const { terms } = Astro.props;
+setTerms(terms);
+---

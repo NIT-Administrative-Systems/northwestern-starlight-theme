@@ -1,0 +1,117 @@
+---
+import { darken, isDark, lighten, toHex } from "khroma";
+import "../styles/components/tooltip.css";
+
+type TooltipVariant = "note" | "tip" | "caution" | "danger";
+
+interface Props {
+    /** Definition text shown in the tooltip. */
+    tip: string;
+    /** Preferred position. */
+    side?: "top" | "bottom";
+    /** Render the trigger with a dotted underline indicator. */
+    underline?: boolean;
+    /** Semantic variant matching Aside types. Sets background, text, and border colors. */
+    variant?: TooltipVariant;
+    /** Custom background color. Overrides variant. Text color is auto-computed for WCAG contrast. */
+    color?: string;
+}
+
+/** Maps to --nu-color-* tokens in variables.css */
+const VARIANT_COLORS: Record<TooltipVariant, string> = {
+    note: "#5091cd", // --nu-color-info
+    tip: "#008656", // --nu-color-success
+    caution: "#ffc520", // --nu-color-warning
+    danger: "#ef553f", // --nu-color-danger
+};
+
+const { tip, side = "top", underline = true, variant, color } = Astro.props;
+const id = `nu-tip-${Math.random().toString(36).slice(2, 9)}`;
+
+const resolvedColor = color ?? (variant ? VARIANT_COLORS[variant] : undefined);
+
+let colorStyles: string | undefined;
+if (resolvedColor) {
+    const bg = toHex(resolvedColor);
+    const textColor = isDark(bg) ? "#fff" : "#1a1a1a";
+    const borderColor = isDark(bg) ? toHex(lighten(bg, 12)) : toHex(darken(bg, 12));
+    colorStyles = `--nu-tip-bg: ${bg}; --nu-tip-text: ${textColor}; --nu-tip-border: ${borderColor}; --nu-tip-arrow: ${bg};`;
+}
+---
+
+<span
+    class:list={["nu-tooltip", `nu-tooltip--${side}`, { "nu-tooltip--underline": underline, "nu-tooltip--custom": !!resolvedColor }]}
+    data-tooltip-id={id}
+    style={colorStyles}
+>
+    <span class="nu-tooltip__trigger" tabindex="0" aria-describedby={id}><slot /></span>
+    <span class="nu-tooltip__content" role="tooltip" id={id} popover="manual">
+        {tip}
+        <span class="nu-tooltip__arrow"></span>
+    </span>
+</span>
+
+<script>
+    function initTooltips() {
+        document.querySelectorAll<HTMLElement>(".nu-tooltip").forEach((wrapper) => {
+            const trigger = wrapper.querySelector<HTMLElement>(".nu-tooltip__trigger");
+            const content = wrapper.querySelector<HTMLElement>(".nu-tooltip__content");
+            if (!trigger || !content) return;
+
+            let isVisible = false;
+
+            function onScroll() {
+                if (isVisible) position();
+            }
+
+            function show() {
+                if (isVisible) return;
+                isVisible = true;
+                content!.showPopover();
+                position();
+                window.addEventListener("scroll", onScroll, { passive: true });
+            }
+
+            function hide() {
+                if (!isVisible) return;
+                isVisible = false;
+                content!.hidePopover();
+                window.removeEventListener("scroll", onScroll);
+            }
+
+            function position() {
+                const rect = trigger!.getBoundingClientRect();
+                const side = wrapper.classList.contains("nu-tooltip--bottom") ? "bottom" : "top";
+                const gap = 8;
+
+                content!.style.left = `${rect.left + rect.width / 2}px`;
+
+                if (side === "top") {
+                    content!.style.top = `${rect.top - gap}px`;
+                    content!.style.transform = "translate(-50%, -100%)";
+                } else {
+                    content!.style.top = `${rect.bottom + gap}px`;
+                    content!.style.transform = "translate(-50%, 0)";
+                }
+            }
+
+            wrapper.addEventListener("mouseenter", show);
+            wrapper.addEventListener("mouseleave", hide);
+            trigger.addEventListener("focus", show);
+            trigger.addEventListener("blur", hide);
+
+            content.addEventListener("mouseenter", () => { isVisible = true; });
+            content.addEventListener("mouseleave", hide);
+        });
+
+    }
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            (document.activeElement as HTMLElement)?.blur();
+        }
+    });
+
+    initTooltips();
+    document.addEventListener("astro:after-swap", initTooltips);
+</script>
