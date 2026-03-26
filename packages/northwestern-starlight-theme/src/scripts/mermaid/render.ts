@@ -115,9 +115,10 @@ export async function renderAllDiagrams(forceAll = false): Promise<void> {
             for (const entry of entries) {
                 if (!entry.isIntersecting) continue;
                 const container = entry.target as HTMLElement;
-                if (!needsRender(container, mode)) continue;
+                const currentMode = resolveThemeMode();
+                if (!needsRender(container, currentMode)) continue;
                 observer.unobserve(container);
-                void renderDiagram(container, mode, containers.indexOf(container));
+                void renderDiagram(container, currentMode, containers.indexOf(container));
             }
         },
         { rootMargin: PRERENDER_MARGIN },
