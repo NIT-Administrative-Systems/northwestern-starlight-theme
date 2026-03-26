@@ -1,0 +1,19 @@
+---
+interface Props {
+    /** Label for the toggle. */
+    title?: string;
+    /** Whether to start expanded. */
+    open?: boolean;
+}
+
+const { title = "Show properties", open = false } = Astro.props;
+---
+
+<details class="nu-expandable" open={open || undefined}>
+    <summary class="nu-expandable__toggle">{title}</summary>
+    <div class="nu-expandable__content">
+        <div class="nu-expandable__nested">
+            <slot />
+        </div>
+    </div>
+</details>
