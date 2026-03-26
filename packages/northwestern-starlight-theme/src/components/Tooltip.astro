@@ -54,8 +54,13 @@ if (resolvedColor) {
 </span>
 
 <script>
+    const initialized = new WeakSet<HTMLElement>();
+
     function initTooltips() {
         document.querySelectorAll<HTMLElement>(".nu-tooltip").forEach((wrapper) => {
+            if (initialized.has(wrapper)) return;
+            initialized.add(wrapper);
+
             const trigger = wrapper.querySelector<HTMLElement>(".nu-tooltip__trigger");
             const content = wrapper.querySelector<HTMLElement>(".nu-tooltip__content");
             if (!trigger || !content) return;
