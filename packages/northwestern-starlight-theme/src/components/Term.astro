@@ -1,0 +1,25 @@
+---
+import { getTerm } from "./glossary-store.ts";
+import Tooltip from "./Tooltip.astro";
+
+interface Props {
+    /** Key matching a Glossary entry. */
+    of: string;
+    /** Preferred position. */
+    side?: "top" | "bottom";
+    /** Render with a dotted underline indicator. */
+    underline?: boolean;
+}
+
+const { of: key, side, underline } = Astro.props;
+const tip = getTerm(key);
+const hasSlot = Astro.slots.has("default");
+
+if (!tip) {
+    throw new Error(`[Term] No glossary entry found for "${key}". Add it to a <Glossary> component above this <Term>.`);
+}
+---
+
+<Tooltip tip={tip} side={side} underline={underline}>
+    {hasSlot ? <slot /> : key}
+</Tooltip>
