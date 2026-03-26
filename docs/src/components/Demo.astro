@@ -7,11 +7,36 @@
 
 <style>
     .nu-demo {
-        padding: 1.25rem;
+        position: relative;
+        padding: 2rem 1.25rem 1.25rem;
         margin: 1rem 0;
         font-size: var(--sl-text-sm);
         line-height: 2;
-        background: var(--nu-card-bg);
+        background:
+            radial-gradient(circle, rgb(78 42 132 / 6%) 1px, transparent 1px),
+            var(--nu-card-bg);
+        background-size: 16px 16px;
         border: 1px solid var(--nu-border-color);
+    }
+
+    :root:not([data-theme="light"]) .nu-demo {
+        background:
+            radial-gradient(circle, rgb(164 149 195 / 6%) 1px, transparent 1px),
+            var(--nu-card-bg);
+        background-size: 16px 16px;
+    }
+
+    .nu-demo::before {
+        position: absolute;
+        top: 0.5rem;
+        left: 0.75rem;
+        font-family: var(--sl-font-system-mono);
+        font-size: 0.5625rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        color: var(--nu-color-text-muted);
+        text-transform: uppercase;
+        content: "Preview";
+        opacity: 0.6;
     }
 </style>
