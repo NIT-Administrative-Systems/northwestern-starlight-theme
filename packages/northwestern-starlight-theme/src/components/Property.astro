@@ -4,6 +4,8 @@ interface Props {
     name: string;
     /** Type annotation (displayed in monospace, supports union syntax). */
     type?: string;
+    /** URL to link the type annotation to (e.g. a type definition or external docs). */
+    typeHref?: string;
     /** Default value (displayed in monospace). */
     default?: string;
     /** Mark as required. Displays a "Required" badge. */
@@ -16,7 +18,7 @@ interface Props {
 
 const slugCounts = (globalThis.__nuPropertySlugs ??= new Map<string, number>());
 
-const { name, type, default: defaultValue, required, deprecated, since } = Astro.props;
+const { name, type, typeHref, default: defaultValue, required, deprecated, since } = Astro.props;
 const hasInlineBadges = required || since || deprecated;
 const rawSlug = name
     .toLowerCase()
@@ -40,7 +42,10 @@ const slug = count === 1 ? baseSlug : `${baseSlug}-${count}`;
                 </span>
             )}
         </span>
-        {type && <code class="nu-property__type">{type}</code>}
+        {type && typeHref
+            ? <a class="nu-property__type-link" href={typeHref}><code class="nu-property__type">{type}</code></a>
+            : type && <code class="nu-property__type">{type}</code>
+        }
         <span class="nu-property__default-col">
             {defaultValue && <span class="nu-property__badge nu-property__badge--default"><code>{defaultValue}</code></span>}
         </span>
