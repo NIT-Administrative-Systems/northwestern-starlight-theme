@@ -73,6 +73,7 @@ if (resolvedColor) {
                 if (!isVisible) return;
                 const rect = trigger!.getBoundingClientRect();
                 if (rect.bottom < 0 || rect.top > window.innerHeight || Math.abs(rect.top - openY) > 50) {
+                    trigger!.blur();
                     hide();
                     return;
                 }
