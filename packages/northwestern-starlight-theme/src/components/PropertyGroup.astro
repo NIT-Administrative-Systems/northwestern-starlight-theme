@@ -1,0 +1,13 @@
+---
+interface Props {
+    /** Group heading text. */
+    title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<div class="nu-property-group" role="group" aria-label={title}>
+    <div class="nu-property-group__title">{title}</div>
+    <slot />
+</div>

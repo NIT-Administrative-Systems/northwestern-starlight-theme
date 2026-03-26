@@ -1,0 +1,54 @@
+---
+import "../styles/components/property-table.css";
+
+type ColumnShorthand = "name" | "type" | "default";
+type ColumnConfig = { key: ColumnShorthand; label: string };
+type ColumnDef = ColumnShorthand | ColumnConfig;
+
+interface Props {
+    /** Optional heading above the table. */
+    title?: string;
+    /** Layout variant. "list" (default) shows stacked rows. "table" shows a columnar grid. */
+    variant?: "list" | "table";
+    /** Columns to display in table variant. Array of field keys or { key, label } objects. */
+    columns?: ColumnDef[];
+    /** Show "Optional" label on non-required properties. */
+    showOptional?: boolean;
+}
+
+const DEFAULT_LABELS: Record<ColumnShorthand, string> = {
+    name: "Prop",
+    type: "Type",
+    default: "Default",
+};
+
+const { title, variant = "list", columns: columnsProp, showOptional = false } = Astro.props;
+const isTable = variant === "table";
+
+const resolvedColumns = isTable
+    ? (columnsProp ?? ["name", "type", "default"]).map((col) =>
+          typeof col === "string" ? { key: col, label: DEFAULT_LABELS[col] } : col,
+      )
+    : [];
+
+const columnCount = resolvedColumns.length;
+const columnKeys = resolvedColumns.map((c) => c.key);
+---
+
+<div
+    class:list={["nu-property-table", { "nu-property-table--table": isTable, "nu-property-table--show-optional": showOptional }]}
+    style={isTable ? `--nu-pt-columns: ${columnCount};` : undefined}
+    data-columns={isTable ? columnKeys.join(",") : undefined}
+>
+    {title && <div class="nu-property-table__header">{title}</div>}
+    {isTable && (
+        <div class="nu-property-table__columns" aria-hidden="true">
+            {resolvedColumns.map((col) => (
+                <span>{col.label}</span>
+            ))}
+        </div>
+    )}
+    <div class="nu-property-table__body not-content" role="list">
+        <slot />
+    </div>
+</div>

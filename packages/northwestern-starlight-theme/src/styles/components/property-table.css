@@ -1,0 +1,574 @@
+/* ==========================================================================
+   Property Table — Structured display for config options, props, and API params
+   ========================================================================== */
+
+/* stylelint-disable selector-class-pattern */
+
+@layer northwestern {
+    /* ---- Container card ---- */
+
+    .nu-property-table {
+        margin: 1.5rem 0;
+        overflow: hidden;
+        background-color: var(--nu-card-bg);
+        border: 1px solid var(--nu-border-color);
+        border-top: 1px solid var(--nu-purple-100);
+    }
+
+    :root:not([data-theme="light"]) .nu-property-table {
+        border-top-color: var(--nu-purple-60);
+    }
+
+    .nu-property-table__header {
+        padding: 0.625rem 1rem;
+        font-family: var(--sl-font-system-mono);
+        font-size: var(--sl-text-sm);
+        font-weight: 600;
+        color: var(--nu-black-80);
+        background-color: var(--nu-purple-surface);
+        border-bottom: 1px solid var(--nu-border-color);
+    }
+
+    :root:not([data-theme="light"]) .nu-property-table__header {
+        color: var(--nu-color-text);
+        background-color: rgb(78 42 132 / 14%);
+    }
+
+    .nu-property-table__body {
+        padding: 0;
+        margin: 0;
+    }
+
+    .nu-property-table__body:empty {
+        display: none;
+    }
+
+    .nu-property-table:has(.nu-property-table__body:empty) {
+        display: none;
+    }
+
+    /* ---- Property row ---- */
+
+    .nu-property {
+        padding: 0.875rem 1rem;
+    }
+
+    .nu-property + .nu-property {
+        border-top: 1px solid rgb(0 0 0 / 6%);
+    }
+
+    :root:not([data-theme="light"]) .nu-property + .nu-property {
+        border-top-color: rgb(255 255 255 / 6%);
+    }
+
+    .nu-property__head {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem 0.625rem;
+        align-items: center;
+        margin: 0;
+        font: inherit;
+    }
+
+    .nu-property__prop-col {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+        align-items: center;
+    }
+
+    .nu-property__name {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.1875rem 0.375rem;
+        font-family: var(--sl-font-system-mono);
+        font-size: var(--sl-text-sm);
+        font-weight: 700;
+        line-height: 1;
+        color: var(--sl-color-text-accent);
+        background-color: var(--nu-purple-surface);
+        border: 1px solid rgb(78 42 132 / 20%);
+    }
+
+    :root:not([data-theme="light"]) .nu-property__name {
+        background-color: rgb(255 255 255 / 6%);
+        border-color: rgb(255 255 255 / 12%);
+    }
+
+    .nu-property__anchor {
+        position: absolute;
+        top: 50%;
+        right: 100%;
+        padding-right: 0.25rem;
+        padding-bottom: 0;
+        font-family: var(--sl-font-system-mono);
+        font-size: var(--sl-text-sm);
+        font-weight: 400;
+        line-height: 1;
+        color: var(--nu-color-text-muted);
+        text-decoration: none !important;
+        border-bottom: none !important;
+        opacity: 0;
+        transform: translateY(-50%);
+        transition:
+            opacity var(--nu-transition-fast),
+            color var(--nu-transition-fast);
+    }
+
+    .nu-property:hover > .nu-property__head .nu-property__anchor,
+    .nu-property__anchor:focus-visible {
+        opacity: 1;
+    }
+
+    /* Hide parent anchor when hovering over expandable nested area */
+    .nu-property:has(.nu-expandable:hover) > .nu-property__head .nu-property__anchor {
+        opacity: 0;
+    }
+
+    .nu-property__anchor:hover {
+        color: var(--nu-purple-60) !important;
+        border-bottom: none !important;
+    }
+
+    .nu-property__anchor:focus-visible {
+        outline: 2px solid var(--nu-focus-ring);
+        outline-offset: 2px;
+        opacity: 1;
+    }
+
+    .nu-property__type {
+        padding: 0;
+        font-family: var(--sl-font-system-mono);
+        font-size: var(--sl-text-sm);
+        font-weight: 400;
+        line-height: 1;
+        color: var(--nu-color-text-muted);
+        background: none;
+        border: none;
+    }
+
+    .nu-property__default-col {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .nu-property__badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+        align-items: center;
+    }
+
+    .nu-property__badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.125rem 0.375rem;
+        font-family: var(--nu-font-body);
+        font-size: 0.625rem;
+        font-weight: 700;
+        line-height: 1;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border-style: solid;
+        border-width: 1px;
+    }
+
+    .nu-property__badge code {
+        font-family: var(--sl-font-system-mono);
+        font-size: inherit;
+        font-weight: 500;
+        color: inherit;
+        text-transform: none;
+        letter-spacing: normal;
+        background: none;
+        border: none;
+    }
+
+    .nu-property__badge--required {
+        color: color-mix(in srgb, var(--nu-dark-orange), black 25%);
+        background-color: rgb(239 85 63 / 8%);
+        border-color: rgb(239 85 63 / 22%);
+    }
+
+    :root:not([data-theme="light"]) .nu-property__badge--required {
+        color: #fca5a5;
+        background-color: rgb(239 85 63 / 10%);
+        border-color: rgb(239 85 63 / 22%);
+    }
+
+    .nu-property__badge--default {
+        font-weight: 400;
+        color: var(--nu-color-text-muted);
+        text-transform: none;
+        letter-spacing: normal;
+        background-color: rgb(78 42 132 / 6%);
+        border-color: rgb(78 42 132 / 15%);
+    }
+
+    .nu-property__badge--default code {
+        font-weight: 400;
+    }
+
+    :root:not([data-theme="light"]) .nu-property__badge--default {
+        background-color: rgb(147 128 182 / 8%);
+        border-color: rgb(147 128 182 / 15%);
+    }
+
+    .nu-property__badge--since {
+        color: color-mix(in srgb, var(--nu-dark-teal), black 10%);
+        background-color: rgb(127 206 205 / 10%);
+        border-color: rgb(127 206 205 / 25%);
+    }
+
+    :root:not([data-theme="light"]) .nu-property__badge--since {
+        color: var(--nu-teal);
+        background-color: rgb(127 206 205 / 10%);
+        border-color: rgb(127 206 205 / 22%);
+    }
+
+    .nu-property__badge--deprecated {
+        color: var(--nu-color-text-muted);
+        background-color: var(--nu-surface-muted);
+        border-color: var(--nu-border-color);
+    }
+
+    /* ---- Description ---- */
+
+    .nu-property__description {
+        margin: 0.25rem 0 0;
+        font-size: var(--sl-text-sm);
+        line-height: 1.5;
+        color: var(--nu-color-text-muted);
+    }
+
+    .nu-property__description:empty {
+        display: none;
+    }
+
+    .nu-property__description > :first-child {
+        margin-top: 0;
+    }
+
+    .nu-property__description > :last-child {
+        margin-bottom: 0;
+    }
+
+    /* Keep inline code legible inside muted description text, but not nested Property components */
+    .nu-property__description code:not(.nu-property__name, .nu-property__type) {
+        padding: 0.1rem 0.3rem;
+        color: var(--nu-color-text);
+        background-color: var(--nu-surface-muted);
+    }
+
+    :root:not([data-theme="light"]) .nu-property__description code:not(.nu-property__name, .nu-property__type) {
+        background-color: rgb(255 255 255 / 6%);
+    }
+
+    /* ---- Optional indicator ---- */
+
+    .nu-property-table--show-optional .nu-property:not(.nu-property--required, .nu-property--deprecated)
+        .nu-property__prop-col::after {
+        display: inline-flex;
+        align-items: center;
+        font-family: var(--nu-font-body);
+        font-size: 0.625rem;
+        font-style: italic;
+        font-weight: 400;
+        line-height: 1;
+        color: var(--nu-color-text-muted);
+        content: "Optional";
+    }
+
+    /* ---- Deprecated state ---- */
+
+    .nu-property--deprecated .nu-property__name {
+        color: var(--nu-color-text-muted);
+        text-decoration: line-through;
+        background-color: var(--nu-surface-muted);
+        border-color: var(--nu-border-color);
+    }
+
+    .nu-property--deprecated .nu-property__type {
+        color: #6b6665;
+    }
+
+    :root:not([data-theme="light"]) .nu-property--deprecated .nu-property__type {
+        color: var(--nu-color-text-muted);
+    }
+
+    /* ---- Property group divider ---- */
+
+    .nu-property-group + .nu-property-group,
+    .nu-property + .nu-property-group {
+        border-top: 1px solid var(--nu-border-color);
+    }
+
+    .nu-property-group__title {
+        padding: 0.5rem 1rem;
+        font-family: var(--nu-font-heading);
+        font-size: var(--sl-text-xs);
+        font-weight: 700;
+        color: var(--nu-color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        background-color: var(--nu-surface-muted);
+        border-inline-start: 1px solid var(--nu-purple-100);
+    }
+
+    :root:not([data-theme="light"]) .nu-property-group__title {
+        background-color: rgb(255 255 255 / 3%);
+        border-inline-start-color: var(--nu-purple-60);
+    }
+
+    /* In table variant, group title spans the full grid */
+    .nu-property-table--table .nu-property-group__title {
+        grid-column: 1 / -1;
+    }
+
+    /* ---- Expandable ---- */
+
+    .nu-expandable {
+        margin-top: 0.625rem;
+    }
+
+    .nu-expandable__toggle {
+        padding: 0.25rem 0.5rem;
+        margin-bottom: 0;
+        font-family: var(--sl-font-system-mono);
+        font-size: 0.6875rem;
+        font-weight: 500;
+        color: var(--nu-color-text-muted);
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        user-select: none;
+        transition:
+            color var(--nu-transition-fast),
+            background-color var(--nu-transition-fast);
+    }
+
+    .nu-expandable__toggle:hover {
+        color: var(--sl-color-text-accent);
+        background-color: var(--nu-purple-surface-subtle);
+    }
+
+    :root:not([data-theme="light"]) .nu-expandable__toggle:hover {
+        background-color: rgb(255 255 255 / 5%);
+    }
+
+    .nu-expandable__toggle:focus-visible {
+        outline: 2px solid var(--nu-focus-ring);
+        outline-offset: 2px;
+    }
+
+    .nu-expandable__content {
+        margin-top: 0;
+    }
+
+    .nu-expandable__nested {
+        margin-inline-start: 0.675rem;
+        margin-top: 0.625rem;
+        margin-bottom: 0.25rem;
+        overflow: hidden;
+        border-inline-start: 1px solid var(--nu-purple-40);
+    }
+
+    :root:not([data-theme="light"]) .nu-expandable__nested {
+        border-inline-start-color: var(--nu-purple-110);
+    }
+
+    .nu-expandable__nested .nu-property {
+        padding: 0.625rem 0.75rem 0.625rem 1.25rem;
+    }
+
+    .nu-expandable__nested .nu-property + .nu-property {
+        border-top: 1px solid rgb(0 0 0 / 6%);
+    }
+
+    :root:not([data-theme="light"]) .nu-expandable__nested .nu-property + .nu-property {
+        border-top-color: rgb(255 255 255 / 6%);
+    }
+
+    /* ---- List variant: default-col is inline with the rest ---- */
+
+    .nu-property-table:not(.nu-property-table--table) .nu-property__default-col:empty {
+        display: none;
+    }
+
+    /* ---- Table variant ---- */
+
+    .nu-property-table__columns {
+        display: grid;
+        grid-template-columns: repeat(var(--nu-pt-columns, 3), 1fr);
+        gap: 0 1rem;
+        align-items: center;
+        padding: 0.5625rem 1rem;
+        margin-top: 0;
+        font-family: var(--nu-font-body);
+        font-size: 0.625rem;
+        font-weight: 500;
+        line-height: 1;
+        color: var(--nu-color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        background-color: var(--nu-purple-surface-subtle);
+        border-bottom: 1px solid rgb(0 0 0 / 6%);
+    }
+
+    :root:not([data-theme="light"]) .nu-property-table__columns {
+        background-color: rgb(78 42 132 / 6%);
+        border-bottom-color: rgb(255 255 255 / 6%);
+    }
+
+    .nu-property-table--table[style*="--nu-pt-columns: 3"] .nu-property-table__columns {
+        grid-template-columns: 1.2fr 1.5fr 0.8fr;
+    }
+
+    .nu-property-table--table .nu-property {
+        display: grid;
+        grid-template-columns: repeat(var(--nu-pt-columns, 3), 1fr);
+        gap: 0 1rem;
+        align-items: center;
+        padding: 0.625rem 1rem;
+    }
+
+    /* Better ratios for the common 3-column case (Prop / Type / Default) */
+    .nu-property-table--table[style*="--nu-pt-columns: 3"] .nu-property {
+        grid-template-columns: 1.2fr 1.5fr 0.8fr;
+    }
+
+    .nu-property-table--table .nu-property:hover {
+        background-color: rgb(78 42 132 / 3%);
+    }
+
+    :root:not([data-theme="light"]) .nu-property-table--table .nu-property:hover {
+        background-color: rgb(255 255 255 / 3%);
+    }
+
+    .nu-property-table--table .nu-property__head {
+        display: contents;
+    }
+
+    .nu-property-table--table .nu-property__prop-col {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+        align-items: center;
+    }
+
+    .nu-property-table--table .nu-property__type {
+        font-size: var(--sl-text-sm);
+    }
+
+    .nu-property-table--table .nu-property__description {
+        display: none;
+    }
+
+    /* Hide columns not in data-columns */
+    .nu-property-table--table:not([data-columns*="type"]) .nu-property__type {
+        display: none;
+    }
+
+    .nu-property-table--table:not([data-columns*="default"]) .nu-property__default-col {
+        display: none;
+    }
+
+    /* Default column: strip badge styling, show as plain monospace text */
+    .nu-property-table--table .nu-property__default-col .nu-property__badge--default {
+        padding: 0;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: normal;
+        background: none;
+        border: none;
+    }
+
+    .nu-property-table--table .nu-property__default-col .nu-property__badge--default code {
+        font-size: var(--sl-text-sm);
+        font-weight: 400;
+        color: var(--nu-color-text-muted);
+    }
+
+    /* Em-dash when no default value */
+    .nu-property-table--table .nu-property__default-col:empty::after {
+        font-family: var(--sl-font-system-mono);
+        font-size: var(--sl-text-sm);
+        color: var(--nu-border-color);
+        content: "—";
+    }
+
+    /* ---- Table variant — mobile fallback to list layout ---- */
+
+    @media (width <= 30rem) {
+        .nu-property-table__columns {
+            display: none;
+        }
+
+        .nu-property-table--table .nu-property {
+            display: block;
+            padding: 0.875rem 1rem;
+        }
+
+        .nu-property-table--table .nu-property__head {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem 0.625rem;
+            align-items: center;
+        }
+
+        .nu-property-table--table .nu-property__prop-col {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem;
+            align-items: center;
+        }
+
+        .nu-property-table--table[data-columns*="type"] .nu-property__type {
+            display: revert;
+        }
+
+        .nu-property-table--table[data-columns*="default"] .nu-property__default-col {
+            display: revert;
+        }
+
+        .nu-property-table--table .nu-property__default-col .nu-property__badge--default {
+            padding: 0.0625rem 0.375rem;
+            font-size: 0.625rem;
+            font-weight: 400;
+            background-color: rgb(78 42 132 / 6%);
+            border: 1px solid rgb(78 42 132 / 15%);
+        }
+
+        .nu-property-table--table .nu-property__default-col .nu-property__badge--default code {
+            font-size: inherit;
+        }
+
+        .nu-property-table--table .nu-property__description {
+            display: block;
+        }
+
+        .nu-property-table--table .nu-property__default-col:empty {
+            display: none;
+        }
+
+        .nu-property-table--table .nu-property__default-col:empty::after {
+            content: none;
+        }
+    }
+
+    /* ---- List variant — mobile ---- */
+
+    @media (width <= 30rem) {
+        .nu-property-table:not(.nu-property-table--table) .nu-property__head {
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .nu-property-table:not(.nu-property-table--table) .nu-property__prop-col {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem;
+            align-items: center;
+        }
+    }
+}
