@@ -97,16 +97,20 @@ function isToolbarEnabled(): boolean {
  * Render diagrams and inject toolbars. Called on initial page load
  * and after Astro view transitions.
  */
+let domObserver: MutationObserver | undefined;
+
 function onPageReady(): void {
+    domObserver?.disconnect();
+
     void renderAllDiagrams(false).then(() => {
         if (isToolbarEnabled()) injectToolbars();
 
         // Watch for lazy-rendered diagrams that enter the viewport after initial load
-        const domObserver = new MutationObserver(() => {
+        domObserver = new MutationObserver(() => {
             if (isToolbarEnabled()) injectToolbars();
         });
         domObserver.observe(document.body, { childList: true, subtree: true });
-        setTimeout(() => domObserver.disconnect(), TOOLBAR_OBSERVER_TIMEOUT_MS);
+        setTimeout(() => domObserver?.disconnect(), TOOLBAR_OBSERVER_TIMEOUT_MS);
     });
 }
 
