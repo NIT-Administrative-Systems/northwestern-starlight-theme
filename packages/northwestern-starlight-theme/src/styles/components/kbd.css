@@ -1,0 +1,69 @@
+/* ==========================================================================
+   Kbd — Keyboard shortcut display
+   ========================================================================== */
+
+/* stylelint-disable selector-class-pattern */
+
+@layer northwestern {
+    .nu-kbd {
+        display: inline-flex;
+        gap: 0.25rem;
+        align-items: center;
+        font-family: var(--sl-font-system-mono);
+        font-size: var(--sl-text-xs);
+        line-height: 1;
+        white-space: nowrap;
+        background: none;
+        border: none;
+    }
+
+    .nu-kbd__key {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.375rem;
+        height: 1.375rem;
+        padding: 0 0.3125rem;
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: 500;
+        line-height: 1;
+        color: var(--nu-color-text);
+        text-align: center;
+        background-color: var(--nu-purple-surface-subtle);
+        border: 1px solid rgb(78 42 132 / 18%);
+        border-bottom-width: 2px;
+        border-radius: 3px !important;
+    }
+
+    :root:not([data-theme="light"]) .nu-kbd__key {
+        color: var(--nu-color-text);
+        background-color: rgb(255 255 255 / 6%);
+        border-color: rgb(255 255 255 / 12%);
+    }
+
+    .nu-kbd__sep {
+        font-size: 0.625rem;
+        color: var(--nu-color-text-muted);
+        user-select: none;
+    }
+
+    .nu-kbd__mac,
+    .nu-kbd__other {
+        display: inline-flex;
+        gap: 0.25rem;
+        align-items: center;
+    }
+
+    .nu-kbd__other {
+        display: none;
+    }
+
+    :root[data-platform="other"] .nu-kbd__mac {
+        display: none;
+    }
+
+    :root[data-platform="other"] .nu-kbd__other {
+        display: inline-flex;
+    }
+}

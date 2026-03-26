@@ -1,0 +1,136 @@
+---
+import "../styles/components/kbd.css";
+
+interface Props {
+    /** Explicit array of key names. Overrides children parsing. */
+    keys?: string[];
+}
+
+/** Map semantic key names to display symbols (Mac). */
+const KEY_SYMBOLS_MAC: Record<string, string> = {
+    mod: "⌘",
+    command: "⌘",
+    cmd: "⌘",
+    meta: "⌘",
+    control: "⌃",
+    ctrl: "⌃",
+    option: "⌥",
+    alt: "⌥",
+    shift: "⇧",
+    enter: "↵",
+    return: "↵",
+    backspace: "⌫",
+    delete: "⌦",
+    escape: "Esc",
+    esc: "Esc",
+    tab: "⇥",
+    capslock: "⇪",
+    space: "␣",
+    up: "↑",
+    down: "↓",
+    left: "←",
+    right: "→",
+    pageup: "⇞",
+    pagedown: "⇟",
+    home: "↖",
+    end: "↘",
+};
+
+/** Map semantic key names to display symbols (Windows/Linux). */
+const KEY_SYMBOLS_OTHER: Record<string, string> = {
+    ...KEY_SYMBOLS_MAC,
+    mod: "Ctrl",
+    command: "Ctrl",
+    cmd: "Ctrl",
+    meta: "Win",
+    control: "Ctrl",
+    ctrl: "Ctrl",
+    option: "Alt",
+    alt: "Alt",
+};
+
+/** Keys that differ between platforms. */
+const PLATFORM_KEYS = new Set(["mod", "command", "cmd", "meta", "control", "ctrl", "option", "alt"]);
+
+/** Canonical modifier ordering: Ctrl, Meta/Cmd, Alt/Option, Shift, then others. */
+const MODIFIER_ORDER_MAC = ["⌃", "⌘", "⌥", "⇧"];
+const MODIFIER_ORDER_OTHER = ["Ctrl", "Win", "Alt", "Shift"];
+
+function resolveKeys(rawKeys: string[], symbols: Record<string, string>): string[] {
+    return rawKeys.map((k) => {
+        const lower = k.trim().toLowerCase();
+        return symbols[lower] ?? k.trim();
+    });
+}
+
+function sortKeys(keys: string[], order: string[]): string[] {
+    return [...keys].sort((a, b) => {
+        const ai = order.indexOf(a);
+        const bi = order.indexOf(b);
+        if (ai !== -1 && bi !== -1) return ai - bi;
+        if (ai !== -1) return -1;
+        if (bi !== -1) return 1;
+        return 0;
+    });
+}
+
+const { keys: keysProp } = Astro.props;
+
+let rawSlot = "";
+if (!keysProp && Astro.slots.has("default")) {
+    rawSlot = await Astro.slots.render("default").then((s) => s.replace(/<[^>]*>/g, "").trim());
+}
+
+const rawKeys =
+    keysProp ??
+    rawSlot
+        .split("+")
+        .map((s) => s.trim())
+        .filter(Boolean);
+const hasPlatformKeys = rawKeys.some((k) => PLATFORM_KEYS.has(k.toLowerCase()));
+
+const macKeys = sortKeys(resolveKeys(rawKeys, KEY_SYMBOLS_MAC), MODIFIER_ORDER_MAC);
+const otherKeys = sortKeys(resolveKeys(rawKeys, KEY_SYMBOLS_OTHER), MODIFIER_ORDER_OTHER);
+
+const ariaLabel = rawKeys.join(" + ");
+---
+
+<kbd class="nu-kbd" aria-label={ariaLabel}>
+    {hasPlatformKeys ? (
+        <>
+            <span class="nu-kbd__mac">
+                {macKeys.map((key, i) => (
+                    <>
+                        {i > 0 && <span class="nu-kbd__sep" aria-hidden="true">+</span>}
+                        <kbd class="nu-kbd__key">{key}</kbd>
+                    </>
+                ))}
+            </span>
+            <span class="nu-kbd__other">
+                {otherKeys.map((key, i) => (
+                    <>
+                        {i > 0 && <span class="nu-kbd__sep" aria-hidden="true">+</span>}
+                        <kbd class="nu-kbd__key">{key}</kbd>
+                    </>
+                ))}
+            </span>
+        </>
+    ) : (
+        macKeys.map((key, i) => (
+            <>
+                {i > 0 && <span class="nu-kbd__sep" aria-hidden="true">+</span>}
+                <kbd class="nu-kbd__key">{key}</kbd>
+            </>
+        ))
+    )}
+</kbd>
+
+<script>
+    function detectPlatform() {
+        const isMac = navigator.userAgentData
+            ? navigator.userAgentData.platform === "macOS"
+            : /Mac|iPhone|iPad|iPod/.test(navigator.userAgent);
+        document.documentElement.setAttribute("data-platform", isMac ? "mac" : "other");
+    }
+    detectPlatform();
+</script>
