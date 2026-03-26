@@ -72,12 +72,25 @@ Key names are mapped to standard symbols. Unrecognized names render as-is (<Kbd>
     </PropertyGroup>
 </PropertyTable>
 
+## With Description
+
+The `tip` prop wraps the shortcut in a [`<Tooltip/>`](/components/tooltip), showing a description on hover.
+
+<Demo>
+    <Kbd tip="Open command palette">Mod+Shift+P</Kbd>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<Kbd tip="Save file">Mod+S</Kbd>
+</Demo>
+
+```mdx
+<Kbd tip="Open command palette">Mod+Shift+P</Kbd>
+<Kbd tip="Save file">Mod+S</Kbd>
+```
+
 ## Explicit Keys Array
 
 Use the `keys` array to specify each key explicitly.
 
 <Demo>
-    <Kbd keys={["Ctrl", "Shift", "I"]} /> · <Kbd keys={["Command", "K"]} />
+    <Kbd keys={["Ctrl", "Shift", "I"]} />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<Kbd keys={["Command", "K"]} />
 </Demo>
 
 ```mdx
@@ -95,5 +108,8 @@ Use the `keys` array to specify each key explicitly.
     </Property>
     <Property name="keys" type="string[]">
         Explicit array of key names. Overrides children parsing.
+    </Property>
+    <Property name="tip" type="string">
+        Description shown on hover via Tooltip.
     </Property>
 </PropertyTable>

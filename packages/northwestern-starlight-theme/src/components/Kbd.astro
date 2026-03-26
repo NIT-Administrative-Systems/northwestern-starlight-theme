@@ -1,9 +1,12 @@
 ---
 import "../styles/components/kbd.css";
+import Tooltip from "./Tooltip.astro";
 
 interface Props {
     /** Explicit array of key names. Overrides children parsing. */
     keys?: string[];
+    /** Tooltip description shown on hover. Wraps the Kbd in a Tooltip when set. */
+    tip?: string;
 }
 
 /** Map semantic key names to display symbols (Mac). */
@@ -74,7 +77,7 @@ function sortKeys(keys: string[], order: string[]): string[] {
     });
 }
 
-const { keys: keysProp } = Astro.props;
+const { keys: keysProp, tip: kbdTip } = Astro.props;
 
 let rawSlot = "";
 if (!keysProp && Astro.slots.has("default")) {
@@ -95,35 +98,43 @@ const otherKeys = sortKeys(resolveKeys(rawKeys, KEY_SYMBOLS_OTHER), MODIFIER_ORD
 const ariaLabel = rawKeys.join(" + ");
 ---
 
-<kbd class="nu-kbd" aria-label={ariaLabel}>
-    {hasPlatformKeys ? (
-        <>
-            <span class="nu-kbd__mac">
-                {macKeys.map((key, i) => (
+{() => {
+    const kbdElement = (
+        <kbd class="nu-kbd" aria-label={ariaLabel}>
+            {hasPlatformKeys ? (
+                <>
+                    <span class="nu-kbd__mac">
+                        {macKeys.map((key, i) => (
+                            <>
+                                {i > 0 && <span class="nu-kbd__sep" aria-hidden="true">+</span>}
+                                <kbd class="nu-kbd__key">{key}</kbd>
+                            </>
+                        ))}
+                    </span>
+                    <span class="nu-kbd__other">
+                        {otherKeys.map((key, i) => (
+                            <>
+                                {i > 0 && <span class="nu-kbd__sep" aria-hidden="true">+</span>}
+                                <kbd class="nu-kbd__key">{key}</kbd>
+                            </>
+                        ))}
+                    </span>
+                </>
+            ) : (
+                macKeys.map((key, i) => (
                     <>
                         {i > 0 && <span class="nu-kbd__sep" aria-hidden="true">+</span>}
                         <kbd class="nu-kbd__key">{key}</kbd>
                     </>
-                ))}
-            </span>
-            <span class="nu-kbd__other">
-                {otherKeys.map((key, i) => (
-                    <>
-                        {i > 0 && <span class="nu-kbd__sep" aria-hidden="true">+</span>}
-                        <kbd class="nu-kbd__key">{key}</kbd>
-                    </>
-                ))}
-            </span>
-        </>
-    ) : (
-        macKeys.map((key, i) => (
-            <>
-                {i > 0 && <span class="nu-kbd__sep" aria-hidden="true">+</span>}
-                <kbd class="nu-kbd__key">{key}</kbd>
-            </>
-        ))
-    )}
-</kbd>
+                ))
+            )}
+        </kbd>
+    );
+
+    return kbdTip
+        ? <Tooltip tip={kbdTip} underline={false}>{kbdElement}</Tooltip>
+        : kbdElement;
+}}
 
 <script>
     function detectPlatform() {
