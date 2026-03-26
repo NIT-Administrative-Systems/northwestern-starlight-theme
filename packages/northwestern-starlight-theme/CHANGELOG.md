@@ -38,6 +38,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - iOS Safari toggled the URL bar when copying in the fullscreen viewer. The fallback textarea now appends inside the overlay.
 - Mouse-opening the fullscreen viewer put a focus ring on the first control. Keyboard opens focus the first button; mouse opens focus the overlay container (no visible ring, Tab still works).
 - Zoom in/out/reset buttons hidden on mobile (pinch-to-zoom covers it).
+- Mermaid user overrides dropped on client-side theme toggle. Runtime configs now include merged user config.
+- Mermaid lazy-rendered diagrams used stale theme after toggle. Observer callback now reads live theme mode.
+- Mermaid pinch-to-zoom anchored to viewport center instead of pinch midpoint.
+- Mermaid `MutationObservers` accumulated on view transitions. Previous observer now disconnected before creating a new one.
+- Mermaid render race on rapid theme toggles. Per-container version tracking discards stale async completions.
+- Mermaid fullscreen close could fire twice during animation. Added guard against double-close.
+- Mermaid `diagramSources` `Map` leaked detached DOM nodes across view transitions. Switched to `WeakMap`.
+- Tooltip event listeners duplicated on Astro view transitions. Added `WeakSet` idempotency guard.
+- Tooltip Popover API called without feature detection. Added fallback for unsupported browsers.
+- Tooltip positioning drifted on scroll. Now repositions via scroll listener while visible.
+- Sidebar active item border shifted text. All sidebar links now reserve space with a transparent left border.
+- Search modal focus ring used browser default blue. Now uses `--nu-focus-ring`.
+- Site title clipped on mobile. Added fluid font sizing with `clamp()` and ellipsis overflow.
 
 ### Changed
 
