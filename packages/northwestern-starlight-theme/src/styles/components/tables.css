@@ -1,0 +1,60 @@
+/* ==========================================================================
+   Tables — Markdown table styling with striped rows and horizontal scroll
+   ========================================================================== */
+
+@layer northwestern {
+    .nu-table-scroll {
+        overflow-x: auto;
+    }
+
+    .sl-markdown-content table:not(:where(.not-content *)) {
+        display: table;
+        width: 100%;
+        text-indent: 0;
+        border-collapse: collapse;
+        border-color: var(--nu-border-color);
+    }
+
+    .sl-markdown-content table:not(:where(.not-content *)) > thead > tr > th {
+        padding: 0.5rem 1rem;
+        font-family: var(--nu-font-heading);
+        font-weight: 600;
+        color: var(--nu-black-80);
+        text-align: left;
+        background-color: var(--nu-purple-surface);
+        border: 1px solid var(--nu-border-color);
+    }
+
+    :root:not([data-theme="light"]) .sl-markdown-content table:not(:where(.not-content *)) > thead > tr > th {
+        color: var(--nu-color-text);
+        background-color: rgb(78 42 132 / 14%);
+    }
+
+    .sl-markdown-content table:not(:where(.not-content *)) > tbody > tr > td {
+        padding: 0.5rem 1rem;
+        text-align: left;
+        border: 1px solid var(--nu-border-color);
+    }
+
+    .sl-markdown-content table:not(:where(.not-content *)) > thead > tr > th[align="right"],
+    .sl-markdown-content table:not(:where(.not-content *)) > tbody > tr > td[align="right"] {
+        text-align: right;
+    }
+
+    .sl-markdown-content table:not(:where(.not-content *)) > thead > tr > th[align="center"],
+    .sl-markdown-content table:not(:where(.not-content *)) > tbody > tr > td[align="center"] {
+        text-align: center;
+    }
+
+    .sl-markdown-content table:not(:where(.not-content *)) > tbody > tr:nth-child(even) {
+        background-color: #f3f4f6;
+    }
+
+    :root:not([data-theme="light"])
+        .sl-markdown-content
+        table:not(:where(.not-content *))
+        > tbody
+        > tr:nth-child(even) {
+        background-color: #1e1e1e;
+    }
+}
