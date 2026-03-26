@@ -10,7 +10,10 @@
         "docs:dev": "pnpm --filter docs dev",
         "docs:preview": "pnpm --filter docs preview",
         "lint:css": "stylelint \"packages/northwestern-starlight-theme/src/**/*.css\"",
-        "test:accessibility": "playwright test tests/accessibility.spec.ts"
+        "test": "playwright test",
+        "test:accessibility": "playwright test tests/accessibility.spec.ts",
+        "test:mermaid": "playwright test tests/mermaid-toolbar.spec.ts",
+        "test:theme": "playwright test tests/theme-toggle.spec.ts"
     },
     "devDependencies": {
         "@axe-core/playwright": "^4.11.1",

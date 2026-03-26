@@ -3,7 +3,7 @@
     "ignoreBinaries": ["astro"],
     "workspaces": {
         "packages/northwestern-starlight-theme": {
-            "entry": ["src/scripts/*.ts"],
+            "entry": ["src/scripts/**/*.ts"],
             "ignoreDependencies": ["astro-mermaid", "mermaid"]
         },
         "docs": {
