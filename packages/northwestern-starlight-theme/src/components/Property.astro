@@ -16,7 +16,15 @@ interface Props {
     since?: string;
 }
 
-const slugCounts = (globalThis.__nuPropertySlugs ??= new Map<string, number>());
+if (!globalThis.__nuPropertySlugs || !(globalThis.__nuPropertySlugs.counts instanceof Map)) {
+    globalThis.__nuPropertySlugs = { page: "", counts: new Map<string, number>() };
+}
+const pageSlugState = globalThis.__nuPropertySlugs as { page: string; counts: Map<string, number> };
+const currentPage = Astro.url.pathname;
+if (pageSlugState.page !== currentPage) {
+    pageSlugState.page = currentPage;
+    pageSlugState.counts.clear();
+}
 
 const { name, type, typeHref, default: defaultValue, required, deprecated, since } = Astro.props;
 const hasInlineBadges = required || since || deprecated;
@@ -25,8 +33,8 @@ const rawSlug = name
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 const baseSlug = `prop-${rawSlug || "key"}`;
-const count = (slugCounts.get(baseSlug) ?? 0) + 1;
-slugCounts.set(baseSlug, count);
+const count = (pageSlugState.counts.get(baseSlug) ?? 0) + 1;
+pageSlugState.counts.set(baseSlug, count);
 const slug = count === 1 ? baseSlug : `${baseSlug}-${count}`;
 ---
 
