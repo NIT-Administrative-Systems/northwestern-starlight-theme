@@ -9,9 +9,13 @@ interface Props {
     side?: "top" | "bottom";
     /** Render with a dotted underline indicator. */
     underline?: boolean;
+    /** Semantic color variant. */
+    variant?: "note" | "tip" | "caution" | "danger";
+    /** Custom background color. */
+    color?: string;
 }
 
-const { of: key, side, underline } = Astro.props;
+const { of: key, side, underline, variant, color } = Astro.props;
 const tip = getTerm(key);
 const hasSlot = Astro.slots.has("default");
 
@@ -20,6 +24,6 @@ if (!tip) {
 }
 ---
 
-<Tooltip tip={tip} side={side} underline={underline}>
+<Tooltip tip={tip} side={side} underline={underline} variant={variant} color={color}>
     {hasSlot ? <slot /> : key}
 </Tooltip>
