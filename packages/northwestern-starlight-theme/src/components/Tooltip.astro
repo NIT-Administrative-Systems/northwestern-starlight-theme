@@ -66,6 +66,7 @@ if (resolvedColor) {
             if (!trigger || !content) return;
 
             let isVisible = false;
+            const hasPopover = "showPopover" in content;
 
             function onScroll() {
                 if (isVisible) position();
@@ -74,7 +75,14 @@ if (resolvedColor) {
             function show() {
                 if (isVisible) return;
                 isVisible = true;
-                content!.showPopover();
+                if (hasPopover) {
+                    content!.showPopover();
+                } else {
+                    content!.style.position = "fixed";
+                    content!.style.opacity = "1";
+                    content!.style.visibility = "visible";
+                    content!.style.pointerEvents = "auto";
+                }
                 position();
                 window.addEventListener("scroll", onScroll, { passive: true });
             }
@@ -82,7 +90,13 @@ if (resolvedColor) {
             function hide() {
                 if (!isVisible) return;
                 isVisible = false;
-                content!.hidePopover();
+                if (hasPopover) {
+                    content!.hidePopover();
+                } else {
+                    content!.style.opacity = "0";
+                    content!.style.visibility = "hidden";
+                    content!.style.pointerEvents = "none";
+                }
                 window.removeEventListener("scroll", onScroll);
             }
 
