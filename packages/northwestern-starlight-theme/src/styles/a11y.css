@@ -1,0 +1,72 @@
+/* ==========================================================================
+   Accessibility — High contrast and reduced transparency overrides
+   ========================================================================== */
+
+@layer northwestern {
+    /* High contrast: heavier borders, no muted text, system color focus rings */
+    @media (prefers-contrast: more) {
+        :root,
+        ::backdrop {
+            --nu-border-color: CanvasText;
+            --nu-color-text-muted: CanvasText;
+            --nu-focus-ring: Highlight;
+            --nu-focus-border: Highlight;
+            --nu-focus-shadow-color: transparent;
+            --nu-hover-bg: Mark;
+        }
+
+        :root[data-theme="light"],
+        [data-theme="light"] ::backdrop {
+            --nu-border-color: CanvasText;
+            --nu-color-text-muted: CanvasText;
+            --nu-focus-ring: Highlight;
+        }
+
+        /* Force visible borders on elements that rely on subtle color differences */
+        .sl-markdown-content table:not(:where(.not-content *)) > thead > tr > th,
+        .sl-markdown-content table:not(:where(.not-content *)) > tbody > tr > td {
+            border-width: 2px;
+        }
+
+        .starlight-aside {
+            border-width: 2px !important;
+        }
+
+        .sl-markdown-content blockquote:not(:where(.not-content *)) {
+            border-inline-start-width: 6px;
+        }
+
+        .sl-badge {
+            border-width: 2px;
+        }
+    }
+
+    /* Reduced transparency: replace translucent surfaces with solid equivalents */
+    @media (prefers-reduced-transparency: reduce) {
+        :root,
+        ::backdrop {
+            --nu-purple-tint: var(--nu-purple-10);
+            --nu-purple-tint-strong: var(--nu-purple-20);
+            --nu-purple-surface: #f3f0f7;
+            --nu-purple-surface-subtle: #f7f5f9;
+            --nu-surface-muted: #f5f5f5;
+            --nu-hover-bg: #ebebeb;
+        }
+
+        :root:not([data-theme="light"]),
+        :root:not([data-theme="light"]) ::backdrop {
+            --nu-purple-surface: #2a2235;
+            --nu-purple-surface-subtle: #231d2e;
+            --nu-surface-muted: #262626;
+            --nu-hover-bg: #333;
+        }
+
+        .sl-markdown-content blockquote:not(:where(.not-content *)) {
+            background: var(--nu-purple-surface);
+        }
+
+        :root:not([data-theme="light"]) .sl-markdown-content blockquote:not(:where(.not-content *)) {
+            background: var(--nu-purple-surface);
+        }
+    }
+}

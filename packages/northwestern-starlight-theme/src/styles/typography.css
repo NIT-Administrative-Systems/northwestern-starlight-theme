@@ -165,6 +165,10 @@
     }
 
     .site-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
         font-family: var(--nu-font-heading);
+        font-size: clamp(1rem, 3.5vw, 1.125rem);
+        white-space: nowrap;
     }
 }
