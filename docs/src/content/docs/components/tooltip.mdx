@@ -8,7 +8,7 @@ sidebar:
 import { Tooltip, Glossary, Term, PropertyTable, Property } from "@nu-appdev/northwestern-starlight-theme/components";
 import Demo from "../../../components/Demo.astro";
 
-Attach definitions to acronyms and technical terms. Hover or focus a trigger to see the definition in a floating popup. Use `<Tooltip>` for one-off definitions, or `<Glossary>` + `<Term>` to define terms once and reference them by key.
+Adds hover definitions to acronyms and technical terms. Hovering or focusing a trigger shows the definition in a floating popup. `<Tooltip>` handles one-off definitions. `<Glossary>` + `<Term>` let you define a term once and reference it by key.
 
 ## Import
 
@@ -108,7 +108,7 @@ Use the `tip` named slot for HTML/MDX content instead of the `tip` string prop. 
 </Tooltip>
 ```
 
-The `tip` string prop still works for plain text. Use the slot when you need links, code, emphasis, or multi-line content.
+The `tip` string prop still works for plain text. The slot supports links, code, emphasis, and multi-line content.
 
 ## Variants
 
