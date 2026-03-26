@@ -255,4 +255,11 @@
     .sidebar-content a[href="/changelog/"]:hover span {
         opacity: 1;
     }
+
+    dialog button:focus-visible,
+    dialog input:focus-visible,
+    dialog a:focus-visible {
+        outline: 2px solid var(--nu-focus-ring) !important;
+        outline-offset: 2px;
+    }
 }
