@@ -66,15 +66,23 @@ if (resolvedColor) {
             if (!trigger || !content) return;
 
             let isVisible = false;
+            let openY = 0;
             const hasPopover = "showPopover" in content;
 
             function onScroll() {
-                if (isVisible) position();
+                if (!isVisible) return;
+                const rect = trigger!.getBoundingClientRect();
+                if (rect.bottom < 0 || rect.top > window.innerHeight || Math.abs(rect.top - openY) > 50) {
+                    hide();
+                    return;
+                }
+                position();
             }
 
             function show() {
                 if (isVisible) return;
                 isVisible = true;
+                openY = trigger!.getBoundingClientRect().top;
                 if (hasPopover) {
                     content!.showPopover();
                 } else {
