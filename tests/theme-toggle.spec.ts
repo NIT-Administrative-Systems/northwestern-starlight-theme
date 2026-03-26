@@ -24,7 +24,7 @@ test.describe("theme toggle", () => {
     });
 
     test("persists theme across navigation", async ({ browser }) => {
-        const context = await browser.newContext({ colorScheme: "light" });
+        const context = await browser.newContext({ colorScheme: "light", baseURL: "http://127.0.0.1:4321" });
         const page = await context.newPage();
 
         await page.goto("/", { waitUntil: "networkidle" });
