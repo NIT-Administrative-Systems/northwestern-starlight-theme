@@ -2,14 +2,41 @@ import type { AstroIntegration } from "astro";
 import mermaid, { type AstroMermaidOptions } from "astro-mermaid";
 import { darken, isDark, lighten, mix, transparentize } from "khroma";
 
+/**
+ * Configuration options for the Northwestern Mermaid integration.
+ *
+ * Extends `astro-mermaid` options with a `toolbar` toggle that controls
+ * the hover toolbar (fullscreen, download, copy) on rendered diagrams.
+ *
+ * @see {@link northwesternMermaid} for the integration factory
+ */
 export interface NorthwesternMermaidOptions extends AstroMermaidOptions {
+    /**
+     * Show the hover toolbar (fullscreen, download SVG, copy source) on diagrams.
+     *
+     * @default true
+     */
     toolbar?: boolean;
 }
 
+/**
+ * Theme mode for Mermaid color palette generation.
+ *
+ * Maps to the `data-theme` attribute on `<html>`: `"light"` for the default
+ * palette, `"dark"` for the inverted palette with lighter primary colors
+ * and darker canvas backgrounds.
+ */
 export type NorthwesternMermaidMode = "light" | "dark";
 
+/** Flat key-value map passed to Mermaid's `themeVariables`. */
 type ThemeVariables = Record<string, unknown>;
 
+/**
+ * Resolved brand palette for a single theme mode.
+ *
+ * All values are hex strings. Derived from Northwestern's brand primaries
+ * with light/dark adjustments via `khroma`.
+ */
 type BrandPalette = {
     purple: string;
     blue: string;
@@ -30,6 +57,15 @@ type BrandPalette = {
 };
 
 const chartPalette = ["#4e2a84", "#836eaa", "#5091cd", "#008656", "#ffc520", "#ef553f", "#7fcecd", "#d85820"];
+
+/** Generate `{ prefix0: fn(0), prefix1: fn(1), ... }` from an array. */
+function indexedVars(prefix: string, values: string[], startAt = 0): ThemeVariables {
+    const out: ThemeVariables = {};
+    for (let i = 0; i < values.length; i++) {
+        out[`${prefix}${i + startAt}`] = values[i];
+    }
+    return out;
+}
 
 function onColor(color: string, darkText = "#342f2e", lightText = "#fff") {
     return isDark(color) ? lightText : darkText;
@@ -216,32 +252,16 @@ function createThemeVariables(mode: NorthwesternMermaidMode): ThemeVariables {
         altSectionBkgColor: rowEven,
         sectionBkgColor2: compositeAltBackground,
 
-        git0: chartPalette[0],
-        git1: chartPalette[1],
-        git2: chartPalette[2],
-        git3: chartPalette[3],
-        git4: chartPalette[4],
-        git5: chartPalette[5],
-        git6: chartPalette[6],
-        git7: chartPalette[7],
-        gitBranchLabel0: onColor(chartPalette[0]),
-        gitBranchLabel1: onColor(chartPalette[1]),
-        gitBranchLabel2: onColor(chartPalette[2]),
-        gitBranchLabel3: onColor(chartPalette[3]),
-        gitBranchLabel4: onColor(chartPalette[4]),
-        gitBranchLabel5: onColor(chartPalette[5]),
-        gitBranchLabel6: onColor(chartPalette[6]),
-        gitBranchLabel7: onColor(chartPalette[7]),
+        // Git graph — one color per branch from the chart palette
+        ...indexedVars("git", chartPalette),
+        ...indexedVars(
+            "gitBranchLabel",
+            chartPalette.map((c) => onColor(c)),
+        ),
         gitInv0: palette.white,
 
-        pie1: chartPalette[0],
-        pie2: chartPalette[1],
-        pie3: chartPalette[2],
-        pie4: chartPalette[3],
-        pie5: chartPalette[4],
-        pie6: chartPalette[5],
-        pie7: chartPalette[6],
-        pie8: chartPalette[7],
+        // Pie chart — 8 base slices + 4 extended with tint shift
+        ...indexedVars("pie", chartPalette, 1),
         pie9: dark ? lighten(chartPalette[0], 16) : darken(chartPalette[0], 10),
         pie10: dark ? lighten(chartPalette[2], 16) : darken(chartPalette[2], 10),
         pie11: dark ? lighten(chartPalette[3], 16) : darken(chartPalette[3], 10),
@@ -255,35 +275,64 @@ function createThemeVariables(mode: NorthwesternMermaidMode): ThemeVariables {
         pieLegendTextSize: "14px",
         pieStrokeWidth: "2px",
         pieOuterStrokeWidth: "1px",
-        pieOuterStrokeColor: dark ? palette.border : palette.border,
+        pieOuterStrokeColor: palette.border,
         pieOpacity: "0.85",
 
-        cScale0: dark ? mix(primary, palette.canvas, 40) : primary,
-        cScale1: dark ? mix(palette.blue, palette.canvas, 40) : palette.blue,
-        cScale2: dark ? mix(palette.green, palette.canvas, 40) : palette.green,
-        cScale3: dark ? mix(palette.orange, palette.canvas, 35) : palette.orange,
-        cScale4: dark ? mix(palette.teal, palette.canvas, 35) : darken(palette.teal, 15),
-        cScale5: dark ? mix(palette.yellow, palette.canvas, 30) : darken(palette.yellow, 20),
-        cScale6: dark ? mix(palette.red, palette.canvas, 35) : palette.red,
-        cScale7: dark ? mix(primary, palette.canvas, 30) : lighten(primary, 10),
+        // C4/journey scale — each color mixed toward canvas in dark mode
+        ...(() => {
+            const colors = [
+                primary,
+                palette.blue,
+                palette.green,
+                palette.orange,
+                palette.teal,
+                palette.yellow,
+                palette.red,
+                primary,
+            ];
+            const darkMix = [40, 40, 40, 35, 35, 30, 35, 30];
+            const lightFallback = [
+                primary,
+                palette.blue,
+                palette.green,
+                palette.orange,
+                darken(palette.teal, 15),
+                darken(palette.yellow, 20),
+                palette.red,
+                lighten(primary, 10),
+            ];
+            return indexedVars(
+                "cScale",
+                colors.map((c, i) => (dark ? mix(c, palette.canvas, darkMix[i]) : lightFallback[i])),
+            );
+        })(),
+        ...indexedVars("cScaleLabel", [
+            palette.white,
+            palette.white,
+            palette.white,
+            palette.white,
+            dark ? palette.white : palette.black,
+            palette.black,
+            palette.white,
+            palette.white,
+        ]),
 
-        cScaleLabel0: palette.white,
-        cScaleLabel1: palette.white,
-        cScaleLabel2: palette.white,
-        cScaleLabel3: palette.white,
-        cScaleLabel4: dark ? palette.white : palette.black,
-        cScaleLabel5: palette.black,
-        cScaleLabel6: palette.white,
-        cScaleLabel7: palette.white,
-
-        quadrant1Fill: dark ? mix(primary, palette.canvas, 35) : mix(primary, palette.white, 25),
-        quadrant2Fill: dark ? mix(primary, palette.canvas, 28) : mix(primary, palette.white, 18),
-        quadrant3Fill: dark ? mix(primary, palette.canvas, 22) : mix(primary, palette.white, 12),
-        quadrant4Fill: dark ? mix(primary, palette.canvas, 15) : mix(primary, palette.white, 8),
-        quadrant1TextFill: onColor(dark ? mix(primary, palette.canvas, 35) : mix(primary, palette.white, 25)),
-        quadrant2TextFill: onColor(dark ? mix(primary, palette.canvas, 28) : mix(primary, palette.white, 18)),
-        quadrant3TextFill: onColor(dark ? mix(primary, palette.canvas, 22) : mix(primary, palette.white, 12)),
-        quadrant4TextFill: onColor(dark ? mix(primary, palette.canvas, 15) : mix(primary, palette.white, 8)),
+        // Quadrant chart — progressive primary tints
+        ...(() => {
+            const darkRatios = [35, 28, 22, 15];
+            const lightRatios = [25, 18, 12, 8];
+            const fills = darkRatios.map((dr, i) =>
+                dark ? mix(primary, palette.canvas, dr) : mix(primary, palette.white, lightRatios[i]),
+            );
+            return {
+                ...indexedVars("quadrantFill", fills, 1),
+                ...indexedVars(
+                    "quadrantTextFill",
+                    fills.map((f) => onColor(f)),
+                    1,
+                ),
+            };
+        })(),
         quadrantPointFill: primary,
         quadrantPointTextFill: dark ? palette.white : palette.black,
         quadrantXAxisTextFill: palette.text,
@@ -305,6 +354,25 @@ function createThemeVariables(mode: NorthwesternMermaidMode): ThemeVariables {
     };
 }
 
+/**
+ * Generate a complete `astro-mermaid` config with Northwestern-branded colors
+ * for the given theme mode.
+ *
+ * Builds a Mermaid `themeVariables` object from the Northwestern brand palette,
+ * deriving all node, edge, label, chart, and diagram-specific colors from a
+ * small set of brand primaries via `khroma` color manipulation.
+ *
+ * @param mode - `"light"` or `"dark"`. Controls canvas, text, and primary color values.
+ * @returns A complete `AstroMermaidOptions` object ready to pass to `astro-mermaid`.
+ *
+ * @example
+ * ```ts
+ * import { createNorthwesternMermaidConfig } from "@nu-appdev/northwestern-starlight-theme/mermaid";
+ *
+ * const darkConfig = createNorthwesternMermaidConfig("dark");
+ * // darkConfig.mermaidConfig.themeVariables contains all colors
+ * ```
+ */
 export function createNorthwesternMermaidConfig(mode: NorthwesternMermaidMode): AstroMermaidOptions {
     const palette = createPalette(mode);
     return {
@@ -327,15 +395,53 @@ export function createNorthwesternMermaidConfig(mode: NorthwesternMermaidMode): 
 }
 
 /**
- * Northwestern-branded Mermaid configuration.
+ * Pre-built light-mode Mermaid config with Northwestern brand colors.
  *
- * The theme is derived from a small brand palette per mode instead of a large
- * hand-authored variable table. Mermaid renders with a dedicated light or dark
- * config, while CSS remains limited to structural SVG tweaks.
+ * Used as the default when Mermaid is auto-detected. Override individual
+ * `themeVariables` by passing a `mermaid` object to {@link northwesternTheme}
+ * in `index.ts`, or use {@link createNorthwesternMermaidConfig} for full control.
  */
 export const defaultMermaidConfig: AstroMermaidOptions = createNorthwesternMermaidConfig("light");
+
+/**
+ * Pre-built dark-mode Mermaid config with Northwestern brand colors.
+ *
+ * Applied at runtime when the user switches to dark mode. The toolbar script
+ * re-renders diagrams with this config via `window.__NU_MERMAID_CONFIGS__.dark`.
+ */
 export const darkMermaidConfig: AstroMermaidOptions = createNorthwesternMermaidConfig("dark");
 
+/**
+ * Create an Astro integration that registers Northwestern-branded Mermaid diagrams.
+ *
+ * Wraps `astro-mermaid` with Northwestern color palettes for both light and dark
+ * modes, and injects the toolbar script (fullscreen viewer, download, copy).
+ *
+ * **Must be added before `starlight()` in the `integrations` array.** The
+ * `astro-mermaid` remark plugin needs to register before Starlight's rehype
+ * processing, and Astro processes integrations in order. Placing it after
+ * `starlight()` causes Mermaid code blocks to be treated as plain code.
+ *
+ * @param options - Merged with Northwestern defaults. Set `toolbar: false` to
+ *   disable the hover toolbar.
+ * @returns An Astro integration to add to `integrations` in your Astro config.
+ *
+ * @example
+ * ```ts
+ * import { northwesternMermaid } from "@nu-appdev/northwestern-starlight-theme/mermaid";
+ * import northwesternTheme from "@nu-appdev/northwestern-starlight-theme";
+ *
+ * export default defineConfig({
+ *     integrations: [
+ *         northwesternMermaid(), // Must come before starlight()
+ *         starlight({
+ *             plugins: [northwesternTheme()],
+ *             title: "My Docs",
+ *         }),
+ *     ],
+ * });
+ * ```
+ */
 export function northwesternMermaid(options: NorthwesternMermaidOptions = {}): AstroIntegration {
     const { toolbar = true, ...overrides } = options;
     const lightConfig = createNorthwesternMermaidConfig("light");
@@ -368,7 +474,7 @@ export function northwesternMermaid(options: NorthwesternMermaidOptions = {}): A
                             light: lightConfig.mermaidConfig,
                             dark: darkConfig.mermaidConfig,
                         },
-                    )}; import "@nu-appdev/northwestern-starlight-theme/src/scripts/mermaid-toolbar.ts";`,
+                    )}; import "@nu-appdev/northwestern-starlight-theme/src/scripts/mermaid/toolbar.ts";`,
                 );
             },
         },
