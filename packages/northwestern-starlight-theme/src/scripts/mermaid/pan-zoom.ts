@@ -226,7 +226,7 @@ export function createPanZoomController(
             const midY = (event.touches[0].clientY + event.touches[1].clientY) / 2;
 
             if (pinchDistance > 0) {
-                zoomTo(scale * (distance / pinchDistance));
+                zoomTowardPoint(midX, midY, scale * (distance / pinchDistance));
                 panX += midX - touchCenterX;
                 panY += midY - touchCenterY;
                 applyTransform();
