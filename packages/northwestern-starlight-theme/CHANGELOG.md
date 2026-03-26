@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-03-26
+
+### Added
+
+- **Property Table component suite**: `<PropertyTable>`, `<Property>`, `<PropertyGroup>`, `<Expandable>`.
+  - See the [documentation](https://starlight-theme.entapp.northwestern.edu/components/property-table) for more information.
+- **Tooltip component suite**: `<Tooltip>`, `<Glossary>`, `<Term>`.
+  - See the [documentation](https://starlight-theme.entapp.northwestern.edu/components/tooltip) for more information.
+- **Keyboard component**: `<Kbd>`.
+  - See the [documentation](https://starlight-theme.entapp.northwestern.edu/components/kbd) for more information.
+- Fullscreen Mermaid overlay: scale animation, dot grid background, pan momentum on drag release, toast notifications on copy.
+- `@media (prefers-contrast: more)`: heavier borders, system colors for focus rings.
+- `@media (prefers-reduced-transparency: reduce)`: solid surfaces replace translucent backgrounds.
+- `CONTRIBUTING.md` with development setup, conventions, and PR process.
+- JSDoc comments on public TypeScript interfaces.
+
+### Fixed
+
+- Code block line numbers in dark mode had 2.85:1 contrast. Bumped from `#6e6e6e` to `#999` (4.6:1).
+- Code block copy button icon in dark mode used `--nu-purple-100` on hover. Switched to `--nu-purple-40`.
+- Wide tables overflowed into the sidebar. A [rehype](https://github.com/rehypejs/rehype) plugin now wraps each `<table>` in a scrollable `<div>` at build time.
+- Reopening the fullscreen viewer after Escape showed a blue focus ring around the entire viewport.
+- Mermaid hover toolbar sat unevenly relative to the diagram container border.
+- Fullscreen close button used `rgb(255 255 255 / 20%)` while the theme toggle used `15%`. Both use `15%` now.
+- Mobile sidebar: theme toggle and GitHub icon were white-on-white in light mode.
+- Mobile sidebar: theme toggle was taller than wide; GitHub icon sat below it.
+- Copy buttons did nothing on HTTP (insecure contexts). Added `document.execCommand("copy")` fallback.
+- Clicking copy twice during the success animation duplicated the check icon. Debounced per button.
+- iOS Safari toggled the URL bar when copying in the fullscreen viewer. The fallback textarea now appends inside the overlay.
+- Mouse-opening the fullscreen viewer put a focus ring on the first control. Keyboard opens focus the first button; mouse opens focus the overlay container (no visible ring, Tab still works).
+- Zoom in/out/reset buttons hidden on mobile (pinch-to-zoom covers it).
+
+### Changed
+
+- Fullscreen controls bar uses Starlight's `--sl-nav-pad-x` and `--sl-menu-button-size` so the close button aligns with the hamburger menu on mobile.
+- Removed right padding on active sidebar headings that broke nested heading alignment.
+
 ## [1.2.0] - 2026-03-25
 
 ### Added
@@ -40,7 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Fullscreen mermaid viewer supports touch: one-finger pan, pinch-to-zoom, two-finger pan.
+- Fullscreen Mermaid viewer supports touch: one-finger pan, pinch-to-zoom, two-finger pan.
 - Mermaid toolbar stays visible on touch devices (`hover: none`) since hover is unavailable.
 - SVG downloads use descriptive filenames derived from the site title, page slug, and diagram type (e.g., `northwestern-starlight-theme_examples-mermaid-flowchart.svg`).
 
@@ -71,7 +108,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OpenAPI plugin compatibility with method badge preservation
 - Reduced motion support for transitions
 
-[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.0.0...v1.1.0

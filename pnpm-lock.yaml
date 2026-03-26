@@ -83,6 +83,10 @@ importers:
       mermaid:
         specifier: '>=11.0.0'
         version: 11.13.0
+    devDependencies:
+      '@types/hast':
+        specifier: ^3.0.4
+        version: 3.0.4
 
 packages:
 
