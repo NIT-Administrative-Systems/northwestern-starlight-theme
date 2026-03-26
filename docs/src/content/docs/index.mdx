@@ -192,8 +192,12 @@ export default defineConfig({
     .nu-feature-icon {
         width: 20px;
         height: 20px;
+        padding: 6px;
         flex-shrink: 0;
         color: var(--nu-purple-100);
+        background: var(--nu-purple-surface);
+        border-radius: 8px;
+        box-sizing: content-box;
         transition: transform var(--nu-transition-default), color var(--nu-transition-default);
     }
 
@@ -204,6 +208,7 @@ export default defineConfig({
 
     :root:not([data-theme="light"]) .nu-feature-icon {
         color: var(--nu-purple-40);
+        background: rgb(255 255 255 / 6%);
     }
 
     .nu-home-feature h3 {
@@ -226,7 +231,7 @@ export default defineConfig({
         grid-template-columns: 1fr 1.6fr;
         gap: 2rem;
         align-items: start;
-        padding: 2rem;
+        padding: 2.5rem;
         border: 1px solid var(--nu-border-color);
         background:
             linear-gradient(135deg, var(--nu-purple-surface-subtle) 0%, transparent 60%),
@@ -238,6 +243,12 @@ export default defineConfig({
 
     .nu-home-config-text {
         padding-top: 0.5rem;
+        padding-left: 1rem;
+        border-left: 3px solid var(--nu-purple-100);
+    }
+
+    :root:not([data-theme="light"]) .nu-home-config-text {
+        border-left-color: var(--nu-purple-60);
     }
 
     .nu-home-config-text p:not(.nu-home-eyebrow) {
