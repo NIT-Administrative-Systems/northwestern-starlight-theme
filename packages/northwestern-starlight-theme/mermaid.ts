@@ -447,18 +447,28 @@ export function northwesternMermaid(options: NorthwesternMermaidOptions = {}): A
     const lightConfig = createNorthwesternMermaidConfig("light");
     const darkConfig = createNorthwesternMermaidConfig("dark");
 
+    const userMermaidConfig = overrides.mermaidConfig ?? {};
+    const userThemeVars = (userMermaidConfig as Record<string, unknown>)?.themeVariables ?? {};
+
+    function mergeWithOverrides(base: Record<string, unknown>): Record<string, unknown> {
+        return {
+            ...base,
+            ...userMermaidConfig,
+            themeVariables: {
+                ...(base.themeVariables ?? {}),
+                ...userThemeVars,
+            },
+        };
+    }
+
+    const mergedLightMermaidConfig = mergeWithOverrides(lightConfig.mermaidConfig as Record<string, unknown>);
+    const mergedDarkMermaidConfig = mergeWithOverrides(darkConfig.mermaidConfig as Record<string, unknown>);
+
     const mermaidIntegration = mermaid({
         ...lightConfig,
         ...overrides,
         enableLog: false,
-        mermaidConfig: {
-            ...(lightConfig.mermaidConfig ?? {}),
-            ...(overrides.mermaidConfig ?? {}),
-            themeVariables: {
-                ...((lightConfig.mermaidConfig as Record<string, unknown>)?.themeVariables ?? {}),
-                ...((overrides.mermaidConfig as Record<string, unknown>)?.themeVariables ?? {}),
-            },
-        },
+        mermaidConfig: mergedLightMermaidConfig,
     });
 
     return {
@@ -471,8 +481,8 @@ export function northwesternMermaid(options: NorthwesternMermaidOptions = {}): A
                     "page",
                     `window.__NU_MERMAID_TOOLBAR__ = ${toolbar ? "true" : "false"}; window.__NU_MERMAID_CONFIGS__ = ${JSON.stringify(
                         {
-                            light: lightConfig.mermaidConfig,
-                            dark: darkConfig.mermaidConfig,
+                            light: mergedLightMermaidConfig,
+                            dark: mergedDarkMermaidConfig,
                         },
                     )}; import "@nu-appdev/northwestern-starlight-theme/src/scripts/mermaid/toolbar.ts";`,
                 );
