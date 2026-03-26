@@ -2,11 +2,12 @@ import { defineConfig, devices } from "@playwright/test";
 
 const port = 4321;
 const baseURL = `http://127.0.0.1:${port}`;
+const isCI = !!process.env.CI;
 
 export default defineConfig({
     testDir: "./tests",
     fullyParallel: true,
-    reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : [["list"], ["html", { open: "never" }]],
+    reporter: isCI ? [["github"], ["html", { open: "never" }]] : [["list"], ["html", { open: "never" }]],
     snapshotPathTemplate: "{testDir}/{testFilePath}-snapshots/{arg}{ext}",
     use: {
         baseURL,
@@ -28,9 +29,11 @@ export default defineConfig({
         },
     ],
     webServer: {
-        command: `pnpm --dir docs astro dev --host 127.0.0.1 --port ${port}`,
+        command: isCI
+            ? `pnpm --dir docs astro preview --host 127.0.0.1 --port ${port}`
+            : `pnpm --dir docs astro dev --host 127.0.0.1 --port ${port}`,
         url: baseURL,
-        reuseExistingServer: !process.env.CI,
+        reuseExistingServer: !isCI,
         stdout: "pipe",
         stderr: "pipe",
         timeout: 120000,
