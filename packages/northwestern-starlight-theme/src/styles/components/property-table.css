@@ -280,7 +280,8 @@
         background-color: rgb(255 255 255 / 6%);
     }
 
-    .nu-property-table--show-optional .nu-property:not(.nu-property--required, .nu-property--deprecated)
+    .nu-property-table--show-optional
+        .nu-property:not(.nu-property--required, .nu-property--deprecated)
         .nu-property__prop-col::after {
         display: inline-flex;
         align-items: center;
