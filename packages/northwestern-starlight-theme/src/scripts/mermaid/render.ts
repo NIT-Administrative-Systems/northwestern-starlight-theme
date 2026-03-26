@@ -14,7 +14,7 @@ const DIAGRAM_SELECTOR = "pre.mermaid:not(.nu-mermaid-fullscreen)";
 const PRERENDER_MARGIN = "200px";
 
 /** Registry mapping diagram containers to their raw Mermaid source text. */
-export const diagramSources = new Map<Element, string>();
+export const diagramSources = new WeakMap<Element, string>();
 
 /** Tracks which theme each diagram was last rendered with to avoid redundant re-renders. */
 const renderedThemes = new WeakMap<HTMLElement, ThemeMode>();

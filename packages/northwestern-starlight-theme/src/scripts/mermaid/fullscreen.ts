@@ -99,7 +99,10 @@ export function openFullscreen(
         openedViaKeyboard,
     });
 
+    let closed = false;
     function closeOverlay(): void {
+        if (closed) return;
+        closed = true;
         panZoom.destroy();
 
         overlay.style.opacity = "0";
