@@ -164,6 +164,11 @@ export default defineConfig({
         transform: translateY(-2px);
     }
 
+    .nu-home-feature:focus-within {
+        outline: 2px solid var(--nu-focus-ring);
+        outline-offset: 2px;
+    }
+
     @media (prefers-reduced-motion: reduce) {
         .nu-home-feature,
         .nu-home-config {
@@ -256,10 +261,10 @@ export default defineConfig({
     }
 
     .nu-home-eyebrow {
-        margin: 0 0 0.5rem;
+        margin: 0 0 0.75rem;
         font-size: var(--sl-text-xs);
         font-weight: 700;
-        letter-spacing: 0.08em;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
         color: var(--nu-color-link);
     }
@@ -290,13 +295,23 @@ export default defineConfig({
 
         .nu-home-config {
             grid-template-columns: 1fr;
-            padding: 1.5rem;
+            padding: 1.25rem;
+            gap: 1.25rem;
+        }
+
+        .nu-home-feature {
+            padding: 1.25rem;
         }
     }
 
     @media (max-width: 30rem) {
+        .nu-home {
+            gap: 2.25rem;
+        }
+
         .nu-home-features {
             grid-template-columns: 1fr;
+            gap: 0.9rem;
         }
 
         .nu-home-install {
