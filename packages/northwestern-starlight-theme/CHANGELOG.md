@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Tooltips on mobile rendered outside the viewport near screen edges. Horizontal position now clamps with 8px padding; arrow shifts to track the trigger.
+- Tooltips stayed visible while scrolling on touch devices. Dismisses when the trigger moves 50px from its open position or leaves the viewport.
+- Tapping a tooltip after scroll-dismiss had no effect. Trigger now blurs on scroll-dismiss so the next tap re-focuses.
+- Tooltips near the top of the page overlapped Starlight's fixed header and "On this page" dropdown. Flips to bottom when space above is insufficient (100px header safe zone).
+
 ## [1.3.0] - 2026-03-26
 
 ### Added

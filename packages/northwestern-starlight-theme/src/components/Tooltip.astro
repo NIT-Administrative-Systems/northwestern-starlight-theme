@@ -66,15 +66,25 @@ if (resolvedColor) {
             if (!trigger || !content) return;
 
             let isVisible = false;
+            let openY = 0;
             const hasPopover = "showPopover" in content;
+            const preferredSide = wrapper.classList.contains("nu-tooltip--bottom") ? "bottom" : "top";
 
             function onScroll() {
-                if (isVisible) position();
+                if (!isVisible) return;
+                const rect = trigger!.getBoundingClientRect();
+                if (rect.bottom < 0 || rect.top > window.innerHeight || Math.abs(rect.top - openY) > 50) {
+                    trigger!.blur();
+                    hide();
+                    return;
+                }
+                position();
             }
 
             function show() {
                 if (isVisible) return;
                 isVisible = true;
+                openY = trigger!.getBoundingClientRect().top;
                 if (hasPopover) {
                     content!.showPopover();
                 } else {
@@ -102,17 +112,52 @@ if (resolvedColor) {
 
             function position() {
                 const rect = trigger!.getBoundingClientRect();
-                const side = wrapper.classList.contains("nu-tooltip--bottom") ? "bottom" : "top";
+                const preferred = preferredSide;
                 const gap = 8;
+                const pad = 8;
+                const vw = document.documentElement.clientWidth;
 
-                content!.style.left = `${rect.left + rect.width / 2}px`;
+                // Measure tooltip height to decide if we need to flip
+                content!.style.transform = "";
+                content!.style.left = "0";
+                content!.style.top = "0";
+                const tipHeight = content!.offsetHeight;
+                const tipWidth = content!.offsetWidth;
 
-                if (side === "top") {
-                    content!.style.top = `${rect.top - gap}px`;
-                    content!.style.transform = "translate(-50%, -100%)";
-                } else {
-                    content!.style.top = `${rect.bottom + gap}px`;
-                    content!.style.transform = "translate(-50%, 0)";
+                // Reserve space for fixed header + mobile TOC (~100px)
+                const headerZone = 100;
+
+                // Auto-flip: if preferred side would overflow, use the other
+                const spaceAbove = rect.top - headerZone - gap;
+                const spaceBelow = window.innerHeight - rect.bottom - gap;
+                let side = preferred;
+                if (preferred === "top" && spaceAbove < tipHeight + pad && spaceBelow > spaceAbove) {
+                    side = "bottom";
+                } else if (preferred === "bottom" && spaceBelow < tipHeight + pad && spaceAbove > spaceBelow) {
+                    side = "top";
+                }
+
+                // Update wrapper class so CSS arrow borders match
+                wrapper.classList.toggle("nu-tooltip--top", side === "top");
+                wrapper.classList.toggle("nu-tooltip--bottom", side === "bottom");
+
+                content!.style.top = side === "top"
+                    ? `${rect.top - gap}px`
+                    : `${rect.bottom + gap}px`;
+
+                let left = rect.left + rect.width / 2 - tipWidth / 2;
+                left = Math.max(pad, Math.min(left, vw - tipWidth - pad));
+
+                content!.style.left = `${left}px`;
+                content!.style.transform = side === "top" ? "translateY(-100%)" : "";
+
+                // Shift arrow to stay centered on trigger and flip its direction
+                const arrow = content!.querySelector<HTMLElement>(".nu-tooltip__arrow");
+                if (arrow) {
+                    const tipCenter = left + tipWidth / 2;
+                    const triggerCenter = rect.left + rect.width / 2;
+                    const offset = triggerCenter - tipCenter;
+                    arrow.style.left = `calc(50% + ${offset}px)`;
                 }
             }
 
