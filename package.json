@@ -19,7 +19,7 @@
         "@axe-core/playwright": "^4.11.1",
         "@biomejs/biome": "^2.4.9",
         "@playwright/test": "^1.58.2",
-        "knip": "^6.0.5",
+        "knip": "^6.0.6",
         "playwright": "^1.58.2",
         "stylelint": "^16.0.0",
         "stylelint-config-recess-order": "^7.7.0",
