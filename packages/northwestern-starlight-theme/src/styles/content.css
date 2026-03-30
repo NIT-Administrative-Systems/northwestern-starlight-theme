@@ -39,7 +39,7 @@
         width: 6px;
         height: 6px;
         content: "";
-        background: var(--nu-purple-40);
+        background: var(--nu-purple-100);
     }
 
     :root:not([data-theme="light"]) .sl-markdown-content ul:not(:where(.not-content *)) > li::before {
@@ -56,10 +56,16 @@
         border-color: var(--nu-purple-30);
     }
 
+    .sl-markdown-content mark:not(:where(.not-content *)),
+    .sl-markdown-content .highlight:not(:where(.not-content *)) {
+        padding: 3px;
+        background: rgb(228 224 238 / 50%);
+    }
+
     .sl-markdown-content hr:not(:where(.not-content *)) {
-        height: 1px;
+        height: 3px;
         margin: 2.5rem 0;
-        background: var(--nu-border-color);
+        background: var(--nu-purple-10);
         border: 0;
     }
 

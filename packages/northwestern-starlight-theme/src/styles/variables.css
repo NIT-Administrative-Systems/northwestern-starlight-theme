@@ -55,12 +55,12 @@
         --nu-transition-default: 200ms ease;
         --nu-transition-slow: 300ms ease-in-out;
 
-        --nu-purple-surface: #f3f0f7;
-        --nu-purple-surface-subtle: #f7f5f9;
+        --nu-purple-surface: #f9f6ff;
+        --nu-purple-surface-subtle: #f3f0f7;
         --nu-purple-tint: rgb(78 42 132 / 15%);
         --nu-purple-tint-strong: rgb(78 42 132 / 20%);
         --nu-surface-muted: #f9fafb;
-        --nu-hover-bg: #f3f4f6;
+        --nu-hover-bg: #f0f0f0;
 
         --nu-focus-ring: var(--nu-purple-100);
         --nu-focus-border: #a795c2;
@@ -90,10 +90,10 @@
         --nu-focus-ring: var(--nu-purple-100);
         --nu-focus-shadow-color: rgb(78 42 132 / 25%);
 
-        --nu-purple-surface: #f3f0f7;
-        --nu-purple-surface-subtle: #f7f5f9;
+        --nu-purple-surface: #f9f6ff;
+        --nu-purple-surface-subtle: #f3f0f7;
         --nu-surface-muted: #f9fafb;
-        --nu-hover-bg: #f3f4f6;
+        --nu-hover-bg: #f0f0f0;
     }
 
     :root:not([data-theme="light"]),
