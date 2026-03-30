@@ -56,11 +56,11 @@
         background-color: #f0f0f0;
     }
 
-    :root:not([data-theme="light"])
-        .sl-markdown-content
-        table:not(:where(.not-content *))
-        > tbody
-        > tr:nth-child(even) {
-        background-color: #1e1e1e;
+    :root:not([data-theme="light"]) .sl-markdown-content table:not(:where(.not-content *)) > tbody > tr:nth-child(odd) {
+        background-color: rgb(78 42 132 / 10%);
+    }
+
+    :root:not([data-theme="light"]) .sl-markdown-content table:not(:where(.not-content *)) > tbody > tr:hover {
+        background-color: rgb(255 255 255 / 5%);
     }
 }
