@@ -16,18 +16,20 @@
     }
 
     .sl-markdown-content table:not(:where(.not-content *)) > thead > tr > th {
-        padding: 0.5rem 1rem;
-        font-family: var(--nu-font-heading);
-        font-weight: 600;
-        color: var(--nu-black-80);
+        padding: 0.75rem 0.5rem;
+        font-family: var(--nu-font-body);
+        font-size: 1rem;
+        font-weight: 700;
+        color: #fff;
         text-align: left;
-        background-color: var(--nu-purple-surface);
+        background-color: var(--nu-purple-100);
         border: 1px solid var(--nu-border-color);
+        border-right: 1px solid rgb(255 255 255 / 30%);
+        border-left: 1px solid rgb(255 255 255 / 30%);
     }
 
     :root:not([data-theme="light"]) .sl-markdown-content table:not(:where(.not-content *)) > thead > tr > th {
-        color: var(--nu-color-text);
-        background-color: rgb(78 42 132 / 14%);
+        background-color: rgb(78 42 132 / 40%);
     }
 
     .sl-markdown-content table:not(:where(.not-content *)) > tbody > tr > td {
@@ -46,15 +48,19 @@
         text-align: center;
     }
 
-    .sl-markdown-content table:not(:where(.not-content *)) > tbody > tr:nth-child(even) {
-        background-color: #f3f4f6;
+    .sl-markdown-content table:not(:where(.not-content *)) > tbody > tr:nth-child(odd) {
+        background-color: #f9f6ff;
     }
 
-    :root:not([data-theme="light"])
-        .sl-markdown-content
-        table:not(:where(.not-content *))
-        > tbody
-        > tr:nth-child(even) {
-        background-color: #1e1e1e;
+    .sl-markdown-content table:not(:where(.not-content *)) > tbody > tr:hover {
+        background-color: #f0f0f0;
+    }
+
+    :root:not([data-theme="light"]) .sl-markdown-content table:not(:where(.not-content *)) > tbody > tr:nth-child(odd) {
+        background-color: rgb(78 42 132 / 10%);
+    }
+
+    :root:not([data-theme="light"]) .sl-markdown-content table:not(:where(.not-content *)) > tbody > tr:hover {
+        background-color: rgb(255 255 255 / 5%);
     }
 }

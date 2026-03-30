@@ -557,6 +557,7 @@
         .nu-property-table:not(.nu-property-table--table) .nu-property__head {
             flex-direction: column;
             gap: 0.25rem;
+            align-items: flex-start;
         }
 
         .nu-property-table:not(.nu-property-table--table) .nu-property__prop-col {

@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.2] - 2026-03-30
+
+### Fixed
+
+- H1/H2 now use Noto Serif (`--nu-font-display`), H3–H6 use Poppins (`--nu-font-heading`). Sizes, weights, and colors match the [Department 4.0 stylesheet](https://common.northwestern.edu/dept/4.0/css/styles.css).
+- Poppins 400 loaded the Light file instead of Regular. Poppins 500 (Medium) added from v4 CDN.
+- Table headers now use `--nu-purple-100` with white text.
+- Table striping moved to odd rows (`#f9f6ff`); dark mode uses `rgb(78 42 132 / 10%)`.
+- `--nu-purple-surface` corrected to `#f9f6ff`, `--nu-purple-surface-subtle` to `#f3f0f7`.
+- Blockquote background uses `#f9f6ff` instead of translucent purple.
+- Horizontal rules use 3px `--nu-purple-10` instead of 1px gray.
+- List markers use `--nu-purple-100` instead of `--nu-purple-40`.
+
 ## [1.3.1] - 2026-03-27
 
 ### Fixed
@@ -130,7 +143,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OpenAPI plugin compatibility with method badge preservation
 - Reduced motion support for transitions
 
-[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.3.1...HEAD
+[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.3.2...HEAD
+[1.3.2]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.1.1...v1.2.0

@@ -7,8 +7,9 @@
         padding: 1rem 1.5rem;
         margin: 2rem 0;
         color: var(--nu-color-text);
-        background: rgb(228 224 238 / 42%);
+        background: #f9f6ff;
         border-inline-start: 10px solid var(--nu-purple-100);
+        border-radius: 0 0.75rem 0.75rem 0 !important;
     }
 
     .sl-markdown-content blockquote:not(:where(.not-content *)) p:last-child {
