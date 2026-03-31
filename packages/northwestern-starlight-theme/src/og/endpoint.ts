@@ -5,15 +5,21 @@ import { OGImageRoute } from "astro-og-canvas";
 const siteTitle = config.ogImage.siteTitle;
 const logoPath = config.ogImage.logoPath;
 const docs = await getCollection("docs");
-const pages = Object.fromEntries(docs.map((doc) => [doc.id, doc]));
+let changelogs: typeof docs = [];
+try {
+    changelogs = await getCollection("changelogs" as "docs");
+} catch {}
+const pages = Object.fromEntries([...docs, ...changelogs].map((entry) => [entry.id, entry]));
 
 export const { getStaticPaths, GET } = await OGImageRoute({
     param: "slug",
     pages,
     getImageOptions: (path, page) => {
         const isIndex = path === "index";
+        const isChangelogVersion = path.startsWith("changelog/version/");
+        const title = isIndex ? siteTitle : isChangelogVersion ? `Changelog\n${page.data.title}` : page.data.title;
         return {
-            title: isIndex ? siteTitle : page.data.title,
+            title,
             description: page.data.description,
             logo: { path: logoPath, size: [60] },
             bgGradient: [[64, 31, 104]],
@@ -27,7 +33,7 @@ export const { getStaticPaths, GET } = await OGImageRoute({
                 title: {
                     families: ["Poppins"],
                     weight: "Bold",
-                    size: 48,
+                    size: isChangelogVersion ? 56 : 48,
                     lineHeight: 1.3,
                     color: [255, 255, 255],
                 },
