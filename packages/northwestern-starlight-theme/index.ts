@@ -159,6 +159,8 @@ export default function northwesternTheme(config: NorthwesternThemeConfig = {}):
         },
         ogImage: {
             enabled: false, // set to true in config:setup when ogImage is enabled
+            siteTitle: "",
+            logoPath: "",
         },
     };
 
@@ -290,6 +292,12 @@ export default function northwesternTheme(config: NorthwesternThemeConfig = {}):
                         );
                     } else {
                         themeConfig.ogImage.enabled = true;
+                        themeConfig.ogImage.logoPath = faviconPath;
+                        const rawTitle = starlightConfig.title;
+                        themeConfig.ogImage.siteTitle =
+                            typeof rawTitle === "string"
+                                ? rawTitle
+                                : (Object.values(rawTitle as Record<string, string>)[0] ?? "");
 
                         addRouteMiddleware({
                             entrypoint: "@nu-appdev/northwestern-starlight-theme/src/og/route-middleware",
