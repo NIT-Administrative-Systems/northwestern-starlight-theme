@@ -40,6 +40,7 @@ export default defineConfig({
 
 <div class="nu-home">
     <section class="nu-home-install">
+        <p class="nu-home-eyebrow nu-home-eyebrow--center">Quick Start</p>
         <PackageManagers pkg="@nu-appdev/northwestern-starlight-theme" icons={true} frame="terminal" pkgManagers={["pnpm", "npm", "yarn", "bun"]} />
     </section>
 
@@ -89,12 +90,14 @@ export default defineConfig({
     .hero img {
         transform-origin: center;
         transform: translateY(0) rotate(0deg) scale(1);
-        transition: transform 1.05s cubic-bezier(0.22, 1, 0.36, 1);
+        transition: transform 1.05s cubic-bezier(0.22, 1, 0.36, 1), filter 0.6s ease;
         will-change: transform;
+        filter: drop-shadow(0 4px 20px rgb(78 42 132 / 15%));
     }
 
     .hero img:hover {
         transform: translateY(-1px) rotate(-10deg) scale(1.015);
+        filter: drop-shadow(0 8px 28px rgb(78 42 132 / 28%));
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -149,6 +152,9 @@ export default defineConfig({
         margin-inline: auto;
         width: 100%;
         min-width: 0;
+        opacity: 0;
+        transform: translateY(12px);
+        animation: nu-feature-in 0.5s ease 0.05s forwards;
     }
 
 
@@ -194,6 +200,7 @@ export default defineConfig({
     }
 
     @media (prefers-reduced-motion: reduce) {
+        .nu-home-install,
         .nu-home-feature,
         .nu-home-config {
             opacity: 1;
@@ -220,19 +227,26 @@ export default defineConfig({
         flex-shrink: 0;
         color: var(--nu-purple-100);
         background: var(--nu-purple-surface);
+        border: 1px solid rgb(78 42 132 / 8%);
         border-radius: 8px;
         box-sizing: content-box;
-        transition: transform var(--nu-transition-default), color var(--nu-transition-default);
+        transition: transform var(--nu-transition-default), color var(--nu-transition-default), background var(--nu-transition-default);
     }
 
     .nu-home-feature:hover .nu-feature-icon {
         transform: scale(1.1) rotate(-4deg);
         color: var(--nu-purple-80);
+        background: var(--nu-purple-surface-subtle);
     }
 
     :root:not([data-theme="light"]) .nu-feature-icon {
         color: var(--nu-purple-40);
         background: rgb(255 255 255 / 6%);
+        border-color: rgb(255 255 255 / 6%);
+    }
+
+    :root:not([data-theme="light"]) .nu-home-feature:hover .nu-feature-icon {
+        background: rgb(255 255 255 / 10%);
     }
 
     .nu-home-feature h3 {
@@ -241,6 +255,7 @@ export default defineConfig({
         font-weight: 700;
         margin: 0;
         color: var(--nu-color-text);
+        transition: color var(--nu-transition-default);
     }
 
     .nu-home-feature p {
@@ -269,6 +284,7 @@ export default defineConfig({
         padding-top: 0.5rem;
         padding-left: 1rem;
         border-left: 3px solid var(--nu-purple-100);
+        transition: border-color var(--nu-transition-default);
     }
 
     :root:not([data-theme="light"]) .nu-home-config-text {
@@ -321,6 +337,34 @@ export default defineConfig({
             linear-gradient(135deg, rgb(78 42 132 / 10%) 0%, transparent 60%),
             var(--nu-sidebar-bg);
         border-color: rgb(255 255 255 / 8%);
+    }
+
+    .nu-home-eyebrow--center {
+        text-align: center;
+    }
+
+    :root:not([data-theme="light"]) .hero img {
+        filter: drop-shadow(0 4px 20px rgb(164 149 195 / 12%));
+    }
+
+    :root:not([data-theme="light"]) .hero img:hover {
+        filter: drop-shadow(0 8px 28px rgb(164 149 195 / 22%));
+    }
+
+    .nu-home-feature:hover h3 {
+        color: var(--nu-purple-100);
+    }
+
+    :root:not([data-theme="light"]) .nu-home-feature:hover h3 {
+        color: var(--nu-purple-30);
+    }
+
+.nu-home-config:hover .nu-home-config-text {
+        border-left-color: var(--nu-purple-80);
+    }
+
+    :root:not([data-theme="light"]) .nu-home-config:hover .nu-home-config-text {
+        border-left-color: var(--nu-purple-40);
     }
 
     @media (max-width: 60rem) {
