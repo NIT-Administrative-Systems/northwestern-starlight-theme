@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Enabled by default. Set `site` in your Astro config. pnpm users also need `pnpm add canvaskit-wasm`.
   - Disable with `ogImage: false`.
   - Adds `og:image`, `og:image:type`, `og:image:width`, `og:image:height`, `og:image:alt`, `twitter:image`, and `twitter:image:alt` meta tags to every page.
+  - New dependency: `astro-og-canvas`.
 
 ## [1.3.2] - 2026-03-30
 

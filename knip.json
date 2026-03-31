@@ -7,7 +7,7 @@
             "ignoreDependencies": ["astro-mermaid", "mermaid"]
         },
         "docs": {
-            "ignoreDependencies": ["sharp"]
+            "ignoreDependencies": ["sharp", "canvaskit-wasm"]
         }
     }
 }
