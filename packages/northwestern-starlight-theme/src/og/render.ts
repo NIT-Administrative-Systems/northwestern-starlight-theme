@@ -26,7 +26,7 @@ interface OGImageOptions {
         color?: RGBColor;
         width?: number;
     };
-    padding?: number;
+    padding?: number | [vertical: number, horizontal: number];
     font?: {
         title?: FontConfig;
         description?: FontConfig;
@@ -101,7 +101,7 @@ export async function renderOGImage({
     description = "",
     bgGradient = [[0, 0, 0]],
     border: borderConfig = {},
-    padding = 80,
+    padding: rawPadding = 80,
     logo,
     font: fontConfig = {},
     fonts: fontUrls = ["https://api.fontsource.org/v1/fonts/noto-sans/latin-400-normal.ttf"],
@@ -109,6 +109,7 @@ export async function renderOGImage({
     const decodedTitle = decodeText(title);
     const decodedDescription = description ? decodeText(description) : "";
 
+    const [vPad, hPad] = Array.isArray(rawPadding) ? rawPadding : [rawPadding, rawPadding];
     const borderColor = borderConfig.color ?? [255, 255, 255];
     const borderWidth = borderConfig.width ?? 0;
 
@@ -151,8 +152,8 @@ export async function renderOGImage({
                 width: "100%",
                 height: "100%",
                 background: `linear-gradient(to bottom, ${bgStart}, ${bgEnd})`,
-                padding: `${padding}px`,
-                paddingLeft: `${padding + borderWidth}px`,
+                padding: `${vPad}px ${hPad}px`,
+                paddingLeft: `${hPad + borderWidth}px`,
                 borderLeft: borderWidth ? `${borderWidth}px solid ${rgbToCSS(borderColor)}` : undefined,
             },
             children: [

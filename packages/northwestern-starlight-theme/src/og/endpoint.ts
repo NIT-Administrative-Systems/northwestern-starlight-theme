@@ -22,7 +22,7 @@ function getImageOptions(path: string, page: (typeof docs)[number]) {
         description: page.data.description,
         logo: { path: logoPath, size: [80] as [number] },
         bgGradient: [[64, 31, 104]] as [number, number, number][],
-        padding: 220,
+        padding: [60, 220] as [number, number],
         border: {
             color: [164, 149, 195] as [number, number, number],
             width: 12,
