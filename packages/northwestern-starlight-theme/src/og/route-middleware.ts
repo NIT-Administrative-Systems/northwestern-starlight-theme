@@ -1,32 +1,8 @@
-import { getEntry } from "astro:content";
 import { defineRouteMiddleware } from "@astrojs/starlight/route-data";
 import type { HeadConfig } from "@astrojs/starlight/schemas/head";
 
 type HeadEntry = HeadConfig[number];
 type JsonLd = Record<string, unknown>;
-
-/** Strip Markdown syntax to produce plain text for meta descriptions. */
-function markdownToPlainText(md: string): string {
-    return (
-        md
-            // Remove headings
-            .replace(/^#{1,6}\s+/gm, "")
-            // Remove list markers before bold so `- **text**` works
-            .replace(/^[\s]*[-*+]\s+/gm, "")
-            // Remove bold/italic
-            .replace(/\*{1,3}(.+?)\*{1,3}/g, "$1")
-            .replace(/_{1,3}(.+?)_{1,3}/g, "$1")
-            // Remove inline code
-            .replace(/`(.+?)`/g, "$1")
-            // Remove links, keep text
-            .replace(/\[(.+?)\]\(.+?\)/g, "$1")
-            // Remove images
-            .replace(/!\[.*?\]\(.+?\)/g, "")
-            // Collapse whitespace
-            .replace(/\n+/g, " ")
-            .trim()
-    );
-}
 
 function getStructuredData({
     imageUrl,
@@ -92,7 +68,7 @@ function getStructuredData({
     };
 }
 
-export const onRequest = defineRouteMiddleware(async (context) => {
+export const onRequest = defineRouteMiddleware((context) => {
     const route = context.locals.starlightRoute;
     const site = context.site;
     if (!site) return;
@@ -103,22 +79,6 @@ export const onRequest = defineRouteMiddleware(async (context) => {
     const isChangelogVersion = route.id?.startsWith("changelog/version/") ?? false;
     const ogPath = route.id ? `/og/${route.id}.png` : "/og/index.png";
     const imageUrl = new URL(ogPath, site).href;
-
-    // For changelog version pages, derive og:description from the Markdown body
-    // when no explicit description is set in frontmatter.
-    if (isChangelogVersion && !route.entry.data.description) {
-        const changelogEntry = await getEntry("changelogs" as "docs", route.id);
-        const body = changelogEntry?.body;
-        if (body) {
-            const plainText = markdownToPlainText(body);
-            if (plainText) {
-                route.head.push({
-                    tag: "meta",
-                    attrs: { property: "og:description", content: plainText },
-                });
-            }
-        }
-    }
 
     // Replace Starlight's twitter:card (defaults to "summary" on non-splash
     // pages) with "summary_large_image" so the 1200x630 image isn't cropped.
