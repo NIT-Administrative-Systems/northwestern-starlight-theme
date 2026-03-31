@@ -141,7 +141,7 @@ jobs:
           { "type": "module" }
           PKG
           cd /tmp/compat-test
-          pnpm add @astrojs/starlight@${{ matrix.starlight }} astro@${{ matrix.astro }}
+          pnpm add @astrojs/starlight@${{ matrix.starlight }} astro@${{ matrix.astro }} canvaskit-wasm
           pnpm add @nu-appdev/northwestern-starlight-theme@file:${{ github.workspace }}/packages/northwestern-starlight-theme
 
       - name: Verify build
