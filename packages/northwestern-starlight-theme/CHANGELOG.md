@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Open Graph image generation**: builds a branded 1200x630 PNG per docs page. Title and description on Northwestern purple with a light purple accent border. Slack, Teams, and social media link previews use these images.
-  - Enabled by default. Set `site` in your Astro config. pnpm users also need `pnpm add canvaskit-wasm`.
+  - Enabled by default. Set `site` in your Astro config. pnpm users: run `pnpm add canvaskit-wasm` to enable (build skips OG gracefully without it).
   - Disable with `ogImage: false`.
   - Adds `og:image`, `og:image:type`, `og:image:width`, `og:image:height`, `og:image:alt`, `twitter:image`, and `twitter:image:alt` meta tags to every page.
   - New dependency: `astro-og-canvas`.

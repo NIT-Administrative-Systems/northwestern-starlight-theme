@@ -69,7 +69,7 @@ Set `site` in your Astro config so the meta tags use absolute URLs:
 ```
 
 <Aside type="note">
-pnpm users need to install `canvaskit-wasm` directly (a [known pnpm limitation](https://github.com/nicolo-ribaudo/canvaskit-wasm/issues/4) with native WASM packages):
+pnpm users must install `canvaskit-wasm` directly to enable OG images (a [known pnpm limitation](https://github.com/delucis/astro-og-canvas/tree/latest/packages/astro-og-canvas#pnpm) with native WASM packages). Without it, the build skips OG generation and logs a warning.
 
 <PackageManagers pkg="canvaskit-wasm" pkgManagers={["pnpm"]} />
 </Aside>

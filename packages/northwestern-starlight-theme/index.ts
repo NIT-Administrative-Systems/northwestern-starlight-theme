@@ -1,5 +1,6 @@
 import { copyFileSync, mkdirSync, readFileSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { StarlightPlugin } from "@astrojs/starlight/types";
@@ -267,26 +268,48 @@ export default function northwesternTheme(config: NorthwesternThemeConfig = {}):
 
                 // OG image generation (bundled via astro-og-canvas)
                 if (ogImage) {
-                    themeConfig.ogImage.enabled = true;
+                    // canvaskit-wasm uses __dirname to locate its WASM binary, which
+                    // doesn't exist in ESM. Under pnpm's strict symlinks the binary
+                    // can't be found unless the consumer installs canvaskit-wasm
+                    // directly. Probe resolution from the consumer's project root
+                    // (not the theme package) so a missing install skips OG
+                    // gracefully instead of crashing the build.
+                    let canvaskitUsable = true;
+                    try {
+                        const require = createRequire(join(process.cwd(), "package.json"));
+                        require.resolve("canvaskit-wasm");
+                    } catch {
+                        canvaskitUsable = false;
+                    }
 
-                    addRouteMiddleware({
-                        entrypoint: "@nu-appdev/northwestern-starlight-theme/src/og/route-middleware",
-                        order: "post",
-                    });
+                    if (!canvaskitUsable) {
+                        logger.warn(
+                            "OG image generation requires canvaskit-wasm, which could not be loaded.\n" +
+                                "  pnpm users: run `pnpm add canvaskit-wasm`\n" +
+                                "  The build will continue without OG images.",
+                        );
+                    } else {
+                        themeConfig.ogImage.enabled = true;
 
-                    addIntegration({
-                        name: "northwestern-theme-og-image",
-                        hooks: {
-                            "astro:config:setup": ({ injectRoute }) => {
-                                injectRoute({
-                                    pattern: "/og/[...slug]",
-                                    entrypoint: "@nu-appdev/northwestern-starlight-theme/src/og/endpoint.ts",
-                                });
+                        addRouteMiddleware({
+                            entrypoint: "@nu-appdev/northwestern-starlight-theme/src/og/route-middleware",
+                            order: "post",
+                        });
+
+                        addIntegration({
+                            name: "northwestern-theme-og-image",
+                            hooks: {
+                                "astro:config:setup": ({ injectRoute }) => {
+                                    injectRoute({
+                                        pattern: "/og/[...slug]",
+                                        entrypoint: "@nu-appdev/northwestern-starlight-theme/src/og/endpoint.ts",
+                                    });
+                                },
                             },
-                        },
-                    });
+                        });
 
-                    logger.info("OG image generation enabled");
+                        logger.info("OG image generation enabled");
+                    }
                 }
 
                 updateConfig({
