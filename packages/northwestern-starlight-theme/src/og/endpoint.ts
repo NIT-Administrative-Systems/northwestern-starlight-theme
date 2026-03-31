@@ -18,29 +18,29 @@ export const { getStaticPaths, GET } = await OGImageRoute({
         const isIndex = path === "index";
         const isChangelogVersion = path.startsWith("changelog/version/");
         const title = isIndex ? siteTitle : isChangelogVersion ? `Changelog\n${page.data.title}` : page.data.title;
-        const padding = isChangelogVersion ? 180 : 140;
+        const padding = isChangelogVersion ? 210 : isIndex ? 170 : 185;
         return {
             title,
             description: page.data.description,
-            logo: { path: logoPath, size: [52] },
+            logo: { path: logoPath, size: [44] },
             bgGradient: [[64, 31, 104]],
             padding,
             border: {
                 color: [164, 149, 195],
-                width: 10,
+                width: 8,
                 side: "inline-start",
             },
             font: {
                 title: {
                     families: ["Poppins"],
                     weight: "Bold",
-                    size: isIndex ? 46 : isChangelogVersion ? 50 : 44,
+                    size: isIndex ? 40 : isChangelogVersion ? 42 : 38,
                     lineHeight: 1.3,
                     color: [255, 255, 255],
                 },
                 description: {
                     families: ["Akkurat Pro"],
-                    size: 24,
+                    size: 20,
                     lineHeight: 1.5,
                     color: [182, 172, 209],
                 },
