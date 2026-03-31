@@ -1,6 +1,6 @@
 ---
 title: Getting Started
-description: How to install and configure the Northwestern Starlight Theme.
+description: Install the Starlight plugin and configure Mermaid diagrams, OG images, and Expressive Code.
 ---
 
 import { Aside } from "@astrojs/starlight/components";
@@ -50,6 +50,31 @@ Install `astro-mermaid` and `mermaid`, then add the Northwestern Mermaid integra
 ```
 
 The theme does not bundle either package. Without them installed, Mermaid code blocks render as plain text.
+
+## Open Graph Images
+
+Each page gets a branded 1200x630 preview image at build time. Slack, Teams, and social media link previews show a Northwestern purple card with the page title and description.
+
+Set `site` in your Astro config so the meta tags use absolute URLs:
+
+```diff lang="ts" title="astro.config.ts"
+  export default defineConfig({
++     site: "https://docs.example.northwestern.edu",
+      integrations: [
+          starlight({
+              plugins: [northwesternTheme()],
+          }),
+      ],
+  });
+```
+
+<Aside type="note">
+pnpm users need to install `canvaskit-wasm` directly (a [known pnpm limitation](https://github.com/nicolo-ribaudo/canvaskit-wasm/issues/4) with native WASM packages):
+
+<PackageManagers pkg="canvaskit-wasm" pkgManagers={["pnpm"]} />
+</Aside>
+
+To disable OG images, pass `ogImage: false` to the theme. See [Customization](/customization/#open-graph-images).
 
 ## Expressive Code Line Numbers (Optional)
 
