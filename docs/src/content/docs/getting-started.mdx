@@ -3,7 +3,6 @@ title: Getting Started
 description: Install the Starlight plugin and configure Mermaid diagrams, OG images, and Expressive Code.
 ---
 
-import { Aside } from "@astrojs/starlight/components";
 import { PackageManagers } from "starlight-package-managers";
 
 ## Installation
@@ -67,12 +66,6 @@ Set `site` in your Astro config so the meta tags use absolute URLs:
       ],
   });
 ```
-
-<Aside type="note">
-pnpm users must install `canvaskit-wasm` directly to enable OG images (a [known pnpm limitation](https://github.com/delucis/astro-og-canvas/tree/latest/packages/astro-og-canvas#pnpm) with native WASM packages). Without it, the build skips OG generation and logs a warning.
-
-<PackageManagers pkg="canvaskit-wasm" pkgManagers={["pnpm"]} />
-</Aside>
 
 To disable OG images, pass `ogImage: false` to the theme. See [Customization](/customization/#open-graph-images).
 

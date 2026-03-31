@@ -57,8 +57,9 @@
     ],
     "dependencies": {
         "@expressive-code/plugin-line-numbers": "^0.41.7",
-        "astro-og-canvas": "^0.10.1",
-        "khroma": "^2.1.0"
+        "@resvg/resvg-wasm": "^2.6.2",
+        "khroma": "^2.1.0",
+        "satori": "^0.26.0"
     },
     "peerDependencies": {
         "@astrojs/starlight": ">=0.32.0",

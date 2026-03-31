@@ -14,7 +14,6 @@
         "@nu-appdev/northwestern-starlight-theme": "workspace:*",
         "astro": "^6.1.1",
         "astro-mermaid": "^2.0.1",
-        "canvaskit-wasm": "^0.41.0",
         "mermaid": "^11.12.2",
         "sharp": "^0.34.1",
         "starlight-changelogs": "^0.5.0",
