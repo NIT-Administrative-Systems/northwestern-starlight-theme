@@ -20,7 +20,7 @@ function getImageOptions(path: string, page: (typeof docs)[number]) {
         resvgWasmPath,
         title,
         description: page.data.description,
-        logo: { path: logoPath, size: [60] as [number] },
+        logo: { path: logoPath, size: [80] as [number] },
         bgGradient: [[64, 31, 104]] as [number, number, number][],
         padding: 120,
         border: {
@@ -31,13 +31,13 @@ function getImageOptions(path: string, page: (typeof docs)[number]) {
             title: {
                 families: ["Poppins"],
                 weight: "Bold" as const,
-                size: isChangelogVersion ? 56 : 48,
+                size: isChangelogVersion ? 64 : 56,
                 lineHeight: 1.3,
                 color: [255, 255, 255] as [number, number, number],
             },
             description: {
                 families: ["Akkurat Pro"],
-                size: 28,
+                size: 32,
                 lineHeight: 1.5,
                 color: [182, 172, 209] as [number, number, number],
             },
