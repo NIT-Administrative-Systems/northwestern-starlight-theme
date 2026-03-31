@@ -4,10 +4,10 @@
     "workspaces": {
         "packages/northwestern-starlight-theme": {
             "entry": ["src/scripts/**/*.ts"],
-            "ignoreDependencies": ["astro-mermaid", "mermaid"]
+            "ignoreDependencies": ["astro-mermaid", "mermaid", "canvaskit-wasm"]
         },
         "docs": {
-            "ignoreDependencies": ["sharp"]
+            "ignoreDependencies": ["sharp", "canvaskit-wasm"]
         }
     }
 }

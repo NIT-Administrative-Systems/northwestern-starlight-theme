@@ -1,6 +1,6 @@
 ---
 title: Customization
-description: How to customize the Northwestern Starlight Theme.
+description: Hero layouts, component overrides, OG images, and CSS variables.
 ---
 
 import { PropertyTable, Property } from "@nu-appdev/northwestern-starlight-theme/components";
@@ -156,6 +156,18 @@ northwesternMermaid({
         },
     },
 });
+```
+
+## Open Graph Images
+
+Each page gets a 1200x630 PNG at build time: title and description on Northwestern purple with a light purple accent border. Set `site` in your Astro config for absolute URLs. See [Getting Started](/getting-started/#open-graph-images) for setup.
+
+To disable OG images:
+
+```ts
+northwesternTheme({
+    ogImage: false,
+})
 ```
 
 ## Expressive Code
