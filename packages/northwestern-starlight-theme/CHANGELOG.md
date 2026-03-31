@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced `astro-og-canvas` + `canvaskit-wasm` with `satori` + `@resvg/resvg-wasm`. pnpm users no longer need `canvaskit-wasm` as a direct dependency.
 - Larger OG text: title 48→56px, description 28→32px, logo 60→80px.
 - Separate vertical (60px) and horizontal (220px) OG padding to avoid clipping.
+- Asides use a 3px left accent stripe instead of a 1px box border, matching the blockquote and card accent patterns.
 
 ### Added
 
