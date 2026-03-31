@@ -2,12 +2,81 @@ import { defineRouteMiddleware } from "@astrojs/starlight/route-data";
 import type { HeadConfig } from "@astrojs/starlight/schemas/head";
 
 type HeadEntry = HeadConfig[number];
+type JsonLd = Record<string, unknown>;
+
+function getStructuredData({
+    imageUrl,
+    isHomepage,
+    isChangelogVersion,
+    logoUrl,
+    pageUrl,
+    siteName,
+    title,
+    description,
+}: {
+    imageUrl: string;
+    isHomepage: boolean;
+    isChangelogVersion: boolean;
+    logoUrl: string;
+    pageUrl: string;
+    siteName: string;
+    title: string;
+    description?: string;
+}): JsonLd {
+    const origin = new URL(pageUrl).origin;
+    const organization = {
+        "@id": `${origin}/#organization`,
+        "@type": "Organization",
+        name: "Northwestern University",
+        url: "https://www.northwestern.edu",
+        logo: logoUrl,
+    };
+    const website = {
+        "@id": `${origin}/#website`,
+        "@type": "WebSite",
+        name: siteName,
+        url: `${origin}/`,
+        description,
+        image: imageUrl,
+        publisher: { "@id": organization["@id"] },
+    };
+
+    if (isHomepage) {
+        return {
+            "@context": "https://schema.org",
+            "@graph": [organization, website],
+        };
+    }
+
+    return {
+        "@context": "https://schema.org",
+        "@graph": [
+            organization,
+            website,
+            {
+                "@type": isChangelogVersion ? "Article" : "TechArticle",
+                headline: title,
+                name: title,
+                description,
+                image: imageUrl,
+                url: pageUrl,
+                mainEntityOfPage: pageUrl,
+                isPartOf: { "@id": website["@id"] },
+                publisher: { "@id": organization["@id"] },
+            },
+        ],
+    };
+}
 
 export const onRequest = defineRouteMiddleware((context) => {
     const route = context.locals.starlightRoute;
     const site = context.site;
     if (!site) return;
 
+    const pageUrl = new URL(context.url.pathname, site).href;
+    const siteName = route.siteTitle ?? route.entry.data.title;
+    const isHomepage = route.id === "index" || context.url.pathname === "/";
+    const isChangelogVersion = route.id?.startsWith("changelog/version/") ?? false;
     const ogPath = route.id ? `/og/${route.id}.png` : "/og/index.png";
     const imageUrl = new URL(ogPath, site).href;
 
@@ -29,6 +98,18 @@ export const onRequest = defineRouteMiddleware((context) => {
     );
     const faviconHref = faviconEntry?.attrs.href ?? "/favicon.png";
     const logoUrl = new URL(faviconHref, site).href;
+    const structuredData = JSON.stringify(
+        getStructuredData({
+            imageUrl,
+            isHomepage,
+            isChangelogVersion,
+            logoUrl,
+            pageUrl,
+            siteName,
+            title: route.entry.data.title,
+            description: route.entry.data.description,
+        }),
+    );
 
     route.head.push(
         { tag: "meta", attrs: { property: "og:image", content: imageUrl } },
@@ -39,5 +120,6 @@ export const onRequest = defineRouteMiddleware((context) => {
         { tag: "meta", attrs: { property: "og:logo", content: logoUrl } },
         { tag: "meta", attrs: { name: "twitter:image", content: imageUrl } },
         { tag: "meta", attrs: { name: "twitter:image:alt", content: route.entry.data.title } },
+        { tag: "script", attrs: { type: "application/ld+json" }, content: structuredData },
     );
 });
