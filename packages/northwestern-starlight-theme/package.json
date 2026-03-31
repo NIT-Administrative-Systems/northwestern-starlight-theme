@@ -44,6 +44,7 @@
         },
         "./src/styles/components/*": "./src/styles/components/*",
         "./src/components/*": "./src/components/*",
+        "./src/og/*": "./src/og/*",
         "./src/scripts/*": "./src/scripts/*",
         "./src/styles/*": "./src/styles/*"
     },
@@ -56,6 +57,7 @@
     ],
     "dependencies": {
         "@expressive-code/plugin-line-numbers": "^0.41.7",
+        "astro-og-canvas": "^0.10.1",
         "khroma": "^2.1.0"
     },
     "peerDependencies": {

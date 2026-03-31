@@ -14,6 +14,9 @@ declare module "virtual:northwestern-theme/config" {
             showTitle: boolean;
             imageWidth: string;
         };
+        ogImage: {
+            enabled: boolean;
+        };
     };
     export default config;
 }

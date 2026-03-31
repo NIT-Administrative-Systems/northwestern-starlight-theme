@@ -92,6 +92,18 @@ export interface NorthwesternThemeConfig {
      * @default true
      */
     mermaid?: boolean | Record<string, unknown>;
+
+    /**
+     * Open Graph image generation.
+     *
+     * Generates branded OG images (1200x630 PNG) for every docs page with the
+     * page title and description on a Northwestern purple background.
+     *
+     * Requires `site` to be set in `astro.config.ts` for absolute image URLs.
+     *
+     * @default true
+     */
+    ogImage?: boolean;
 }
 
 /**
@@ -137,19 +149,28 @@ const RESOLVED_VIRTUAL_MODULE_ID = `\0${VIRTUAL_MODULE_ID}`;
  * ```
  */
 export default function northwesternTheme(config: NorthwesternThemeConfig = {}): StarlightPlugin {
-    const { homepage = {}, mermaid = true } = config;
+    const { homepage = {}, mermaid = true, ogImage = true } = config;
     const themeConfig = {
         homepage: {
             layout: homepage.layout ?? "centered",
             showTitle: homepage.showTitle ?? true,
             imageWidth: homepage.imageWidth ?? "500px",
         },
+        ogImage: {
+            enabled: false, // set to true in config:setup when ogImage is enabled
+        },
     };
 
     return {
         name: "northwestern-starlight-theme",
         hooks: {
-            async "config:setup"({ config: starlightConfig, updateConfig, addIntegration, logger }) {
+            async "config:setup"({
+                config: starlightConfig,
+                updateConfig,
+                addIntegration,
+                addRouteMiddleware,
+                logger,
+            }) {
                 // Apply default favicon if consumer hasn't set one
                 const consumerSetFavicon =
                     starlightConfig.favicon &&
@@ -242,6 +263,30 @@ export default function northwesternTheme(config: NorthwesternThemeConfig = {}):
                         }
                         mermaidEnabled = false;
                     }
+                }
+
+                // OG image generation (bundled via astro-og-canvas)
+                if (ogImage) {
+                    themeConfig.ogImage.enabled = true;
+
+                    addRouteMiddleware({
+                        entrypoint: "@nu-appdev/northwestern-starlight-theme/src/og/route-middleware",
+                        order: "post",
+                    });
+
+                    addIntegration({
+                        name: "northwestern-theme-og-image",
+                        hooks: {
+                            "astro:config:setup": ({ injectRoute }) => {
+                                injectRoute({
+                                    pattern: "/og/[...slug]",
+                                    entrypoint: "@nu-appdev/northwestern-starlight-theme/src/og/endpoint.ts",
+                                });
+                            },
+                        },
+                    });
+
+                    logger.info("OG image generation enabled");
                 }
 
                 updateConfig({
