@@ -7,12 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-03-31
+
 ### Added
 
-- **Open Graph image generation**: builds a branded 1200x630 PNG per docs page. Title and description on Northwestern purple with a light purple accent border. Slack, Teams, and social media link previews use these images.
+- **Open Graph image generation**: builds a branded 1200x630 PNG per docs page. Favicon logo, page title, and description on Northwestern purple with a light purple accent border. Slack, Teams, and social media link previews use these images.
   - Enabled by default. Set `site` in your Astro config. pnpm users: run `pnpm add canvaskit-wasm` to enable (build skips OG gracefully without it).
   - Disable with `ogImage: false`.
-  - Adds `og:image`, `og:image:type`, `og:image:width`, `og:image:height`, `og:image:alt`, `twitter:image`, and `twitter:image:alt` meta tags to every page.
+  - Adds `og:image`, `og:image:type`, `og:image:width`, `og:image:height`, `og:image:alt`, `og:logo`, `twitter:image`, and `twitter:image:alt` meta tags to every page. Overrides `twitter:card` to `summary_large_image`.
   - New dependency: `astro-og-canvas`.
 
 ## [1.3.2] - 2026-03-30
@@ -151,7 +153,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OpenAPI plugin compatibility with method badge preservation
 - Reduced motion support for transitions
 
-[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.3.2...HEAD
+[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.3.2...v1.4.0
 [1.3.2]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.2.0...v1.3.0
