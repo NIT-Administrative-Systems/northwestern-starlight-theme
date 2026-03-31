@@ -16,6 +16,8 @@ declare module "virtual:northwestern-theme/config" {
         };
         ogImage: {
             enabled: boolean;
+            siteTitle: string;
+            logoPath: string;
         };
     };
     export default config;
