@@ -5,7 +5,7 @@ const baseURL = `http://127.0.0.1:${port}`;
 const isCI = !!process.env.CI;
 
 export default defineConfig({
-    testDir: "./tests",
+    testDir: "./tests/e2e",
     fullyParallel: true,
     reporter: isCI ? [["github"], ["html", { open: "never" }]] : [["list"], ["html", { open: "never" }]],
     snapshotPathTemplate: "{testDir}/{testFilePath}-snapshots/{arg}{ext}",

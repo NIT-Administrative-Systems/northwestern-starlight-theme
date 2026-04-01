@@ -10,10 +10,12 @@
         "docs:dev": "pnpm --filter docs dev",
         "docs:preview": "pnpm --filter docs preview",
         "lint:css": "stylelint \"packages/northwestern-starlight-theme/src/**/*.css\"",
-        "test": "playwright test",
-        "test:accessibility": "playwright test tests/accessibility.spec.ts",
-        "test:mermaid": "playwright test tests/mermaid-toolbar.spec.ts",
-        "test:theme": "playwright test tests/theme-toggle.spec.ts"
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:e2e": "playwright test",
+        "test:accessibility": "playwright test tests/e2e/accessibility.spec.ts",
+        "test:mermaid": "playwright test tests/e2e/mermaid-toolbar.spec.ts",
+        "test:theme": "playwright test tests/e2e/theme-toggle.spec.ts"
     },
     "devDependencies": {
         "@axe-core/playwright": "^4.11.1",
@@ -24,7 +26,8 @@
         "stylelint": "^16.0.0",
         "stylelint-config-recess-order": "^7.7.0",
         "stylelint-config-standard": "^39.0.0",
-        "stylelint-order": "^8.1.1"
+        "stylelint-order": "^8.1.1",
+        "vitest": "^4.1.2"
     },
     "engines": {
         "node": ">= 22.0.0",
