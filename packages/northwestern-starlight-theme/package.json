@@ -59,6 +59,7 @@
         "@expressive-code/plugin-line-numbers": "^0.41.7",
         "@resvg/resvg-wasm": "^2.6.2",
         "khroma": "^2.1.0",
+        "sharp": "^0.34.5",
         "satori": "^0.26.0"
     },
     "peerDependencies": {

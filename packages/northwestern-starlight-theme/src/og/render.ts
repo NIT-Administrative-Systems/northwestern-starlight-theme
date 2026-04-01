@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import { initWasm, Resvg } from "@resvg/resvg-wasm";
 import satori from "satori";
+import sharp from "sharp";
 
 type RGBColor = [r: number, g: number, b: number];
 type FontWeight = string;
@@ -35,6 +36,18 @@ interface OGImageOptions {
 }
 
 const [width, height] = [1200, 630];
+const renderHints = [
+    'text-rendering="geometricPrecision"',
+    'shape-rendering="geometricPrecision"',
+    'image-rendering="optimizeQuality"',
+].join(" ");
+const pngOptions = {
+    palette: true,
+    quality: 100,
+    compressionLevel: 9,
+    effort: 10,
+    dither: 0,
+} as const;
 
 let wasmInitialized = false;
 async function ensureWasm(wasmPath: string) {
@@ -76,7 +89,8 @@ async function loadFont(url: string): Promise<ArrayBuffer> {
         const response = await fetch(url);
         buffer = await response.arrayBuffer();
     } else {
-        buffer = (await fs.readFile(url)).buffer as ArrayBuffer;
+        const file = await fs.readFile(url);
+        buffer = file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength);
     }
     fontCache.set(url, buffer);
     return buffer;
@@ -229,11 +243,12 @@ export async function renderOGImage({
         height,
         fonts: satoriFont,
     });
+    const optimizedSvg = svg.replace("<svg", `<svg ${renderHints}`);
 
     await ensureWasm(resvgWasmPath);
-    const resvg = new Resvg(svg, {
+    const resvg = new Resvg(optimizedSvg, {
         fitTo: { mode: "width", value: width },
     });
 
-    return Buffer.from(resvg.render().asPng());
+    return sharp(Buffer.from(resvg.render().asPng())).png(pngOptions).toBuffer();
 }
