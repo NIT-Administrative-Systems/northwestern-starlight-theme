@@ -11,42 +11,40 @@ import { PackageManagers } from "starlight-package-managers";
 
 ## Configuration
 
-Add the plugin to your Starlight config:
+Use `defineNorthwesternConfig` to handle integration ordering and plugin registration:
 
-```diff lang="ts" title="astro.config.ts"
-+ import northwesternTheme from "@nu-appdev/northwestern-starlight-theme";
+```ts title="astro.config.ts"
+import { defineNorthwesternConfig } from "@nu-appdev/northwestern-starlight-theme/config";
 
-  export default defineConfig({
-      integrations: [
-          starlight({
-+             plugins: [northwesternTheme()],
-              title: "My Docs",
-          }),
-      ],
-  });
+export default defineNorthwesternConfig({
+    site: "https://docs.example.northwestern.edu",
+    starlight: {
+        title: "My Docs",
+        sidebar: [
+            { label: "Guide", autogenerate: { directory: "guide" } },
+        ],
+    },
+});
 ```
 
 Colors, typography, navigation, and component styling apply automatically. The [Style Guide](/examples/style-guide/) previews every styled element.
 
 ## Mermaid Diagrams (Optional)
 
-Install `astro-mermaid` and `mermaid`, then add the Northwestern Mermaid integration **before** `starlight()`:
+Install `astro-mermaid` and `mermaid`:
 
 <PackageManagers pkg="astro-mermaid mermaid" pkgManagers={["pnpm", "npm", "yarn", "bun"]} />
 
-```diff lang="ts" title="astro.config.ts"
-+ import { northwesternMermaid } from "@nu-appdev/northwestern-starlight-theme/mermaid";
-  import northwesternTheme from "@nu-appdev/northwestern-starlight-theme";
+Mermaid is enabled when the packages are installed. No config changes needed. To customize (e.g., disable the toolbar), pass an options object:
 
-  export default defineConfig({
-      integrations: [
-+         northwesternMermaid(),
-          starlight({
-              plugins: [northwesternTheme()],
-          }),
-      ],
-  });
+```ts title="astro.config.ts"
+export default defineNorthwesternConfig({
+    starlight: { title: "My Docs" },
+    mermaid: { toolbar: false },
+});
 ```
+
+To disable Mermaid entirely, set `mermaid: false`.
 
 The theme does not bundle either package. Without them installed, Mermaid code blocks render as plain text.
 
@@ -54,75 +52,44 @@ The theme does not bundle either package. Without them installed, Mermaid code b
 
 Each page gets a branded 1200x630 preview image at build time. Slack, Teams, and social media link previews show a Northwestern purple card with the favicon logo, page title, and description.
 
-Set `site` in your Astro config so the meta tags use absolute URLs:
+Set `site` in your config so the meta tags use absolute URLs:
 
-```diff lang="ts" title="astro.config.ts"
-  export default defineConfig({
-+     site: "https://docs.example.northwestern.edu",
-      integrations: [
-          starlight({
-              plugins: [northwesternTheme()],
-          }),
-      ],
-  });
+```ts title="astro.config.ts"
+export default defineNorthwesternConfig({
+    site: "https://docs.example.northwestern.edu",
+    starlight: { title: "My Docs" },
+});
 ```
 
 To disable OG images, pass `ogImage: false` to the theme. See [Customization](/customization/#open-graph-images).
 
-## Expressive Code Line Numbers (Optional)
+## Expressive Code
 
-The theme configures GitHub syntax highlighting by default. For opt-in line numbers, add an `ec.config.mjs` at your docs project root:
+The theme configures GitHub syntax highlighting and the line-numbers plugin. Add `showLineNumbers` to individual code blocks:
 
-```js title="ec.config.mjs"
-import { defineEcConfig } from "@astrojs/starlight/expressive-code";
-import { northwesternExpressiveCode } from "@nu-appdev/northwestern-starlight-theme/expressive-code";
-
-export default defineEcConfig(northwesternExpressiveCode());
+````md
+```ts showLineNumbers
+const x = 1;
 ```
-
-Authors can then use `showLineNumbers` on individual code blocks.
+````
 
 ## Migrating an Existing Site
 
-If your project already has manual Northwestern branding, remove the overrides that the theme now replaces.
+If your project already has manual Northwestern branding, replace your `astro.config.ts` with `defineNorthwesternConfig`:
 
-### Astro Config
+```ts title="astro.config.ts"
+import { defineNorthwesternConfig } from "@nu-appdev/northwestern-starlight-theme/config";
 
-Replace any handwritten Mermaid config:
-
-```diff lang="ts" title="astro.config.ts"
-- import mermaid from "astro-mermaid";
-+ import { northwesternMermaid } from "@nu-appdev/northwestern-starlight-theme/mermaid";
-
-  export default defineConfig({
-      integrations: [
--         mermaid(),
-+         northwesternMermaid(),
-          starlight({
+export default defineNorthwesternConfig({
+    site: "https://docs.example.northwestern.edu",
+    starlight: {
+        title: "My Docs",
+        // Move your sidebar, editLink, etc. here
+    },
+});
 ```
 
-Remove component overrides the theme now provides:
-
-```diff lang="ts" title="astro.config.ts"
-  components: {
--     EditLink: "./src/components/ConditionalEditLink.astro",
--     Hero: "./src/components/Hero.astro",
-  },
-```
-
-Remove redundant font imports, favicon, and theme CSS:
-
-```diff lang="ts" title="astro.config.ts"
-- favicon: "/favicon.ico",
-- customCss: [
--     "./src/styles/custom.css",
--     "./src/styles/layout.css",
--     "@fontsource/poppins/400.css",
--     "@fontsource/poppins/600.css",
-- ],
-```
-
-The theme ships Northwestern's official favicon by default. To use your own instead, set `favicon` in your Starlight config as usual.
+Remove component overrides the theme now provides (`Hero`, `EditLink`, `ThemeSelect`), redundant font imports, favicon, and theme CSS.
 
 ### Files to Delete
 

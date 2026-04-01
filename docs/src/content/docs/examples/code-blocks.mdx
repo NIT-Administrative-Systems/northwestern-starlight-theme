@@ -9,17 +9,16 @@ export const installCommand = `pnpm add @nu-appdev/northwestern-starlight-theme`
 
 export const longCommand = `pnpm add @nu-appdev/northwestern-starlight-theme @astrojs/starlight astro mermaid sharp @astrojs/check`;
 
-export const configSnippet = `import starlight from "@astrojs/starlight";
-import { defineConfig } from "astro/config";
-import northwesternTheme from "@nu-appdev/northwestern-starlight-theme";
+export const configSnippet = `import { defineNorthwesternConfig } from "@nu-appdev/northwestern-starlight-theme/config";
 
-export default defineConfig({
-    integrations: [
-        starlight({
-            plugins: [northwesternTheme()],
-            title: "My Docs",
-        }),
-    ],
+export default defineNorthwesternConfig({
+    site: "https://docs.example.northwestern.edu",
+    starlight: {
+        title: "My Docs",
+        sidebar: [
+            { label: "Guide", autogenerate: { directory: "guide" } },
+        ],
+    },
 });`;
 
 export const cssSnippet = `:root {
@@ -42,13 +41,13 @@ export const jsonSnippet = `{
     }
 }`;
 
-export const markerSnippet = `export function buildTheme(options) {
-    const plugin = northwesternTheme(options);
+export const markerSnippet = `export function buildConfig(options) {
+    const { title, sidebar } = options;
 
-    return {
-        integrations: [plugin],
-        title: "Northwestern Docs",
-    };
+    return defineNorthwesternConfig({
+        starlight: { title, sidebar },
+        theme: { ogImage: true },
+    });
 }`;
 
 export const diffSnippet = `export function updateNavigation(items) {
@@ -62,8 +61,6 @@ export const diffSnippet = `export function updateNavigation(items) {
 }`;
 
 export const wrappedSnippet = `const install = "pnpm add @nu-appdev/northwestern-starlight-theme @astrojs/starlight astro mermaid sharp @astrojs/check";`;
-
-## Overview
 
 The theme ships with Northwestern code block styling. This page covers the `Code` component patterns most useful when authoring docs.
 
@@ -79,30 +76,27 @@ Use the default terminal presentation for commands and shell output.
 
 `frame="code"` renders the snippet as a file instead of a terminal command.
 
-If your site includes an `ec.config.mjs` file using `northwesternExpressiveCode()`, line numbers are available as an opt-in feature.
+Line numbers are available as an opt-in feature per code block.
 
 Add `showLineNumbers` to a fenced code block when you want a numbered gutter:
 
 ```ts showLineNumbers title="astro.config.ts"
-import starlight from "@astrojs/starlight";
-import { defineConfig } from "astro/config";
-import northwesternTheme from "@nu-appdev/northwestern-starlight-theme";
+import { defineNorthwesternConfig } from "@nu-appdev/northwestern-starlight-theme/config";
 
-export default defineConfig({
-    integrations: [
-        starlight({
-            plugins: [northwesternTheme()],
-            title: "My Docs",
-        }),
-    ],
+export default defineNorthwesternConfig({
+    site: "https://docs.example.northwestern.edu",
+    starlight: {
+        title: "My Docs",
+        sidebar: [
+            { label: "Guide", autogenerate: { directory: "guide" } },
+        ],
+    },
 });
 ```
 
 In the `<Code>` component, use the `showLineNumbers` prop directly.
 
 <Code code={configSnippet} lang="ts" title="astro.config.ts" frame="code" meta="showLineNumbers" />
-
-<Code code={cssSnippet} lang="css" title="tokens.css" frame="code" />
 
 ## Frame Variants
 
@@ -117,9 +111,9 @@ Markers highlight specific lines or text ranges.
 <Code
     code={markerSnippet}
     lang="ts"
-    title="theme.ts"
+    title="config.ts"
     frame="code"
-    mark={[2, "northwesternTheme", { range: "4-7", label: "output" }]}
+    mark={[2, "defineNorthwesternConfig", { range: "4-7", label: "output" }]}
 />
 
 <Code

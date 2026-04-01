@@ -20,21 +20,17 @@ pnpm add @nu-appdev/northwestern-starlight-theme
 ```
 
 ```ts
-import starlight from "@astrojs/starlight";
-import { defineConfig } from "astro/config";
-import northwesternTheme from "@nu-appdev/northwestern-starlight-theme";
+import { defineNorthwesternConfig } from "@nu-appdev/northwestern-starlight-theme/config";
 
-export default defineConfig({
-    integrations: [
-        starlight({
-            plugins: [northwesternTheme()],
-            title: "My Docs",
-        }),
-    ],
+export default defineNorthwesternConfig({
+    site: "https://docs.example.northwestern.edu",
+    starlight: {
+        title: "My Docs",
+    },
 });
 ```
 
-The plugin applies Northwestern's purple palette, Akkurat Pro + Poppins typography, branded navigation, styled components, and full dark mode support. No additional CSS or configuration required.
+The helper applies Northwestern's purple palette, Akkurat Pro + Poppins typography, branded navigation, styled components, and dark mode. It handles integration ordering, plugin registration, and Mermaid setup.
 
 See the **[documentation](https://starlight-theme.entapp.northwestern.edu)** for setup options, customization, and component examples.
 

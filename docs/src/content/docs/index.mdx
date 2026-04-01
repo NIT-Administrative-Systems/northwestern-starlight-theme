@@ -25,17 +25,15 @@ hero:
 import { Code } from "@astrojs/starlight/components";
 import { PackageManagers } from "starlight-package-managers";
 
-export const configSnippet = `import starlight from "@astrojs/starlight";
-import { defineConfig } from "astro/config";
-import northwesternTheme from "@nu-appdev/northwestern-starlight-theme";
+export const configSnippet = `import { defineNorthwesternConfig } from "@nu-appdev/northwestern-starlight-theme/config";
 
-export default defineConfig({
-    integrations: [
-        starlight({
-            plugins: [northwesternTheme()],
-            title: "My Docs",
-        }),
+export default defineNorthwesternConfig({
+  starlight: {
+    title: "My Docs",
+    sidebar: [
+      { label: "Guide", autogenerate: { directory: "guide" } },
     ],
+  },
 });`;
 
 <div class="nu-home">
@@ -81,7 +79,7 @@ export default defineConfig({
             <p>Add the plugin to your Starlight config. Colors, typography, navigation, and component styling apply automatically.</p>
         </div>
         <div class="nu-home-config-code">
-            <Code code={configSnippet} lang="ts" title="astro.config.ts" frame="code" ins={[3, 8]} />
+            <Code code={configSnippet} lang="ts" title="astro.config.ts" frame="code" />
         </div>
     </section>
 </div>
@@ -267,9 +265,8 @@ export default defineConfig({
 
     .nu-home-config {
         display: grid;
-        grid-template-columns: 1fr 1.6fr;
-        gap: 2rem;
-        align-items: start;
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
         padding: 2.5rem;
         border: 1px solid var(--nu-border-color);
         background:
@@ -281,14 +278,6 @@ export default defineConfig({
     }
 
     .nu-home-config-text {
-        padding-top: 0.5rem;
-        padding-left: 1rem;
-        border-left: 3px solid var(--nu-purple-100);
-        transition: border-color var(--nu-transition-default);
-    }
-
-    :root:not([data-theme="light"]) .nu-home-config-text {
-        border-left-color: var(--nu-purple-60);
     }
 
     .nu-home-config-text p:not(.nu-home-eyebrow) {
@@ -304,11 +293,13 @@ export default defineConfig({
 
     .nu-home-config-code {
         margin: 0;
+        overflow-x: auto;
+        min-width: 0;
     }
 
-    .nu-home-config-code .expressive-code {
+    .nu-home-config-code .expressive-code,
+    .nu-home-config-code figure {
         margin: 0 !important;
-        max-width: 100%;
     }
 
     .nu-home-eyebrow {
@@ -359,13 +350,6 @@ export default defineConfig({
         color: var(--nu-purple-30);
     }
 
-.nu-home-config:hover .nu-home-config-text {
-        border-left-color: var(--nu-purple-80);
-    }
-
-    :root:not([data-theme="light"]) .nu-home-config:hover .nu-home-config-text {
-        border-left-color: var(--nu-purple-40);
-    }
 
     @media (max-width: 60rem) {
         .nu-home-features {
@@ -373,9 +357,8 @@ export default defineConfig({
         }
 
         .nu-home-config {
-            grid-template-columns: 1fr;
             padding: 1.25rem;
-            gap: 1.25rem;
+            gap: 1rem;
         }
 
         .nu-home-feature {
@@ -402,8 +385,5 @@ export default defineConfig({
             gap: 1rem;
         }
 
-        .nu-home-config-code {
-            overflow-x: auto;
-        }
     }
 `}</style>

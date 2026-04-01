@@ -33,17 +33,19 @@ Any content below the frontmatter in `index.mdx` renders normally after the hero
 
 ### Layout Options
 
-The hero supports two layouts, configured through the plugin:
+The hero supports two layouts, configured through the `theme` key:
 
 ```ts
 // Centered (default) — image above title, everything centered
-northwesternTheme({
-    homepage: { layout: "centered" },
+defineNorthwesternConfig({
+    starlight: { title: "My Docs" },
+    theme: { homepage: { layout: "centered" } },
 })
 
 // Split — text and buttons on the left, image on the right (60/40)
-northwesternTheme({
-    homepage: { layout: "split" },
+defineNorthwesternConfig({
+    starlight: { title: "My Docs" },
+    theme: { homepage: { layout: "split" } },
 })
 ```
 
@@ -54,10 +56,13 @@ When no image is provided in frontmatter, the hero renders the title, tagline, a
 If your hero image is a lockup that already contains the project name, hide the title to avoid redundancy:
 
 ```ts
-northwesternTheme({
-    homepage: {
-        layout: "centered",
-        showTitle: false,
+defineNorthwesternConfig({
+    starlight: { title: "My Docs" },
+    theme: {
+        homepage: {
+            layout: "centered",
+            showTitle: false,
+        },
     },
 })
 ```
@@ -67,10 +72,13 @@ northwesternTheme({
 By default, hero images are capped at `500px` wide. For wider lockup images, increase it:
 
 ```ts
-northwesternTheme({
-    homepage: {
-        showTitle: false,
-        imageWidth: "750px",
+defineNorthwesternConfig({
+    starlight: { title: "My Docs" },
+    theme: {
+        homepage: {
+            showTitle: false,
+            imageWidth: "750px",
+        },
     },
 })
 ```
@@ -84,10 +92,12 @@ The theme ships Northwestern's official favicon and applies it automatically. Re
 To use your own favicon instead, set `favicon` in your Starlight config as usual:
 
 ```ts
-starlight({
-    favicon: "/my-custom-favicon.png",
-    plugins: [northwesternTheme()],
-});
+defineNorthwesternConfig({
+    starlight: {
+        favicon: "/my-custom-favicon.png",
+        title: "My Docs",
+    },
+})
 ```
 
 ### Dark/Light Image Variants
@@ -107,12 +117,14 @@ hero:
 If you need a completely custom hero, override it in your Starlight config. The theme will not replace it:
 
 ```ts
-starlight({
-    components: {
-        Hero: "./src/components/MyHero.astro",
+defineNorthwesternConfig({
+    starlight: {
+        components: {
+            Hero: "./src/components/MyHero.astro",
+        },
+        title: "My Docs",
     },
-    plugins: [northwesternTheme()],
-});
+})
 ```
 
 ## Component Overrides
@@ -129,61 +141,40 @@ All three respect existing overrides. If you set `Hero`, `EditLink`, or `ThemeSe
 
 ## Mermaid Diagrams
 
-Mermaid support is opt-in. When enabled, the theme applies Northwestern colors to all diagram types and adds a fullscreen viewer with pan/zoom, SVG download, source copying, and touch support.
+Mermaid support is opt-in. When installed, the theme applies Northwestern colors to all diagram types and adds a fullscreen viewer with pan/zoom, SVG download, source copying, and touch support.
 
-Install `astro-mermaid` and `mermaid`, then add the integration:
-
-```diff lang="ts"
-+import { northwesternMermaid } from "@nu-appdev/northwestern-starlight-theme/mermaid";
-
-export default defineConfig({
-    integrations: [
-+        northwesternMermaid(),
-        starlight({
-            plugins: [northwesternTheme()],
-        }),
-    ],
-});
-```
-
-Pass options to override defaults:
+To customize the Mermaid integration (toolbar, theme overrides):
 
 ```ts
-northwesternMermaid({
-    mermaidConfig: {
-        themeVariables: {
-            fontSize: "16px",
+defineNorthwesternConfig({
+    starlight: { title: "My Docs" },
+    mermaid: {
+        toolbar: false,
+        mermaidConfig: {
+            themeVariables: { fontSize: "16px" },
         },
     },
-});
+})
 ```
 
 ## Open Graph Images
 
-Each page gets a 1200x630 PNG at build time: favicon logo, page title, and description on Northwestern purple with a light purple accent border. Set `site` in your Astro config for absolute URLs. See [Getting Started](/getting-started/#open-graph-images) for setup.
+Each page gets a 1200x630 PNG at build time: favicon logo, page title, and description on Northwestern purple with a light purple accent border. Set `site` in your config for absolute URLs. See [Getting Started](/getting-started/#open-graph-images) for setup.
 
 To disable OG images:
 
 ```ts
-northwesternTheme({
-    ogImage: false,
+defineNorthwesternConfig({
+    starlight: { title: "My Docs" },
+    theme: { ogImage: false },
 })
 ```
 
 ## Expressive Code
 
-The theme configures GitHub syntax highlighting themes (`github-dark` / `github-light`) by default.
+With `defineNorthwesternConfig`, the theme configures GitHub syntax highlighting (`github-dark` / `github-light`) and the line-numbers plugin.
 
-For opt-in line numbers, create `ec.config.mjs` at your docs project root:
-
-```js
-import { defineEcConfig } from "@astrojs/starlight/expressive-code";
-import { northwesternExpressiveCode } from "@nu-appdev/northwestern-starlight-theme/expressive-code";
-
-export default defineEcConfig(northwesternExpressiveCode());
-```
-
-Then use `showLineNumbers` on individual code blocks:
+Use `showLineNumbers` on individual code blocks:
 
 ````md
 ```ts showLineNumbers title="example.ts"
@@ -191,15 +182,44 @@ const x = 1;
 ```
 ````
 
+### Manual Setup
+
+If you use `northwesternTheme()` directly instead of `defineNorthwesternConfig`, line numbers require an `ec.config.mjs` at your project root:
+
+```js title="ec.config.mjs"
+import { defineEcConfig } from "@astrojs/starlight/expressive-code";
+import { northwesternExpressiveCode } from "@nu-appdev/northwestern-starlight-theme/expressive-code";
+
+export default defineEcConfig(northwesternExpressiveCode());
+```
+
+## Integration Escape Hatch
+
+If you need to add integrations before or after the managed ones, use the `integrations` key:
+
+```ts
+import sentry from "@sentry/astro";
+
+defineNorthwesternConfig({
+    starlight: { title: "My Docs" },
+    integrations: {
+        before: [],           // before mermaid + starlight
+        after: [sentry()],    // after starlight
+    },
+})
+```
+
 ## Custom CSS
 
 The theme loads its CSS before your project's `customCss`, so you can override any token or style in your own CSS files.
 
 ```ts
-starlight({
-    plugins: [northwesternTheme()],
-    customCss: ["./src/styles/overrides.css"],
-});
+defineNorthwesternConfig({
+    starlight: {
+        title: "My Docs",
+        customCss: ["./src/styles/overrides.css"],
+    },
+})
 ```
 
 ## Available CSS Variables
