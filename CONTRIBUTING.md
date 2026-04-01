@@ -32,9 +32,12 @@ Runs at `http://localhost:4321`. CSS and TypeScript changes hot-reload.
 ```
 packages/northwestern-starlight-theme/
   index.ts                   # Main Starlight plugin entry point
+  config.ts                  # Recommended Astro config helper
   mermaid.ts                 # Northwestern-branded Mermaid color palettes
-  expressive-code.mjs        # Code block line number plugin
+  expressive-code.ts         # Expressive Code defaults for manual setups
   src/
+    config-schema.ts         # Runtime validation and friendly config errors
+    og/                      # OG image rendering + endpoint
     rehype-table-scroll.ts   # Rehype plugin: wraps tables in scroll containers at build time
     components/              # Astro component overrides and custom components
     styles/                  # CSS organized by concern
@@ -117,19 +120,30 @@ pnpm fix
 
 The package ships TypeScript source directly. Astro compiles `.ts` imports at the consumer's build time, so this works out of the box for Starlight users.
 
-The `exports` field in `package.json` uses conditional exports with `"types"` conditions pointing to the `.ts` source files. TypeScript resolvers (4.7+ with `"moduleResolution": "bundler"` or `"node16"`) pick these up for autocompletion and type checking.
+The package also emits `.d.ts` files for the public surface. TypeScript consumer compatibility is checked with a dedicated smoke test in `tests/consumer-types/`.
 
 > [!NOTE]
 > Consumers outside the Astro ecosystem would need a TypeScript-aware bundler (Vite, esbuild, tsup) to import this package. Starlight is the only supported consumer today, so this is a deliberate tradeoff: source publishing keeps the DX simple (edit, save, hot-reload) and avoids a build/watch step during development.
 
-`pnpm verify` checks types and lint.
+Useful commands:
+
+```bash
+pnpm build:types           # Emit package declarations
+pnpm test:consumer-types   # Smoke-test the built package from a fresh TS fixture
+pnpm verify                # Fix formatting/lint issues, check deps, build docs
+```
 
 ### Testing
 
-Tests use [Playwright](https://playwright.dev/) with [@axe-core/playwright](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright) for accessibility:
+The repo has two test layers:
+
+- [Vitest](https://vitest.dev/) for unit tests around config helpers, Mermaid behavior, OG rendering helpers, and other package internals
+- [Playwright](https://playwright.dev/) with [@axe-core/playwright](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright) for browser and accessibility coverage against the docs site
 
 ```bash
-pnpm test                    # Run all tests
+pnpm test                    # Run all Vitest unit tests
+pnpm test:consumer-types     # Built-package TS smoke test
+pnpm test:e2e                # Full Playwright suite
 pnpm test:accessibility      # Axe-core across all routes, light + dark
 pnpm test:mermaid            # Fullscreen viewer interactions
 pnpm test:theme              # Theme toggle behavior
@@ -138,14 +152,17 @@ pnpm test:theme              # Theme toggle behavior
 Run a single test file:
 
 ```bash
-pnpm exec playwright test tests/mermaid-toolbar.spec.ts
+pnpm exec playwright test tests/e2e/mermaid-toolbar.spec.ts
 ```
 
 Playwright starts the Astro dev server on its own. Runs against desktop Chromium and mobile Chromium (Pixel 5).
 
 ### Test expectations
 
-- Add or update tests for behavioral changes. CSS-only changes don't need new tests unless they affect accessibility (axe-core will catch contrast and ARIA issues).
+- Add or update Vitest coverage for behavioral changes in config helpers, runtime validation, OG utilities, or Mermaid internals.
+- Add or update Playwright coverage for user-visible behavior changes in the docs site.
+- Add or update the consumer type fixture when public TypeScript surfaces change.
+- CSS-only changes don't need new tests unless they affect accessibility (axe-core will catch contrast and ARIA issues).
 - Accessibility tests run against all doc routes in both light and dark mode. Serious and critical violations fail the build.
 - Mermaid toolbar tests cover fullscreen open/close, focus trap, keyboard shortcuts, zoom, and focus restoration.
 
@@ -183,11 +200,13 @@ Keep the subject line under 70 characters. A body is optional; use one if the "w
 ## Pull requests
 
 1. Fork the repo and create a branch from `main`
-2. Make your changes and run `pnpm verify` to check lint and build
-3. Run `pnpm test` to verify all Playwright tests pass
-4. Push your branch and open a PR against `main`
+2. Make your changes and run `pnpm verify`
+3. Run `pnpm test`
+4. Run `pnpm test:consumer-types` if you changed public config/types/exports
+5. Run the relevant Playwright command when your change affects browser behavior or accessibility
+6. Push your branch and open a PR against `main`
 
-CI runs lint, build, accessibility tests, and a compatibility matrix (Starlight 0.32 minimum + latest). All checks must pass.
+CI runs unit tests, the consumer type smoke test, lint, dependency checks, docs build, accessibility tests, and a compatibility matrix (Starlight 0.32 minimum + latest). All checks must pass.
 
 > [!NOTE]
 > Open a draft PR if you want early feedback on an approach before finishing the implementation.
@@ -202,7 +221,7 @@ Open an issue first. The theme follows Northwestern's brand guidelines, so not a
 
 ## Releases
 
-Maintainers trigger releases through the GitHub Actions release workflow. It validates the version, updates `package.json`, tags, creates a GitHub release, and publishes to npm with provenance.
+Maintainers trigger releases through the GitHub Actions release workflow. It now runs `pnpm verify`, unit tests, and the consumer type smoke test before versioning, tagging, and publishing to npm with provenance.
 
 The changelog follows [Keep a Changelog](https://keepachangelog.com/) format. Update `packages/northwestern-starlight-theme/CHANGELOG.md` as part of your PR if your changes are user-facing.
 
