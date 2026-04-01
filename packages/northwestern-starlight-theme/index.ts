@@ -107,6 +107,22 @@ export interface NorthwesternThemeConfig {
     ogImage?: boolean;
 }
 
+function isNonEmptyString(value: unknown): value is string {
+    return typeof value === "string" && value.trim().length > 0;
+}
+
+function getSiteTitle(title: unknown): string {
+    if (isNonEmptyString(title)) return title.trim();
+    if (title && typeof title === "object") {
+        return (
+            Object.values(title as Record<string, unknown>)
+                .find((value): value is string => isNonEmptyString(value))
+                ?.trim() ?? ""
+        );
+    }
+    return "";
+}
+
 /**
  * Try to resolve a module. Returns true if it can be imported.
  */
@@ -271,34 +287,49 @@ export default function northwesternTheme(config: NorthwesternThemeConfig = {}):
 
                 // OG image generation (bundled via satori + @resvg/resvg-wasm)
                 if (ogImage) {
-                    themeConfig.ogImage.enabled = true;
-                    themeConfig.ogImage.logoPath = faviconPath;
-                    const require = createRequire(import.meta.url);
-                    themeConfig.ogImage.resvgWasmPath = require.resolve("@resvg/resvg-wasm/index_bg.wasm");
-                    const rawTitle = starlightConfig.title;
-                    themeConfig.ogImage.siteTitle =
-                        typeof rawTitle === "string"
-                            ? rawTitle
-                            : (Object.values(rawTitle as Record<string, string>)[0] ?? "");
+                    const siteTitle = getSiteTitle(starlightConfig.title);
 
-                    addRouteMiddleware({
-                        entrypoint: "@nu-appdev/northwestern-starlight-theme/src/og/route-middleware",
-                        order: "post",
-                    });
+                    if (!siteTitle) {
+                        logger.warn(
+                            "Open Graph image generation was disabled because Starlight `title` is empty.\n" +
+                                "  Set `title` in starlight({...}) so OG images and structured data have a site name.",
+                        );
+                    } else {
+                        themeConfig.ogImage.logoPath = faviconPath;
+                        themeConfig.ogImage.siteTitle = siteTitle;
 
-                    addIntegration({
-                        name: "northwestern-theme-og-image",
-                        hooks: {
-                            "astro:config:setup": ({ injectRoute }) => {
-                                injectRoute({
-                                    pattern: "/og/[...slug]",
-                                    entrypoint: "@nu-appdev/northwestern-starlight-theme/src/og/endpoint.ts",
-                                });
+                        addRouteMiddleware({
+                            entrypoint: "@nu-appdev/northwestern-starlight-theme/src/og/route-middleware",
+                            order: "post",
+                        });
+
+                        addIntegration({
+                            name: "northwestern-theme-og-image",
+                            hooks: {
+                                "astro:config:setup": ({ config: astroConfig, injectRoute }) => {
+                                    if (!astroConfig.site) {
+                                        logger.warn(
+                                            "Open Graph image generation was disabled because `site` is not set.\n" +
+                                                "  Set `site` in astro.config.ts to enable absolute OG image URLs.",
+                                        );
+                                        return;
+                                    }
+
+                                    themeConfig.ogImage.enabled = true;
+                                    const require = createRequire(import.meta.url);
+                                    themeConfig.ogImage.resvgWasmPath = require.resolve(
+                                        "@resvg/resvg-wasm/index_bg.wasm",
+                                    );
+
+                                    injectRoute({
+                                        pattern: "/og/[...slug]",
+                                        entrypoint: "@nu-appdev/northwestern-starlight-theme/src/og/endpoint.ts",
+                                    });
+                                    logger.info("OG image generation enabled");
+                                },
                             },
-                        },
-                    });
-
-                    logger.info("OG image generation enabled");
+                        });
+                    }
                 }
 
                 updateConfig({
