@@ -35,6 +35,10 @@
             "types": "./dist/expressive-code.d.ts",
             "import": "./expressive-code.ts"
         },
+        "./config": {
+            "types": "./dist/config.d.ts",
+            "import": "./config.ts"
+        },
         "./mermaid": {
             "types": "./dist/mermaid.d.ts",
             "import": "./mermaid.ts"
@@ -56,6 +60,7 @@
     "files": [
         "CHANGELOG.md",
         "dist/",
+        "config.ts",
         "expressive-code.ts",
         "index.ts",
         "mermaid.ts",

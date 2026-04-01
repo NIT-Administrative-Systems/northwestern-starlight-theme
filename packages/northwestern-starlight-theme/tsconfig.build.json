@@ -8,5 +8,12 @@
         "composite": false,
         "outDir": "dist"
     },
-    "include": ["index.ts", "mermaid.ts", "expressive-code.ts", "src/rehype-table-scroll.ts", "src/virtual.d.ts"]
+    "include": [
+        "index.ts",
+        "config.ts",
+        "mermaid.ts",
+        "expressive-code.ts",
+        "src/rehype-table-scroll.ts",
+        "src/virtual.d.ts"
+    ]
 }
