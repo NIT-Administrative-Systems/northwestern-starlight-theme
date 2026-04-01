@@ -182,6 +182,21 @@ const x = 1;
 ```
 ````
 
+### Overriding Themes
+
+Pass `expressiveCode` in your `starlight` config to replace the defaults. Properties you set override the theme's; `pluginLineNumbers` and `defaultProps` are preserved.
+
+```ts
+defineNorthwesternConfig({
+    starlight: {
+        title: "My Docs",
+        expressiveCode: {
+            themes: ["dracula", "github-light"],
+        },
+    },
+})
+```
+
 ### Manual Setup
 
 If you use `northwesternTheme()` directly instead of `defineNorthwesternConfig`, line numbers require an `ec.config.mjs` at your project root:
