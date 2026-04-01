@@ -7,13 +7,16 @@ import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
  * Adds the line-numbers plugin and sets sensible defaults. Pass your own
  * options to merge with the Northwestern defaults.
  *
+ * **Note:** `defineNorthwesternConfig` includes these options.
+ * This helper is only needed for manual setups using `northwesternTheme()` directly.
+ *
  * @example
  * ```ts
+ * // ec.config.mjs (manual setup only)
+ * import { defineEcConfig } from "@astrojs/starlight/expressive-code";
  * import { northwesternExpressiveCode } from "@nu-appdev/northwestern-starlight-theme/expressive-code";
  *
- * starlight({
- *     expressiveCode: northwesternExpressiveCode(),
- * })
+ * export default defineEcConfig(northwesternExpressiveCode());
  * ```
  */
 export function northwesternExpressiveCode(

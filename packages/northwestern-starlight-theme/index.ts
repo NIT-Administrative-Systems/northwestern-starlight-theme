@@ -54,21 +54,16 @@ export interface NorthwesternHomepageConfig {
 /**
  * Top-level configuration for the Northwestern Starlight theme plugin.
  *
- * Pass to {@link northwesternTheme} when registering the plugin in your
- * Starlight config. All properties are optional and have sensible defaults.
+ * With `defineNorthwesternConfig`, pass these as the `theme` key.
+ * With `northwesternTheme()` directly, pass them as the function argument.
+ * All properties are optional.
  *
  * @example
  * ```ts
- * // astro.config.ts
- * import northwesternTheme from "@nu-appdev/northwestern-starlight-theme";
- *
- * export default defineConfig({
- *     integrations: [
- *         starlight({
- *             plugins: [northwesternTheme({ homepage: { layout: "split" } })],
- *         }),
- *     ],
- * });
+ * defineNorthwesternConfig({
+ *     starlight: { title: "My Docs" },
+ *     theme: { homepage: { layout: "split" } },
+ * })
  * ```
  *
  * @see {@link NorthwesternHomepageConfig} for homepage hero options
@@ -145,10 +140,14 @@ const RESOLVED_VIRTUAL_MODULE_ID = `\0${VIRTUAL_MODULE_ID}`;
  * component overrides (Hero, ThemeToggle, EditLink), and optional Mermaid diagram
  * support with branded color schemes.
  *
+ * **Recommended:** Use {@link https://github.com/NUAppDev/northwestern-starlight-theme | defineNorthwesternConfig}
+ * from `@nu-appdev/northwestern-starlight-theme/config` instead. It handles
+ * integration ordering, Mermaid, and Expressive Code (line numbers, GitHub themes).
+ *
  * @param config - Theme configuration. All properties optional.
  * @returns A Starlight plugin to pass to `plugins` in your Starlight config.
  *
- * @example Basic usage (all defaults)
+ * @example Manual setup
  * ```ts
  * starlight({ plugins: [northwesternTheme()] })
  * ```

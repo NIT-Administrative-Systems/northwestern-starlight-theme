@@ -417,6 +417,9 @@ export const darkMermaidConfig: AstroMermaidOptions = createNorthwesternMermaidC
  * Wraps `astro-mermaid` with Northwestern color palettes for both light and dark
  * modes, and injects the toolbar script (fullscreen viewer, download, copy).
  *
+ * **Note:** `defineNorthwesternConfig` handles Mermaid integration ordering.
+ * This function is only needed for manual setups.
+ *
  * **Must be added before `starlight()` in the `integrations` array.** The
  * `astro-mermaid` remark plugin needs to register before Starlight's rehype
  * processing, and Astro processes integrations in order. Placing it after
@@ -426,7 +429,7 @@ export const darkMermaidConfig: AstroMermaidOptions = createNorthwesternMermaidC
  *   disable the hover toolbar.
  * @returns An Astro integration to add to `integrations` in your Astro config.
  *
- * @example
+ * @example Manual setup
  * ```ts
  * import { northwesternMermaid } from "@nu-appdev/northwestern-starlight-theme/mermaid";
  * import northwesternTheme from "@nu-appdev/northwestern-starlight-theme";
