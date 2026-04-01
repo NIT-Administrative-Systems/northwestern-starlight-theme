@@ -6,10 +6,10 @@ import type { StarlightExpressiveCodeOptions } from "@astrojs/starlight/expressi
 import type { StarlightPlugin, StarlightUserConfig } from "@astrojs/starlight/types";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import type { AstroIntegration, AstroUserConfig } from "astro";
-import type { NorthwesternThemeConfig } from "./index.ts";
-import northwesternTheme from "./index.ts";
-import { type NorthwesternMermaidOptions, northwesternMermaid } from "./mermaid.ts";
-import { northwesternConfigOptionsSchema, validateSchema } from "./src/config-schema.ts";
+import type { NorthwesternThemeConfig } from "./index";
+import northwesternTheme from "./index";
+import { type NorthwesternMermaidOptions, northwesternMermaid } from "./mermaid";
+import { northwesternConfigOptionsSchema, validateSchema } from "./src/config-schema";
 
 /**
  * Vite plugin that enables `pluginLineNumbers` for both markdown code blocks

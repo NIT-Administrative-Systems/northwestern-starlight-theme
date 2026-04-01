@@ -1,8 +1,7 @@
 import type { AstroIntegration } from "astro";
 import mermaid, { type AstroMermaidOptions } from "astro-mermaid";
 import { darken, isDark, lighten, mix, transparentize } from "khroma";
-import type { z } from "zod";
-import { northwesternMermaidOptionsSchema, validateSchema } from "./src/config-schema.ts";
+import { northwesternMermaidOptionsSchema, validateSchema } from "./src/config-schema";
 
 /**
  * Configuration options for the Northwestern Mermaid integration.
@@ -12,7 +11,14 @@ import { northwesternMermaidOptionsSchema, validateSchema } from "./src/config-s
  *
  * @see {@link northwesternMermaid} for the integration factory
  */
-export type NorthwesternMermaidOptions = AstroMermaidOptions & z.infer<typeof northwesternMermaidOptionsSchema>;
+export interface NorthwesternMermaidOptions extends AstroMermaidOptions {
+    /**
+     * Show the hover toolbar (fullscreen, download SVG, copy source) on diagrams.
+     *
+     * @default true
+     */
+    toolbar?: boolean;
+}
 
 /**
  * Theme mode for Mermaid color palette generation.

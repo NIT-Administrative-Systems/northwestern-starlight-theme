@@ -4,14 +4,12 @@ import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { StarlightPlugin } from "@astrojs/starlight/types";
-import type { z } from "zod";
 import {
     nonEmptyStringSchema,
-    type northwesternHomepageConfigSchema,
     northwesternThemeConfigSchema,
     validateSchema,
-} from "./src/config-schema.ts";
-import rehypeTableScroll from "./src/rehype-table-scroll.ts";
+} from "./src/config-schema";
+import rehypeTableScroll from "./src/rehype-table-scroll";
 
 /**
  * Configuration for the homepage hero section.
@@ -30,7 +28,33 @@ import rehypeTableScroll from "./src/rehype-table-scroll.ts";
  * })
  * ```
  */
-export type NorthwesternHomepageConfig = z.infer<typeof northwesternHomepageConfigSchema>;
+export interface NorthwesternHomepageConfig {
+    /**
+     * Hero layout style.
+     *
+     * - `"centered"` (default) — image above title, everything centered
+     * - `"split"` — text + buttons on the left, image on the right (60/40 split)
+     */
+    layout?: "centered" | "split";
+
+    /**
+     * Whether to display the page title in the hero.
+     *
+     * Set to `false` when the hero image is a lockup that already contains the title.
+     *
+     * @default true
+     */
+    showTitle?: boolean;
+
+    /**
+     * Maximum width of the hero image in the centered layout, in pixels.
+     *
+     * Use a larger value for wide lockup images (e.g., `"750px"`, `"1000px"`).
+     *
+     * @default "500px"
+     */
+    imageWidth?: string;
+}
 
 /**
  * Top-level configuration for the Northwestern Starlight theme plugin.
@@ -49,7 +73,38 @@ export type NorthwesternHomepageConfig = z.infer<typeof northwesternHomepageConf
  *
  * @see {@link NorthwesternHomepageConfig} for homepage hero options
  */
-export type NorthwesternThemeConfig = z.infer<typeof northwesternThemeConfigSchema>;
+export interface NorthwesternThemeConfig {
+    /**
+     * Homepage hero layout configuration.
+     *
+     * @see {@link NorthwesternHomepageConfig}
+     */
+    homepage?: NorthwesternHomepageConfig;
+
+    /**
+     * Mermaid diagram support.
+     *
+     * - `true` (default) — auto-detect: enables Mermaid if `astro-mermaid` and `mermaid`
+     *   are installed, skips silently if they are not
+     * - `false` — disables Mermaid entirely
+     * - `object` — enables Mermaid with custom Mermaid config merged with Northwestern defaults
+     *
+     * @default true
+     */
+    mermaid?: boolean | Record<string, unknown>;
+
+    /**
+     * Open Graph image generation.
+     *
+     * Generates branded OG images (1200x630 PNG) for every docs page with the
+     * page title and description on a Northwestern purple background.
+     *
+     * Requires `site` to be set in `astro.config.ts` for absolute image URLs.
+     *
+     * @default true
+     */
+    ogImage?: boolean;
+}
 
 function getSiteTitle(title: unknown): string {
     const parsedTitle = nonEmptyStringSchema.safeParse(title);

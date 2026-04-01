@@ -3,6 +3,7 @@
     "scripts": {
         "verify": "pnpm fix && pnpm check:deps && pnpm docs:build",
         "verify:full": "pnpm verify && pnpm test:accessibility",
+        "build:types": "pnpm --filter @nu-appdev/northwestern-starlight-theme build",
         "fix": "biome check --write && stylelint \"packages/northwestern-starlight-theme/src/**/*.css\" --fix",
         "check": "biome check",
         "check:deps": "knip",
@@ -12,6 +13,7 @@
         "lint:css": "stylelint \"packages/northwestern-starlight-theme/src/**/*.css\"",
         "test": "vitest run",
         "test:watch": "vitest",
+        "test:consumer-types": "pnpm build:types && pnpm --filter @nu-appdev/northwestern-starlight-theme exec tsc --project ../../tests/consumer-types/tsconfig.json --noEmit",
         "test:e2e": "playwright test",
         "test:accessibility": "playwright test tests/e2e/accessibility.spec.ts",
         "test:mermaid": "playwright test tests/e2e/mermaid-toolbar.spec.ts",
