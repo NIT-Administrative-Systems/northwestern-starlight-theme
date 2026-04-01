@@ -14,4 +14,13 @@
 /biome.json export-ignore
 /knip.json export-ignore
 /art export-ignore
+/CONTRIBUTING.md export-ignore
+/docs export-ignore
+/package.json export-ignore
+/playwright.config.ts export-ignore
 /pnpm-lock.yaml export-ignore
+/pnpm-workspace.yaml export-ignore
+/tests export-ignore
+/tsconfig.base.json export-ignore
+/tsconfig.json export-ignore
+/vitest.config.ts export-ignore
