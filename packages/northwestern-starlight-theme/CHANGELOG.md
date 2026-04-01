@@ -7,19 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.4.1] - 2026-03-31
+## [1.5.0] - 2026-03-31
+
+### Added
+
+- **[`defineNorthwesternConfig`](http://starlight-theme.entapp.northwestern.edu/getting-started/#configuration) config helper.** Single function that returns a complete Astro config with integration ordering (mermaid → starlight), plugin registration, and Expressive Code. Replaces the manual `defineConfig` + `starlight()` + `northwesternMermaid()` wiring. New `./config` package export.
+- **Automatic Expressive Code line numbers.** `defineNorthwesternConfig` injects `pluginLineNumbers()` and GitHub syntax themes (`github-dark` / `github-light`). No `ec.config.mjs` file needed. A Vite plugin separates serializable config from plugin instances so the `<Code>` Astro component continues to work.
+- Type declarations (`.d.ts`) shipped for all public exports.
+- OG images for changelog version pages with multi-line titles (e.g., "Changelog / 1.4.0").
+- JSON-LD structured data on each page.
+- Unit test suite (Vitest) covering `config.ts`, `expressive-code.ts`, `mermaid.ts`, and `rehype-table-scroll.ts`. E2E tests moved to `tests/e2e/`. CI runs unit tests in a dedicated job.
 
 ### Fixed
 
 - Replaced `astro-og-canvas` + `canvaskit-wasm` with `satori` + `@resvg/resvg-wasm`. pnpm users no longer need `canvaskit-wasm` as a direct dependency.
-- Larger OG text: title 48→56px, description 28→32px, logo 60→80px.
-- Separate vertical (60px) and horizontal (220px) OG padding to avoid clipping.
-- Asides use a 3px left accent stripe instead of a 1px box border, matching the blockquote and card accent patterns.
+- OG image generation logs a warning and disables when Starlight `title` is empty or `site` is not set, instead of crashing or producing broken URLs.
+- OG font buffer uses correct `Uint8Array` offset slicing instead of casting the full backing `ArrayBuffer`.
+- Larger OG text: title 48→56px, description 28→32px, logo 60→80px. Separate vertical (60px) and horizontal (220px) padding to avoid clipping.
+- Rehype table scroll skips tables already inside `.nu-table-scroll`, preventing double-wrapping on incremental rebuilds.
+- Aside borders use solid brand colors (`#5091cd`, `#008656`, `#ffc520`, `#ef553f`) and a 3px left accent stripe instead of a translucent 1px box border. Dark mode borders match the text accent for each variant.
 
-### Added
+### Changed
 
-- OG images for changelog version pages with multi-line titles (e.g., "Changelog / 1.4.0").
-- JSON-LD structured data on each page.
+- `h1` keeps `Noto Serif`; `h2`–`h6` switched to `Poppins`.
+- Package `exports` map includes `types` fields pointing to `dist/*.d.ts` for all entry points.
 
 ## [1.4.0] - 2026-03-31
 
@@ -167,8 +178,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OpenAPI plugin compatibility with method badge preservation
 - Reduced motion support for transitions
 
-[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.4.1...HEAD
-[1.4.1]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.4.0...v1.4.1
+[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.3.2...v1.4.0
 [1.3.2]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.3.0...v1.3.1
