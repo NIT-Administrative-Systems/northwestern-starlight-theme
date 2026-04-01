@@ -471,16 +471,13 @@ export function northwesternMermaid(options: NorthwesternMermaidOptions = {}): A
 
     const mergedLightMermaidConfig = mergeWithOverrides(lightConfig.mermaidConfig as Record<string, unknown>);
     const mergedDarkMermaidConfig = mergeWithOverrides(darkConfig.mermaidConfig as Record<string, unknown>);
+    const mermaidModulePromise = import("astro-mermaid");
 
     return {
         name: "northwestern-mermaid",
         hooks: {
             async "astro:config:setup"(params) {
-                const mermaidModuleUrl = import.meta.resolve("astro-mermaid");
-                const dynamicImport = new Function("specifier", "return import(specifier);") as (
-                    specifier: string,
-                ) => Promise<typeof import("astro-mermaid")>;
-                const { default: mermaid } = await dynamicImport(mermaidModuleUrl);
+                const { default: mermaid } = await mermaidModulePromise;
                 const mermaidIntegration = mermaid({
                     ...lightConfig,
                     ...overrides,

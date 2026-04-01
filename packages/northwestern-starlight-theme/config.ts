@@ -84,6 +84,40 @@ function hasOptionalPackage(id: string): boolean {
 }
 
 /**
+ * Merge helper-managed and migrated Starlight plugins into a stable order.
+ *
+ * The Northwestern theme plugin is always first. Existing `starlight.plugins`
+ * are preserved next for migration compatibility, and helper-level `plugins`
+ * are appended last. Named plugins are deduped by first occurrence.
+ *
+ * @internal
+ */
+export function mergeStarlightPlugins(
+    themePlugin: StarlightPlugin,
+    starlightPlugins: StarlightPlugin[],
+    helperPlugins: StarlightPlugin[],
+): StarlightPlugin[] {
+    const seenNamedPlugins = new Set<string>();
+    const deduped: StarlightPlugin[] = [];
+
+    for (const plugin of [themePlugin, ...starlightPlugins, ...helperPlugins]) {
+        if (!plugin.name) {
+            deduped.push(plugin);
+            continue;
+        }
+
+        if (seenNamedPlugins.has(plugin.name)) {
+            continue;
+        }
+
+        seenNamedPlugins.add(plugin.name);
+        deduped.push(plugin);
+    }
+
+    return deduped;
+}
+
+/**
  * Configuration options for {@link defineNorthwesternConfig}.
  *
  * Extends Astro's config (minus `integrations`) with Northwestern-specific
@@ -165,8 +199,15 @@ export function defineNorthwesternConfig(options: NorthwesternConfigOptions): As
         ...astroConfig
     } = validatedOptions as NorthwesternConfigOptions;
 
+    const {
+        expressiveCode: userExpressiveCode,
+        plugins: starlightPlugins = [],
+        ...restStarlightConfig
+    } = starlightConfig;
+    const helperPlugins = plugins;
+
     // Warn if user manually added northwesternTheme in plugins
-    for (const plugin of plugins) {
+    for (const plugin of [...starlightPlugins, ...helperPlugins]) {
         if (plugin.name === "northwestern-starlight-theme") {
             console.warn(
                 "[northwestern-starlight-theme] `northwesternTheme()` was found in `plugins` — " +
@@ -174,6 +215,13 @@ export function defineNorthwesternConfig(options: NorthwesternConfigOptions): As
                     "double-registration. Use the `theme` key for options instead.",
             );
         }
+    }
+
+    if (starlightPlugins.length > 0) {
+        console.warn(
+            "[northwestern-starlight-theme] `starlight.plugins` was found in the helper config. Those plugins will be preserved, " +
+                "but the helper's top-level `plugins` key is the preferred API for new configs.",
+        );
     }
 
     // Build theme config, handling mermaid dual-path.
@@ -212,7 +260,6 @@ export function defineNorthwesternConfig(options: NorthwesternConfigOptions): As
 
     // Build Expressive Code config: GitHub themes + line-numbers plugin.
     // Merge with any user-provided expressiveCode settings.
-    const { expressiveCode: userExpressiveCode, ...restStarlightConfig } = starlightConfig;
     const expressiveCodeConfig: StarlightExpressiveCodeOptions = {
         plugins: [pluginLineNumbers()],
         defaultProps: { showLineNumbers: false },
@@ -220,6 +267,7 @@ export function defineNorthwesternConfig(options: NorthwesternConfigOptions): As
         useStarlightUiThemeColors: true,
         ...(typeof userExpressiveCode === "object" ? userExpressiveCode : {}),
     };
+    const mergedPlugins = mergeStarlightPlugins(northwesternTheme(themeConfig), starlightPlugins, helperPlugins);
 
     // Build integration array: before → [mermaid] → starlight → after
     const integrations: AstroIntegration[] = [
@@ -228,7 +276,7 @@ export function defineNorthwesternConfig(options: NorthwesternConfigOptions): As
         starlight({
             ...restStarlightConfig,
             expressiveCode: expressiveCodeConfig,
-            plugins: [northwesternTheme(themeConfig), ...plugins],
+            plugins: mergedPlugins,
         }),
         ...(extraIntegrations?.after ?? []),
     ];

@@ -33,7 +33,9 @@ vi.mock("../../packages/northwestern-starlight-theme/mermaid.ts", async (importO
 
 import { defineNorthwesternConfig } from "../../packages/northwestern-starlight-theme/config.ts";
 
-type MockIntegration = AstroIntegration & { _mermaidConfig?: unknown };
+type MockIntegration = AstroIntegration & {
+    _mermaidConfig?: unknown;
+};
 
 function getIntegrations(config: AstroUserConfig): MockIntegration[] {
     return config.integrations as MockIntegration[];
@@ -106,11 +108,8 @@ describe("defineNorthwesternConfig", () => {
             starlight: { title: "Test" },
             plugins: [userPlugin],
         });
-        // Theme plugin is created via mockNorthwesternTheme
         expect(mockNorthwesternTheme).toHaveBeenCalledOnce();
-        // Starlight integration is present in the output
-        const names = getIntegrations(result).map((i) => i.name);
-        expect(names).toContain("@astrojs/starlight");
+        expect(getIntegrations(result).map((i) => i.name)).toContain("@astrojs/starlight");
     });
 
     it("warns when user manually adds northwestern-starlight-theme plugin", () => {
@@ -153,6 +152,19 @@ describe("defineNorthwesternConfig", () => {
 
         expect(getIntegrations(result).map((i) => i.name)).toEqual(["@astrojs/starlight"]);
         expect(spy).toHaveBeenCalledWith(expect.stringContaining("Mermaid support was requested"));
+    });
+
+    it("warns when migrated starlight.plugins are present", () => {
+        const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+        defineNorthwesternConfig({
+            starlight: {
+                title: "Test",
+                plugins: [{ name: "migrated-plugin", hooks: {} }],
+            },
+        });
+
+        expect(spy).toHaveBeenCalledWith(expect.stringContaining("`starlight.plugins` was found"));
     });
 
     it("forwards theme config to northwesternTheme", () => {
