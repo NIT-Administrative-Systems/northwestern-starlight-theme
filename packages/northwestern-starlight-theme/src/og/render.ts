@@ -1,7 +1,6 @@
 import fs from "node:fs/promises";
 import { initWasm, Resvg } from "@resvg/resvg-wasm";
 import satori from "satori";
-import sharp from "sharp";
 
 type RGBColor = [r: number, g: number, b: number];
 type FontWeight = string;
@@ -36,18 +35,6 @@ interface OGImageOptions {
 }
 
 const [width, height] = [1200, 630];
-const renderHints = [
-    'text-rendering="geometricPrecision"',
-    'shape-rendering="geometricPrecision"',
-    'image-rendering="optimizeQuality"',
-].join(" ");
-const pngOptions = {
-    palette: true,
-    quality: 100,
-    compressionLevel: 9,
-    effort: 10,
-    dither: 0,
-} as const;
 
 let wasmInitialized = false;
 async function ensureWasm(wasmPath: string) {
@@ -243,12 +230,10 @@ export async function renderOGImage({
         height,
         fonts: satoriFont,
     });
-    const optimizedSvg = svg.replace("<svg", `<svg ${renderHints}`);
-
     await ensureWasm(resvgWasmPath);
-    const resvg = new Resvg(optimizedSvg, {
+    const resvg = new Resvg(svg, {
         fitTo: { mode: "width", value: width },
     });
 
-    return sharp(Buffer.from(resvg.render().asPng())).png(pngOptions).toBuffer();
+    return Buffer.from(resvg.render().asPng());
 }
