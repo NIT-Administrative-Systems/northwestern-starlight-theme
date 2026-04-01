@@ -68,12 +68,33 @@ function rgbToCSS(rgb: RGBColor): string {
 
 const fontCache = new Map<string, ArrayBuffer>();
 
-async function loadFont(url: string): Promise<ArrayBuffer> {
+/**
+ * Load a font from disk or a remote URL for OG image rendering.
+ *
+ * @internal
+ */
+export async function loadFont(url: string): Promise<ArrayBuffer> {
     const cached = fontCache.get(url);
     if (cached) return cached;
     let buffer: ArrayBuffer;
     if (/^https?:\/\//.test(url)) {
-        const response = await fetch(url);
+        let response: Response;
+        try {
+            response = await fetch(url);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            throw new Error(`[northwestern-starlight-theme] Failed to fetch OG font from ${url}: ${message}`, {
+                cause: error,
+            });
+        }
+
+        if (!response.ok) {
+            const statusText = response.statusText ? ` ${response.statusText}` : "";
+            throw new Error(
+                `[northwestern-starlight-theme] Failed to fetch OG font from ${url}: HTTP ${response.status}${statusText}`,
+            );
+        }
+
         buffer = await response.arrayBuffer();
     } else {
         const file = await fs.readFile(url);
