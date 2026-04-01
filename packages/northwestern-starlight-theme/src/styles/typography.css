@@ -156,11 +156,11 @@
         --sl-font-system-mono: ui-monospace, sfmono-regular, "SF Mono", menlo, consolas, "Liberation Mono", monospace;
     }
 
-    h1,
-    h2 {
+    h1 {
         font-family: var(--nu-font-display);
     }
 
+    h2,
     h3,
     h4,
     h5,

@@ -53,8 +53,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --prefer-offline
 
-      - name: Verify build
-        run: pnpm docs:build
+      - name: Verify repository
+        run: pnpm verify
+
+      - name: Run unit tests
+        run: pnpm test
+
+      - name: Run consumer typecheck
+        run: pnpm test:consumer-types
 
       - name: Check version doesn't already exist
         env:

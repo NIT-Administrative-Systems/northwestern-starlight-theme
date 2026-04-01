@@ -178,7 +178,8 @@
 
     .starlight-aside {
         padding: 1rem 1.25rem;
-        border: 1px solid var(--sl-color-asides-border) !important;
+        border: none !important;
+        border-inline-start: 3px solid var(--sl-color-asides-border) !important;
     }
 
     .starlight-aside__title {
@@ -195,50 +196,50 @@
 
     .starlight-aside--note {
         --sl-color-asides-text-accent: color-mix(in srgb, var(--nu-blue), black 30%);
-        --sl-color-asides-border: rgb(80 145 205 / 30%);
-        background-color: rgb(80 145 205 / 6%) !important;
+        --sl-color-asides-border: #5091cd;
+        background-color: rgb(80 145 205 / 8%) !important;
     }
 
     .starlight-aside--tip {
         --sl-color-asides-text-accent: color-mix(in srgb, var(--nu-dark-green), black 18%);
-        --sl-color-asides-border: rgb(0 134 86 / 30%);
-        background-color: rgb(0 134 86 / 6%) !important;
+        --sl-color-asides-border: #008656;
+        background-color: rgb(0 134 86 / 8%) !important;
     }
 
     .starlight-aside--caution {
         --sl-color-asides-text-accent: color-mix(in srgb, var(--nu-dark-gold), black 24%);
-        --sl-color-asides-border: rgb(255 197 32 / 35%);
-        background-color: rgb(255 197 32 / 8%) !important;
+        --sl-color-asides-border: #ffc520;
+        background-color: rgb(255 197 32 / 10%) !important;
     }
 
     .starlight-aside--danger {
         --sl-color-asides-text-accent: color-mix(in srgb, var(--nu-dark-orange), black 18%);
-        --sl-color-asides-border: rgb(239 85 63 / 30%);
-        background-color: rgb(239 85 63 / 6%) !important;
+        --sl-color-asides-border: #ef553f;
+        background-color: rgb(239 85 63 / 8%) !important;
     }
 
     :root:not([data-theme="light"]) .starlight-aside--note {
         --sl-color-asides-text-accent: #93c5fd;
-        --sl-color-asides-border: rgb(80 145 205 / 25%);
-        background-color: rgb(80 145 205 / 8%) !important;
+        --sl-color-asides-border: #93c5fd;
+        background-color: rgb(80 145 205 / 10%) !important;
     }
 
     :root:not([data-theme="light"]) .starlight-aside--tip {
         --sl-color-asides-text-accent: #6ee7b7;
-        --sl-color-asides-border: rgb(0 134 86 / 25%);
-        background-color: rgb(0 134 86 / 8%) !important;
+        --sl-color-asides-border: #6ee7b7;
+        background-color: rgb(0 134 86 / 10%) !important;
     }
 
     :root:not([data-theme="light"]) .starlight-aside--caution {
         --sl-color-asides-text-accent: #fde68a;
-        --sl-color-asides-border: rgb(255 197 32 / 30%);
-        background-color: rgb(255 197 32 / 10%) !important;
+        --sl-color-asides-border: #fde68a;
+        background-color: rgb(255 197 32 / 12%) !important;
     }
 
     :root:not([data-theme="light"]) .starlight-aside--danger {
         --sl-color-asides-text-accent: #fca5a5;
-        --sl-color-asides-border: rgb(239 85 63 / 25%);
-        background-color: rgb(239 85 63 / 8%) !important;
+        --sl-color-asides-border: #fca5a5;
+        background-color: rgb(239 85 63 / 10%) !important;
     }
 
     .sl-link-button {

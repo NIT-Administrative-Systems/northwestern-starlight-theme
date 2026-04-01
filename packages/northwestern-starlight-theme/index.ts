@@ -4,7 +4,8 @@ import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { StarlightPlugin } from "@astrojs/starlight/types";
-import rehypeTableScroll from "./src/rehype-table-scroll.ts";
+import { nonEmptyStringSchema, northwesternThemeConfigSchema, validateSchema } from "./src/config-schema";
+import rehypeTableScroll from "./src/rehype-table-scroll";
 
 /**
  * Configuration for the homepage hero section.
@@ -54,21 +55,16 @@ export interface NorthwesternHomepageConfig {
 /**
  * Top-level configuration for the Northwestern Starlight theme plugin.
  *
- * Pass to {@link northwesternTheme} when registering the plugin in your
- * Starlight config. All properties are optional and have sensible defaults.
+ * With `defineNorthwesternConfig`, pass these as the `theme` key.
+ * With `northwesternTheme()` directly, pass them as the function argument.
+ * All properties are optional.
  *
  * @example
  * ```ts
- * // astro.config.ts
- * import northwesternTheme from "@nu-appdev/northwestern-starlight-theme";
- *
- * export default defineConfig({
- *     integrations: [
- *         starlight({
- *             plugins: [northwesternTheme({ homepage: { layout: "split" } })],
- *         }),
- *     ],
- * });
+ * defineNorthwesternConfig({
+ *     starlight: { title: "My Docs" },
+ *     theme: { homepage: { layout: "split" } },
+ * })
  * ```
  *
  * @see {@link NorthwesternHomepageConfig} for homepage hero options
@@ -87,8 +83,7 @@ export interface NorthwesternThemeConfig {
      * - `true` (default) — auto-detect: enables Mermaid if `astro-mermaid` and `mermaid`
      *   are installed, skips silently if they are not
      * - `false` — disables Mermaid entirely
-     * - `object` — enables Mermaid with custom {@link https://mermaid.js.org/config/schema-docs/config.html | MermaidConfig}
-     *   merged with Northwestern defaults
+     * - `object` — enables Mermaid with custom Mermaid config merged with Northwestern defaults
      *
      * @default true
      */
@@ -105,6 +100,18 @@ export interface NorthwesternThemeConfig {
      * @default true
      */
     ogImage?: boolean;
+}
+
+function getSiteTitle(title: unknown): string {
+    const parsedTitle = nonEmptyStringSchema.safeParse(title);
+    if (parsedTitle.success) return parsedTitle.data;
+    if (title && typeof title === "object") {
+        for (const value of Object.values(title as Record<string, unknown>)) {
+            const parsedValue = nonEmptyStringSchema.safeParse(value);
+            if (parsedValue.success) return parsedValue.data;
+        }
+    }
+    return "";
 }
 
 /**
@@ -129,10 +136,14 @@ const RESOLVED_VIRTUAL_MODULE_ID = `\0${VIRTUAL_MODULE_ID}`;
  * component overrides (Hero, ThemeToggle, EditLink), and optional Mermaid diagram
  * support with branded color schemes.
  *
+ * **Recommended:** Use {@link https://github.com/NUAppDev/northwestern-starlight-theme | defineNorthwesternConfig}
+ * from `@nu-appdev/northwestern-starlight-theme/config` instead. It handles
+ * integration ordering, Mermaid, and Expressive Code (line numbers, GitHub themes).
+ *
  * @param config - Theme configuration. All properties optional.
  * @returns A Starlight plugin to pass to `plugins` in your Starlight config.
  *
- * @example Basic usage (all defaults)
+ * @example Manual setup
  * ```ts
  * starlight({ plugins: [northwesternTheme()] })
  * ```
@@ -150,7 +161,11 @@ const RESOLVED_VIRTUAL_MODULE_ID = `\0${VIRTUAL_MODULE_ID}`;
  * ```
  */
 export default function northwesternTheme(config: NorthwesternThemeConfig = {}): StarlightPlugin {
-    const { homepage = {}, mermaid = true, ogImage = true } = config;
+    const {
+        homepage = {},
+        mermaid = true,
+        ogImage = true,
+    } = validateSchema(northwesternThemeConfigSchema, config, "theme config");
     const themeConfig = {
         homepage: {
             layout: homepage.layout ?? "centered",
@@ -271,34 +286,49 @@ export default function northwesternTheme(config: NorthwesternThemeConfig = {}):
 
                 // OG image generation (bundled via satori + @resvg/resvg-wasm)
                 if (ogImage) {
-                    themeConfig.ogImage.enabled = true;
-                    themeConfig.ogImage.logoPath = faviconPath;
-                    const require = createRequire(import.meta.url);
-                    themeConfig.ogImage.resvgWasmPath = require.resolve("@resvg/resvg-wasm/index_bg.wasm");
-                    const rawTitle = starlightConfig.title;
-                    themeConfig.ogImage.siteTitle =
-                        typeof rawTitle === "string"
-                            ? rawTitle
-                            : (Object.values(rawTitle as Record<string, string>)[0] ?? "");
+                    const siteTitle = getSiteTitle(starlightConfig.title);
 
-                    addRouteMiddleware({
-                        entrypoint: "@nu-appdev/northwestern-starlight-theme/src/og/route-middleware",
-                        order: "post",
-                    });
+                    if (!siteTitle) {
+                        logger.warn(
+                            "Open Graph image generation was disabled because Starlight `title` is empty.\n" +
+                                "  Set `title` in starlight({...}) so OG images and structured data have a site name.",
+                        );
+                    } else {
+                        themeConfig.ogImage.logoPath = faviconPath;
+                        themeConfig.ogImage.siteTitle = siteTitle;
 
-                    addIntegration({
-                        name: "northwestern-theme-og-image",
-                        hooks: {
-                            "astro:config:setup": ({ injectRoute }) => {
-                                injectRoute({
-                                    pattern: "/og/[...slug]",
-                                    entrypoint: "@nu-appdev/northwestern-starlight-theme/src/og/endpoint.ts",
-                                });
+                        addRouteMiddleware({
+                            entrypoint: "@nu-appdev/northwestern-starlight-theme/src/og/route-middleware",
+                            order: "post",
+                        });
+
+                        addIntegration({
+                            name: "northwestern-theme-og-image",
+                            hooks: {
+                                "astro:config:setup": ({ config: astroConfig, injectRoute }) => {
+                                    if (!astroConfig.site) {
+                                        logger.warn(
+                                            "Open Graph image generation was disabled because `site` is not set.\n" +
+                                                "  Set `site` in astro.config.ts to enable absolute OG image URLs.",
+                                        );
+                                        return;
+                                    }
+
+                                    themeConfig.ogImage.enabled = true;
+                                    const require = createRequire(import.meta.url);
+                                    themeConfig.ogImage.resvgWasmPath = require.resolve(
+                                        "@resvg/resvg-wasm/index_bg.wasm",
+                                    );
+
+                                    injectRoute({
+                                        pattern: "/og/[...slug]",
+                                        entrypoint: "@nu-appdev/northwestern-starlight-theme/src/og/endpoint.ts",
+                                    });
+                                    logger.info("OG image generation enabled");
+                                },
                             },
-                        },
-                    });
-
-                    logger.info("OG image generation enabled");
+                        });
+                    }
                 }
 
                 updateConfig({

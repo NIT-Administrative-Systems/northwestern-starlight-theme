@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "strict": true,
+        "noEmit": true,
+        "skipLibCheck": true,
+        "ignoreDeprecations": "6.0",
+        "baseUrl": ".",
+        "paths": {
+            "astro": ["./stubs/astro.d.ts"],
+            "astro-mermaid": ["./stubs/astro-mermaid.d.ts"],
+            "@astrojs/starlight/types": ["./stubs/starlight-types.d.ts"]
+        }
+    },
+    "include": ["./fixture.ts", "./globals.d.ts"]
+}

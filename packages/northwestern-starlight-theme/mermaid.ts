@@ -1,6 +1,7 @@
 import type { AstroIntegration } from "astro";
-import mermaid, { type AstroMermaidOptions } from "astro-mermaid";
+import type { AstroMermaidOptions } from "astro-mermaid";
 import { darken, isDark, lighten, mix, transparentize } from "khroma";
+import { northwesternMermaidOptionsSchema, validateSchema } from "./src/config-schema";
 
 /**
  * Configuration options for the Northwestern Mermaid integration.
@@ -417,6 +418,9 @@ export const darkMermaidConfig: AstroMermaidOptions = createNorthwesternMermaidC
  * Wraps `astro-mermaid` with Northwestern color palettes for both light and dark
  * modes, and injects the toolbar script (fullscreen viewer, download, copy).
  *
+ * **Note:** `defineNorthwesternConfig` handles Mermaid integration ordering.
+ * This function is only needed for manual setups.
+ *
  * **Must be added before `starlight()` in the `integrations` array.** The
  * `astro-mermaid` remark plugin needs to register before Starlight's rehype
  * processing, and Astro processes integrations in order. Placing it after
@@ -426,7 +430,7 @@ export const darkMermaidConfig: AstroMermaidOptions = createNorthwesternMermaidC
  *   disable the hover toolbar.
  * @returns An Astro integration to add to `integrations` in your Astro config.
  *
- * @example
+ * @example Manual setup
  * ```ts
  * import { northwesternMermaid } from "@nu-appdev/northwestern-starlight-theme/mermaid";
  * import northwesternTheme from "@nu-appdev/northwestern-starlight-theme";
@@ -443,7 +447,11 @@ export const darkMermaidConfig: AstroMermaidOptions = createNorthwesternMermaidC
  * ```
  */
 export function northwesternMermaid(options: NorthwesternMermaidOptions = {}): AstroIntegration {
-    const { toolbar = true, ...overrides } = options;
+    const { toolbar = true, ...overrides } = validateSchema(
+        northwesternMermaidOptionsSchema,
+        options,
+        "Mermaid config",
+    );
     const lightConfig = createNorthwesternMermaidConfig("light");
     const darkConfig = createNorthwesternMermaidConfig("dark");
 
@@ -463,19 +471,21 @@ export function northwesternMermaid(options: NorthwesternMermaidOptions = {}): A
 
     const mergedLightMermaidConfig = mergeWithOverrides(lightConfig.mermaidConfig as Record<string, unknown>);
     const mergedDarkMermaidConfig = mergeWithOverrides(darkConfig.mermaidConfig as Record<string, unknown>);
-
-    const mermaidIntegration = mermaid({
-        ...lightConfig,
-        ...overrides,
-        enableLog: false,
-        mermaidConfig: mergedLightMermaidConfig,
-    });
+    const mermaidModulePromise = import("astro-mermaid");
 
     return {
         name: "northwestern-mermaid",
         hooks: {
-            "astro:config:setup"(params) {
-                mermaidIntegration.hooks["astro:config:setup"]?.(params);
+            async "astro:config:setup"(params) {
+                const { default: mermaid } = await mermaidModulePromise;
+                const mermaidIntegration = mermaid({
+                    ...lightConfig,
+                    ...overrides,
+                    enableLog: false,
+                    mermaidConfig: mergedLightMermaidConfig,
+                });
+
+                await mermaidIntegration.hooks["astro:config:setup"]?.(params);
 
                 params.injectScript(
                     "page",

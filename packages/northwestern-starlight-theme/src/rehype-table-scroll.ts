@@ -7,6 +7,11 @@
  */
 import type { Element, Nodes, Root } from "hast";
 
+function isScrollWrapper(node: Element): boolean {
+    const classes = node.properties?.className;
+    return Array.isArray(classes) && classes.includes("nu-table-scroll");
+}
+
 function walk(node: Nodes) {
     if (!("children" in node)) return;
     for (let i = 0; i < node.children.length; i++) {
@@ -24,6 +29,8 @@ function walk(node: Nodes) {
                 children: [child as Element],
             };
             node.children[i] = wrapper;
+        } else if (child.type === "element" && isScrollWrapper(child as Element)) {
+            // Already wrapped — skip to avoid double-wrapping
         } else {
             walk(child as Nodes);
         }

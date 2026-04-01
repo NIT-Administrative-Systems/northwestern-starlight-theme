@@ -18,6 +18,7 @@ declare module "virtual:northwestern-theme/config" {
             enabled: boolean;
             siteTitle: string;
             logoPath: string;
+            resvgWasmPath: string;
         };
     };
     export default config;
