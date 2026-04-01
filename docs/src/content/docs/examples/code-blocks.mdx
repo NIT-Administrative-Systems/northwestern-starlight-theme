@@ -62,23 +62,35 @@ export const diffSnippet = `export function updateNavigation(items) {
 
 export const wrappedSnippet = `const install = "pnpm add @nu-appdev/northwestern-starlight-theme @astrojs/starlight astro mermaid sharp @astrojs/check";`;
 
-The theme ships with Northwestern code block styling. This page covers the `Code` component patterns most useful when authoring docs.
+The theme ships with Northwestern code block styling. This page covers syntax highlighting, line numbers, markers, and frame styles.
 
 ## Terminal Frames
 
-Use the default terminal presentation for commands and shell output.
+````md
+```bash title="bash"
+pnpm add @nu-appdev/northwestern-starlight-theme
+```
+````
 
 <Code code={installCommand} lang="bash" title="bash" />
+
+Long commands can wrap with `wrap={true}`:
+
+```mdx
+<Code code={longCommand} lang="bash" title="bash" wrap={true} hangingIndent={2} />
+```
 
 <Code code={longCommand} lang="bash" title="bash" wrap={true} preserveIndent={false} hangingIndent={2} />
 
 ## Code Frames
 
-`frame="code"` renders the snippet as a file instead of a terminal command.
+`frame="code"` renders the snippet as a file. Add `showLineNumbers` for a numbered gutter:
 
-Line numbers are available as an opt-in feature per code block.
-
-Add `showLineNumbers` to a fenced code block when you want a numbered gutter:
+````md
+```ts showLineNumbers title="astro.config.ts"
+// ...
+```
+````
 
 ```ts showLineNumbers title="astro.config.ts"
 import { defineNorthwesternConfig } from "@nu-appdev/northwestern-starlight-theme/config";
@@ -94,19 +106,32 @@ export default defineNorthwesternConfig({
 });
 ```
 
-In the `<Code>` component, use the `showLineNumbers` prop directly.
+The `<Code>` component accepts the same option via `meta`:
+
+```mdx
+<Code code={configSnippet} lang="ts" title="astro.config.ts" frame="code" meta="showLineNumbers" />
+```
 
 <Code code={configSnippet} lang="ts" title="astro.config.ts" frame="code" meta="showLineNumbers" />
 
 ## Frame Variants
 
-`frame="none"` removes the frame for quieter inline examples.
+`frame="none"` removes the frame:
+
+```mdx
+<Code code={jsonSnippet} lang="json" frame="none" />
+```
 
 <Code code={jsonSnippet} lang="json" frame="none" />
 
 ## Markers
 
-Markers highlight specific lines or text ranges.
+Highlight specific lines, text, or ranges with `mark`, `ins`, and `del`:
+
+```mdx
+<Code code={snippet} lang="ts" title="config.ts"
+    mark={[2, "defineNorthwesternConfig", { range: "4-7", label: "output" }]} />
+```
 
 <Code
     code={markerSnippet}
@@ -115,6 +140,15 @@ Markers highlight specific lines or text ranges.
     frame="code"
     mark={[2, "defineNorthwesternConfig", { range: "4-7", label: "output" }]}
 />
+
+Diff-style markers with `del` and `ins`:
+
+```mdx
+<Code code={snippet} lang="ts" title="navigation.ts"
+    del={[2, "secondary"]}
+    ins={[1, { range: "6-9", label: "new" }]}
+    mark="primary" />
+```
 
 <Code
     code={diffSnippet}
@@ -128,7 +162,9 @@ Markers highlight specific lines or text ranges.
 
 ## Wrapping
 
-Long snippets can wrap cleanly with `wrap`, `preserveIndent`, and `hangingIndent`.
+```mdx
+<Code code={snippet} lang="ts" wrap={true} preserveIndent={true} hangingIndent={3} />
+```
 
 <Code
     code={wrappedSnippet}
@@ -142,7 +178,11 @@ Long snippets can wrap cleanly with `wrap`, `preserveIndent`, and `hangingIndent
 
 ## Class Hook
 
-The `class` prop applies a one-off style variation to a specific example.
+The `class` prop applies a one-off style to a specific block:
+
+```mdx
+<Code code={snippet} lang="ts" class="nu-code-block-accent" wrap={true} />
+```
 
 <Code
     code={wrappedSnippet}
