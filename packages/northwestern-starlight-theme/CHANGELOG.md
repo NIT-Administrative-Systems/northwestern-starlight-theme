@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OG image generation logs a warning and disables when Starlight `title` is empty or `site` is not set, instead of crashing or producing broken URLs.
 - OG font buffer uses correct `Uint8Array` offset slicing instead of casting the full backing `ArrayBuffer`.
 - Larger OG text: title 48→56px, description 28→32px, logo 60→80px. Separate vertical (60px) and horizontal (220px) padding to avoid clipping.
+- Runtime config validation now catches invalid theme, Mermaid, and config-helper options with friendly errors at the public API boundary instead of failing later with cryptic behavior.
 - Rehype table scroll skips tables already inside `.nu-table-scroll`, preventing double-wrapping on incremental rebuilds.
 - Aside borders use solid brand colors (`#5091cd`, `#008656`, `#ffc520`, `#ef553f`) and a 3px left accent stripe instead of a translucent 1px box border. Dark mode borders match the text accent for each variant.
 

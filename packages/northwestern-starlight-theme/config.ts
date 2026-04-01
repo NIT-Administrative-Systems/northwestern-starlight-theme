@@ -2,12 +2,14 @@ import { existsSync } from "node:fs";
 import { createRequire } from "node:module";
 import { join } from "node:path";
 import starlight from "@astrojs/starlight";
+import type { StarlightExpressiveCodeOptions } from "@astrojs/starlight/expressive-code";
 import type { StarlightPlugin, StarlightUserConfig } from "@astrojs/starlight/types";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import type { AstroIntegration, AstroUserConfig } from "astro";
 import type { NorthwesternThemeConfig } from "./index.ts";
 import northwesternTheme from "./index.ts";
 import { type NorthwesternMermaidOptions, northwesternMermaid } from "./mermaid.ts";
+import { northwesternConfigOptionsSchema, validateSchema } from "./src/config-schema.ts";
 
 /**
  * Vite plugin that enables `pluginLineNumbers` for both markdown code blocks
@@ -71,7 +73,7 @@ function northwesternEcVitePlugin() {
  * automatically. Use the `integrations` escape hatch only when you need
  * to inject integrations before or after the managed ones.
  */
-export interface NorthwesternConfigOptions extends Omit<AstroUserConfig, "integrations"> {
+export type NorthwesternConfigOptions = Omit<AstroUserConfig, "integrations"> & {
     /** Full Starlight configuration. Supports all Starlight options with autocompletion. */
     starlight: StarlightUserConfig;
 
@@ -111,7 +113,7 @@ export interface NorthwesternConfigOptions extends Omit<AstroUserConfig, "integr
         before?: AstroIntegration[];
         after?: AstroIntegration[];
     };
-}
+};
 
 /**
  * Create a complete Astro config with Northwestern Starlight theme defaults.
@@ -135,6 +137,7 @@ export interface NorthwesternConfigOptions extends Omit<AstroUserConfig, "integr
  * ```
  */
 export function defineNorthwesternConfig(options: NorthwesternConfigOptions): AstroUserConfig {
+    const validatedOptions = validateSchema(northwesternConfigOptionsSchema, options, "config helper options");
     const {
         starlight: starlightConfig,
         theme,
@@ -142,7 +145,7 @@ export function defineNorthwesternConfig(options: NorthwesternConfigOptions): As
         plugins = [],
         integrations: extraIntegrations,
         ...astroConfig
-    } = options;
+    } = validatedOptions as NorthwesternConfigOptions;
 
     // Warn if user manually added northwesternTheme in plugins
     for (const plugin of plugins) {
@@ -178,10 +181,10 @@ export function defineNorthwesternConfig(options: NorthwesternConfigOptions): As
     // Build Expressive Code config: GitHub themes + line-numbers plugin.
     // Merge with any user-provided expressiveCode settings.
     const { expressiveCode: userExpressiveCode, ...restStarlightConfig } = starlightConfig;
-    const expressiveCodeConfig = {
+    const expressiveCodeConfig: StarlightExpressiveCodeOptions = {
         plugins: [pluginLineNumbers()],
         defaultProps: { showLineNumbers: false },
-        themes: ["github-dark", "github-light"] as const,
+        themes: ["github-dark", "github-light"],
         useStarlightUiThemeColors: true,
         ...(typeof userExpressiveCode === "object" ? userExpressiveCode : {}),
     };
@@ -198,12 +201,21 @@ export function defineNorthwesternConfig(options: NorthwesternConfigOptions): As
         ...(extraIntegrations?.after ?? []),
     ];
 
+    const existingViteConfig = (astroConfig.vite ?? {}) as {
+        plugins?: unknown | unknown[];
+    };
+    const existingVitePlugins = Array.isArray(existingViteConfig.plugins)
+        ? existingViteConfig.plugins
+        : existingViteConfig.plugins
+          ? [existingViteConfig.plugins]
+          : [];
+
     return {
         ...astroConfig,
         integrations,
         vite: {
-            ...astroConfig.vite,
-            plugins: [...((astroConfig.vite?.plugins as Array<unknown>) ?? []), northwesternEcVitePlugin()],
+            ...existingViteConfig,
+            plugins: [...existingVitePlugins, northwesternEcVitePlugin()],
         },
     };
 }

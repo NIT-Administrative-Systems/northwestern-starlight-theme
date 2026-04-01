@@ -4,6 +4,13 @@ import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { StarlightPlugin } from "@astrojs/starlight/types";
+import type { z } from "zod";
+import {
+    nonEmptyStringSchema,
+    type northwesternHomepageConfigSchema,
+    northwesternThemeConfigSchema,
+    validateSchema,
+} from "./src/config-schema.ts";
 import rehypeTableScroll from "./src/rehype-table-scroll.ts";
 
 /**
@@ -23,33 +30,7 @@ import rehypeTableScroll from "./src/rehype-table-scroll.ts";
  * })
  * ```
  */
-export interface NorthwesternHomepageConfig {
-    /**
-     * Hero layout style.
-     *
-     * - `"centered"` (default) — image above title, everything centered
-     * - `"split"` — text + buttons on the left, image on the right (60/40 split)
-     */
-    layout?: "centered" | "split";
-
-    /**
-     * Whether to display the page title in the hero.
-     *
-     * Set to `false` when the hero image is a lockup that already contains the title.
-     *
-     * @default true
-     */
-    showTitle?: boolean;
-
-    /**
-     * Maximum width of the hero image in the centered layout, in pixels.
-     *
-     * Use a larger value for wide lockup images (e.g., `"750px"`, `"1000px"`).
-     *
-     * @default "500px"
-     */
-    imageWidth?: string;
-}
+export type NorthwesternHomepageConfig = z.infer<typeof northwesternHomepageConfigSchema>;
 
 /**
  * Top-level configuration for the Northwestern Starlight theme plugin.
@@ -68,52 +49,16 @@ export interface NorthwesternHomepageConfig {
  *
  * @see {@link NorthwesternHomepageConfig} for homepage hero options
  */
-export interface NorthwesternThemeConfig {
-    /**
-     * Homepage hero layout configuration.
-     *
-     * @see {@link NorthwesternHomepageConfig}
-     */
-    homepage?: NorthwesternHomepageConfig;
-
-    /**
-     * Mermaid diagram support.
-     *
-     * - `true` (default) — auto-detect: enables Mermaid if `astro-mermaid` and `mermaid`
-     *   are installed, skips silently if they are not
-     * - `false` — disables Mermaid entirely
-     * - `object` — enables Mermaid with custom {@link https://mermaid.js.org/config/schema-docs/config.html | MermaidConfig}
-     *   merged with Northwestern defaults
-     *
-     * @default true
-     */
-    mermaid?: boolean | Record<string, unknown>;
-
-    /**
-     * Open Graph image generation.
-     *
-     * Generates branded OG images (1200x630 PNG) for every docs page with the
-     * page title and description on a Northwestern purple background.
-     *
-     * Requires `site` to be set in `astro.config.ts` for absolute image URLs.
-     *
-     * @default true
-     */
-    ogImage?: boolean;
-}
-
-function isNonEmptyString(value: unknown): value is string {
-    return typeof value === "string" && value.trim().length > 0;
-}
+export type NorthwesternThemeConfig = z.infer<typeof northwesternThemeConfigSchema>;
 
 function getSiteTitle(title: unknown): string {
-    if (isNonEmptyString(title)) return title.trim();
+    const parsedTitle = nonEmptyStringSchema.safeParse(title);
+    if (parsedTitle.success) return parsedTitle.data;
     if (title && typeof title === "object") {
-        return (
-            Object.values(title as Record<string, unknown>)
-                .find((value): value is string => isNonEmptyString(value))
-                ?.trim() ?? ""
-        );
+        for (const value of Object.values(title as Record<string, unknown>)) {
+            const parsedValue = nonEmptyStringSchema.safeParse(value);
+            if (parsedValue.success) return parsedValue.data;
+        }
     }
     return "";
 }
@@ -165,7 +110,11 @@ const RESOLVED_VIRTUAL_MODULE_ID = `\0${VIRTUAL_MODULE_ID}`;
  * ```
  */
 export default function northwesternTheme(config: NorthwesternThemeConfig = {}): StarlightPlugin {
-    const { homepage = {}, mermaid = true, ogImage = true } = config;
+    const {
+        homepage = {},
+        mermaid = true,
+        ogImage = true,
+    } = validateSchema(northwesternThemeConfigSchema, config, "theme config");
     const themeConfig = {
         homepage: {
             layout: homepage.layout ?? "centered",

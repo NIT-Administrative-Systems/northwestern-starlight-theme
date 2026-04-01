@@ -1,20 +1,19 @@
 {
+    "extends": "../../tsconfig.base.json",
     "compilerOptions": {
-        "target": "ES2022",
-        "module": "ESNext",
-        "moduleResolution": "bundler",
-        "strict": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "noEmit": true,
         "allowImportingTsExtensions": true,
         "declaration": true,
         "declarationMap": true,
         "composite": true
     },
-    "include": ["index.ts", "mermaid.ts", "src/**/*.ts", "src/**/*.astro", "src/**/*.d.ts"],
+    "include": [
+        "index.ts",
+        "config.ts",
+        "expressive-code.ts",
+        "mermaid.ts",
+        "src/**/*.ts",
+        "src/**/*.astro",
+        "src/**/*.d.ts"
+    ],
     "exclude": ["node_modules", "dist"]
 }
