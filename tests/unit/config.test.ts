@@ -167,6 +167,20 @@ describe("defineNorthwesternConfig", () => {
         expect(spy).toHaveBeenCalledWith(expect.stringContaining("`starlight.plugins` was found"));
     });
 
+    it("warns when theme.mermaid is provided on the helper path", () => {
+        const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+        defineNorthwesternConfig({
+            starlight: { title: "Test" },
+            theme: {
+                mermaid: { theme: "neutral" },
+            },
+            mermaid: true,
+        });
+
+        expect(spy).toHaveBeenCalledWith(expect.stringContaining("`theme.mermaid` is ignored"));
+    });
+
     it("forwards theme config to northwesternTheme", () => {
         defineNorthwesternConfig({
             starlight: { title: "Test" },

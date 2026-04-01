@@ -224,6 +224,13 @@ export function defineNorthwesternConfig(options: NorthwesternConfigOptions): As
         );
     }
 
+    if (theme?.mermaid !== undefined) {
+        console.warn(
+            "[northwestern-starlight-theme] `theme.mermaid` is ignored by `defineNorthwesternConfig()`. " +
+                "Use the helper's top-level `mermaid` option instead.",
+        );
+    }
+
     // Build theme config, handling mermaid dual-path.
     // The standalone northwesternMermaid() integration MUST be added before starlight()
     // so its remark plugin processes mermaid code blocks before expressive-code.
