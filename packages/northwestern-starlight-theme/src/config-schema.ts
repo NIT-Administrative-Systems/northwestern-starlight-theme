@@ -32,7 +32,7 @@ const pixelLengthSchema = z
  * Controls hero layout, title visibility, and image sizing. This is used as
  * the `homepage` property of the top-level theme config.
  */
-export const northwesternHomepageConfigSchema = z
+const northwesternHomepageConfigSchema = z
     .strictObject({
         /**
          * Hero layout style.

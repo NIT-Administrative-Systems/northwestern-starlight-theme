@@ -1,7 +1,7 @@
 import type { AstroIntegration, AstroUserConfig } from "astro";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-const { mockNorthwesternTheme, mockNorthwesternMermaid } = vi.hoisted(() => ({
+const { mockNorthwesternTheme, mockNorthwesternMermaid, mockRequireResolve } = vi.hoisted(() => ({
     mockNorthwesternTheme: vi.fn((config: unknown) => ({
         name: "northwestern-starlight-theme",
         hooks: {},
@@ -12,7 +12,18 @@ const { mockNorthwesternTheme, mockNorthwesternMermaid } = vi.hoisted(() => ({
         hooks: { "astro:config:setup": vi.fn() },
         _mermaidConfig: options,
     })),
+    mockRequireResolve: vi.fn((id: string) => id),
 }));
+
+vi.mock("node:module", async (importOriginal) => {
+    const original = await importOriginal<typeof import("node:module")>();
+    return {
+        ...original,
+        createRequire: vi.fn(() => ({
+            resolve: mockRequireResolve,
+        })),
+    };
+});
 
 vi.mock("../../packages/northwestern-starlight-theme/index.ts", () => ({ default: mockNorthwesternTheme }));
 vi.mock("../../packages/northwestern-starlight-theme/mermaid.ts", async (importOriginal) => {
@@ -31,6 +42,8 @@ function getIntegrations(config: AstroUserConfig): MockIntegration[] {
 afterEach(() => {
     mockNorthwesternTheme.mockClear();
     mockNorthwesternMermaid.mockClear();
+    mockRequireResolve.mockReset();
+    mockRequireResolve.mockImplementation((id: string) => id);
     vi.restoreAllMocks();
 });
 
@@ -119,6 +132,27 @@ describe("defineNorthwesternConfig", () => {
         });
         const names = getIntegrations(result).map((i) => i.name);
         expect(names).toEqual(["before-int", "northwestern-mermaid", "@astrojs/starlight", "after-int"]);
+    });
+
+    it("creates mermaid integration during config construction", () => {
+        const result = defineNorthwesternConfig({ starlight: { title: "Test" } });
+        expect(getIntegrations(result).map((i) => i.name)).toContain("northwestern-mermaid");
+        expect(mockNorthwesternMermaid).toHaveBeenCalledOnce();
+    });
+
+    it("warns and skips mermaid when optional dependencies are missing", () => {
+        mockRequireResolve.mockImplementation((id: string) => {
+            if (id === "astro-mermaid") {
+                throw new Error("missing astro-mermaid");
+            }
+            return id;
+        });
+
+        const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+        const result = defineNorthwesternConfig({ starlight: { title: "Test" } });
+
+        expect(getIntegrations(result).map((i) => i.name)).toEqual(["@astrojs/starlight"]);
+        expect(spy).toHaveBeenCalledWith(expect.stringContaining("Mermaid support was requested"));
     });
 
     it("forwards theme config to northwesternTheme", () => {

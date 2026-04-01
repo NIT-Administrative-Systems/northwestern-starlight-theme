@@ -65,6 +65,24 @@ function northwesternEcVitePlugin() {
         },
     };
 }
+
+function hasOptionalPackage(id: string): boolean {
+    const _require = createRequire(import.meta.url);
+
+    try {
+        _require.resolve(id);
+        return true;
+    } catch (error) {
+        // Some ESM-only packages expose only an `import` condition, so
+        // `require.resolve()` can fail even when the package is installed.
+        if (error && typeof error === "object" && "code" in error && error.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
+            return true;
+        }
+
+        return false;
+    }
+}
+
 /**
  * Configuration options for {@link defineNorthwesternConfig}.
  *
@@ -164,12 +182,26 @@ export function defineNorthwesternConfig(options: NorthwesternConfigOptions): As
     // The theme's built-in mermaid (via addIntegration inside config:setup) runs too late.
     const themeConfig: NorthwesternThemeConfig = { ...theme };
     let mermaidIntegration: AstroIntegration | undefined;
+    const hasAstroMermaid = hasOptionalPackage("astro-mermaid");
+    const hasMermaid = hasOptionalPackage("mermaid");
 
-    if (typeof mermaid === "object") {
+    if (mermaid && (!hasAstroMermaid || !hasMermaid)) {
+        const missingPackages = [
+            ...(!hasAstroMermaid ? ['"astro-mermaid"'] : []),
+            ...(!hasMermaid ? ['"mermaid"'] : []),
+        ];
+        console.warn(
+            `[northwestern-starlight-theme] Mermaid support was requested, but ${missingPackages.join(" and ")} ${
+                missingPackages.length === 1 ? "is" : "are"
+            } not installed. Mermaid integration will be skipped. Install the missing package(s) to enable Mermaid support.`,
+        );
+    }
+
+    if (typeof mermaid === "object" && hasAstroMermaid && hasMermaid) {
         // Standalone integration with custom options; disable the theme's built-in
         themeConfig.mermaid = false;
         mermaidIntegration = northwesternMermaid(mermaid);
-    } else if (mermaid) {
+    } else if (mermaid && hasAstroMermaid && hasMermaid) {
         // Auto-detect: add standalone integration (handles toolbar + dark mode),
         // disable theme's built-in to prevent double-registration
         themeConfig.mermaid = false;

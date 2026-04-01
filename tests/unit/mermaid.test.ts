@@ -41,6 +41,11 @@ function makeHookParams() {
     };
 }
 
+function getLastInjectedScript(params: ReturnType<typeof makeHookParams>): string {
+    const lastCall = params.injectScript.mock.calls.at(-1);
+    return lastCall?.[1] as string;
+}
+
 describe("createNorthwesternMermaidConfig", () => {
     it("returns light config with base theme and Northwestern purple", () => {
         const config = createNorthwesternMermaidConfig("light");
@@ -105,36 +110,36 @@ describe("northwesternMermaid", () => {
         expect(integration.hooks).toHaveProperty("astro:config:setup");
     });
 
-    it("passes toolbar=false into injected script", () => {
+    it("passes toolbar=false into injected script", async () => {
         const integration = northwesternMermaid({ toolbar: false });
         const params = makeHookParams();
-        integration.hooks["astro:config:setup"]?.(params as never);
+        await integration.hooks["astro:config:setup"]?.(params as never);
 
         expect(params.injectScript).toHaveBeenCalled();
-        const scriptContent = params.injectScript.mock.calls[0][1] as string;
+        const scriptContent = getLastInjectedScript(params);
         expect(scriptContent).toContain("__NU_MERMAID_TOOLBAR__ = false");
     });
 
-    it("passes toolbar=true by default into injected script", () => {
+    it("passes toolbar=true by default into injected script", async () => {
         const integration = northwesternMermaid();
         const params = makeHookParams();
-        integration.hooks["astro:config:setup"]?.(params as never);
+        await integration.hooks["astro:config:setup"]?.(params as never);
 
         expect(params.injectScript).toHaveBeenCalled();
-        const scriptContent = params.injectScript.mock.calls[0][1] as string;
+        const scriptContent = getLastInjectedScript(params);
         expect(scriptContent).toContain("__NU_MERMAID_TOOLBAR__ = true");
     });
 
-    it("merges user themeVariables on top of defaults", () => {
+    it("merges user themeVariables on top of defaults", async () => {
         const integration = northwesternMermaid({
             mermaidConfig: {
                 themeVariables: { primaryColor: "#ff0000" },
             },
         });
         const params = makeHookParams();
-        integration.hooks["astro:config:setup"]?.(params as never);
+        await integration.hooks["astro:config:setup"]?.(params as never);
 
-        const scriptContent = params.injectScript.mock.calls[0][1] as string;
+        const scriptContent = getLastInjectedScript(params);
         const configMatch = scriptContent.match(/__NU_MERMAID_CONFIGS__ = ({.*})/s);
         expect(configMatch).not.toBeNull();
 

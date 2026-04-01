@@ -3,6 +3,16 @@
     "ignoreBinaries": ["astro"],
     "ignoreDependencies": ["astro", "hast"],
     "workspaces": {
+        ".": {
+            "entry": ["tests/consumer-types/fixture.ts"],
+            "project": ["tests/consumer-types/**/*.d.ts"],
+            "ignore": [
+                "tests/consumer-types/globals.d.ts",
+                "tests/consumer-types/stubs/astro-mermaid.d.ts",
+                "tests/consumer-types/stubs/astro.d.ts",
+                "tests/consumer-types/stubs/starlight-types.d.ts"
+            ]
+        },
         "packages/northwestern-starlight-theme": {
             "entry": ["src/scripts/**/*.ts"],
             "ignoreDependencies": ["astro-mermaid", "mermaid"]

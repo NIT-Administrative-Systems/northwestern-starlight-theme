@@ -4,11 +4,7 @@ import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { StarlightPlugin } from "@astrojs/starlight/types";
-import {
-    nonEmptyStringSchema,
-    northwesternThemeConfigSchema,
-    validateSchema,
-} from "./src/config-schema";
+import { nonEmptyStringSchema, northwesternThemeConfigSchema, validateSchema } from "./src/config-schema";
 import rehypeTableScroll from "./src/rehype-table-scroll";
 
 /**

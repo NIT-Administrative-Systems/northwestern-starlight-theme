@@ -1,5 +1,5 @@
 import type { AstroIntegration } from "astro";
-import mermaid, { type AstroMermaidOptions } from "astro-mermaid";
+import type { AstroMermaidOptions } from "astro-mermaid";
 import { darken, isDark, lighten, mix, transparentize } from "khroma";
 import { northwesternMermaidOptionsSchema, validateSchema } from "./src/config-schema";
 
@@ -472,18 +472,23 @@ export function northwesternMermaid(options: NorthwesternMermaidOptions = {}): A
     const mergedLightMermaidConfig = mergeWithOverrides(lightConfig.mermaidConfig as Record<string, unknown>);
     const mergedDarkMermaidConfig = mergeWithOverrides(darkConfig.mermaidConfig as Record<string, unknown>);
 
-    const mermaidIntegration = mermaid({
-        ...lightConfig,
-        ...overrides,
-        enableLog: false,
-        mermaidConfig: mergedLightMermaidConfig,
-    });
-
     return {
         name: "northwestern-mermaid",
         hooks: {
-            "astro:config:setup"(params) {
-                mermaidIntegration.hooks["astro:config:setup"]?.(params);
+            async "astro:config:setup"(params) {
+                const mermaidModuleUrl = import.meta.resolve("astro-mermaid");
+                const dynamicImport = new Function("specifier", "return import(specifier);") as (
+                    specifier: string,
+                ) => Promise<typeof import("astro-mermaid")>;
+                const { default: mermaid } = await dynamicImport(mermaidModuleUrl);
+                const mermaidIntegration = mermaid({
+                    ...lightConfig,
+                    ...overrides,
+                    enableLog: false,
+                    mermaidConfig: mergedLightMermaidConfig,
+                });
+
+                await mermaidIntegration.hooks["astro:config:setup"]?.(params);
 
                 params.injectScript(
                     "page",
