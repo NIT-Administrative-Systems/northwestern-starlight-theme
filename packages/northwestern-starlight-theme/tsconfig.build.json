@@ -11,6 +11,7 @@
     "include": [
         "index.ts",
         "config.ts",
+        "legacy-html-redirects.ts",
         "mermaid.ts",
         "expressive-code.ts",
         "src/rehype-table-scroll.ts",

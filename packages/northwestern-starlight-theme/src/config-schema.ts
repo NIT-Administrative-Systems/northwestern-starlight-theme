@@ -137,6 +137,28 @@ export const northwesternMermaidOptionsSchema = z
     });
 
 /**
+ * Options for the legacy `.html` redirect helper.
+ *
+ * Accepts the content directory override. The schema is strict so typos in
+ * the option bag surface as validation errors instead of being ignored.
+ */
+export const legacyHtmlRedirectsOptionsSchema = z
+    .strictObject({
+        contentDir: z
+            .string()
+            .trim()
+            .min(1)
+            .optional()
+            .meta({
+                description: "Project-relative path to the Markdown/MDX content root.",
+                examples: ["src/content/docs"],
+            }),
+    })
+    .meta({
+        description: "Options for the legacy .html redirect generator.",
+    });
+
+/**
  * Configuration options for `defineNorthwesternConfig()`.
  *
  * This schema validates the Northwestern-owned wrapper surface while allowing
@@ -178,6 +200,19 @@ export const northwesternConfigOptionsSchema = z
          */
         plugins: z.array(z.unknown()).optional().meta({
             description: "Additional Starlight plugins to append after the Northwestern theme plugin.",
+        }),
+
+        /**
+         * Generate `.html` redirects for every content page and rewrite the
+         * emitted redirect pages so the URL hash is preserved on forward.
+         *
+         * - `true`: scan `src/content/docs` with the defaults
+         * - `false` (default): do nothing
+         * - `object`: scan a custom content directory
+         */
+        legacyHtmlRedirects: z.union([z.boolean(), legacyHtmlRedirectsOptionsSchema]).optional().meta({
+            description:
+                "Opt-in helper that generates .html → canonical redirects for sites migrated from VuePress (or any .html-extension source), and patches the redirect pages so URL hashes survive the forward.",
         }),
 
         /**

@@ -8,6 +8,11 @@ import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import type { AstroIntegration, AstroUserConfig } from "astro";
 import type { NorthwesternThemeConfig } from "./index";
 import northwesternTheme from "./index";
+import {
+    generateLegacyHtmlRedirects,
+    type LegacyHtmlRedirectsOptions,
+    legacyHtmlRedirectsIntegration,
+} from "./legacy-html-redirects";
 import { type NorthwesternMermaidOptions, northwesternMermaid } from "./mermaid";
 import { northwesternConfigOptionsSchema, validateSchema } from "./src/config-schema";
 
@@ -156,6 +161,23 @@ export type NorthwesternConfigOptions = Omit<AstroUserConfig, "integrations"> & 
     plugins?: StarlightPlugin[];
 
     /**
+     * Generate `.html` redirects for sites migrated from VuePress (or any
+     * `.html`-extension source) and patch the emitted redirect pages so
+     * deep-link hash fragments survive the forward.
+     *
+     * - `true` (default) — scan `src/content/docs`
+     * - `false` — do nothing
+     * - `object` — scan a custom content directory
+     *
+     * Generated redirects are merged with any `redirects` already on this
+     * config; user-specified redirects win on conflicts.
+     *
+     * @default true
+     * @see {@link LegacyHtmlRedirectsOptions}
+     */
+    legacyHtmlRedirects?: boolean | LegacyHtmlRedirectsOptions;
+
+    /**
      * Escape hatch for advanced integration ordering.
      *
      * - `before` — added before Mermaid and Starlight
@@ -196,6 +218,7 @@ export function defineNorthwesternConfig(options: NorthwesternConfigOptions): As
         mermaid = true,
         plugins = [],
         integrations: extraIntegrations,
+        legacyHtmlRedirects = true,
         ...astroConfig
     } = validatedOptions as NorthwesternConfigOptions;
 
@@ -276,7 +299,9 @@ export function defineNorthwesternConfig(options: NorthwesternConfigOptions): As
     };
     const mergedPlugins = mergeStarlightPlugins(northwesternTheme(themeConfig), starlightPlugins, helperPlugins);
 
-    // Build integration array: before → [mermaid] → starlight → after
+    // Build integration array: before → [mermaid] → starlight → after → [legacy-html-redirects]
+    // The legacy-html-redirects integration runs last so it rewrites redirect pages
+    // after every other astro:build:done hook has had a chance to emit them.
     const integrations: AstroIntegration[] = [
         ...(extraIntegrations?.before ?? []),
         ...(mermaidIntegration ? [mermaidIntegration] : []),
@@ -286,7 +311,16 @@ export function defineNorthwesternConfig(options: NorthwesternConfigOptions): As
             plugins: mergedPlugins,
         }),
         ...(extraIntegrations?.after ?? []),
+        ...(legacyHtmlRedirects ? [legacyHtmlRedirectsIntegration()] : []),
     ];
+
+    const generatedHtmlRedirects = legacyHtmlRedirects
+        ? generateLegacyHtmlRedirects(typeof legacyHtmlRedirects === "object" ? legacyHtmlRedirects : undefined)
+        : undefined;
+    // User-specified redirects take precedence when keys overlap.
+    const mergedRedirects = generatedHtmlRedirects
+        ? { ...generatedHtmlRedirects, ...(astroConfig.redirects ?? {}) }
+        : astroConfig.redirects;
 
     const existingViteConfig = (astroConfig.vite ?? {}) as {
         plugins?: unknown | unknown[];
@@ -300,6 +334,7 @@ export function defineNorthwesternConfig(options: NorthwesternConfigOptions): As
     return {
         ...astroConfig,
         integrations,
+        ...(mergedRedirects ? { redirects: mergedRedirects } : {}),
         vite: {
             ...existingViteConfig,
             plugins: [...existingVitePlugins, northwesternEcVitePlugin()],
