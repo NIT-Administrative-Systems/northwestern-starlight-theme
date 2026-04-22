@@ -1,6 +1,6 @@
 {
     "name": "@nu-appdev/northwestern-starlight-theme",
-    "version": "1.5.0",
+    "version": "1.5.1",
     "description": "A Northwestern-branded theme for Astro Starlight",
     "license": "MIT",
     "author": "Danny Foster <danny@northwestern.edu>",
@@ -43,6 +43,10 @@
             "types": "./dist/mermaid.d.ts",
             "import": "./mermaid.ts"
         },
+        "./legacy-html-redirects": {
+            "types": "./dist/legacy-html-redirects.d.ts",
+            "import": "./legacy-html-redirects.ts"
+        },
         "./components": {
             "types": "./src/components/index.ts",
             "import": "./src/components/index.ts"
@@ -63,6 +67,7 @@
         "config.ts",
         "expressive-code.ts",
         "index.ts",
+        "legacy-html-redirects.ts",
         "mermaid.ts",
         "src/"
     ],
