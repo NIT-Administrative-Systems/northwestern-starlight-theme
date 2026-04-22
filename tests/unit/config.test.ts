@@ -1,7 +1,13 @@
 import type { AstroIntegration, AstroUserConfig } from "astro";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-const { mockNorthwesternTheme, mockNorthwesternMermaid, mockRequireResolve } = vi.hoisted(() => ({
+const {
+    mockNorthwesternTheme,
+    mockNorthwesternMermaid,
+    mockRequireResolve,
+    mockGenerateLegacyHtmlRedirects,
+    mockLegacyHtmlRedirectsIntegration,
+} = vi.hoisted(() => ({
     mockNorthwesternTheme: vi.fn((config: unknown) => ({
         name: "northwestern-starlight-theme",
         hooks: {},
@@ -13,6 +19,13 @@ const { mockNorthwesternTheme, mockNorthwesternMermaid, mockRequireResolve } = v
         _mermaidConfig: options,
     })),
     mockRequireResolve: vi.fn((id: string) => id),
+    mockGenerateLegacyHtmlRedirects: vi.fn((_options?: unknown) => ({
+        "/legacy.html": "/legacy/",
+    })),
+    mockLegacyHtmlRedirectsIntegration: vi.fn(() => ({
+        name: "northwestern-legacy-html-redirects",
+        hooks: {},
+    })),
 }));
 
 vi.mock("node:module", async (importOriginal) => {
@@ -30,6 +43,15 @@ vi.mock("../../packages/northwestern-starlight-theme/mermaid.ts", async (importO
     const original = await importOriginal<typeof import("../../packages/northwestern-starlight-theme/mermaid.ts")>();
     return { ...original, northwesternMermaid: mockNorthwesternMermaid };
 });
+vi.mock("../../packages/northwestern-starlight-theme/legacy-html-redirects.ts", async (importOriginal) => {
+    const original =
+        await importOriginal<typeof import("../../packages/northwestern-starlight-theme/legacy-html-redirects.ts")>();
+    return {
+        ...original,
+        generateLegacyHtmlRedirects: mockGenerateLegacyHtmlRedirects,
+        legacyHtmlRedirectsIntegration: mockLegacyHtmlRedirectsIntegration,
+    };
+});
 
 import { defineNorthwesternConfig } from "../../packages/northwestern-starlight-theme/config.ts";
 
@@ -46,6 +68,11 @@ afterEach(() => {
     mockNorthwesternMermaid.mockClear();
     mockRequireResolve.mockReset();
     mockRequireResolve.mockImplementation((id: string) => id);
+    mockGenerateLegacyHtmlRedirects.mockClear();
+    mockGenerateLegacyHtmlRedirects.mockImplementation((_options?: unknown) => ({
+        "/legacy.html": "/legacy/",
+    }));
+    mockLegacyHtmlRedirectsIntegration.mockClear();
     vi.restoreAllMocks();
 });
 
@@ -68,7 +95,10 @@ describe("defineNorthwesternConfig", () => {
 
     describe("mermaid integration ordering", () => {
         it("adds mermaid before starlight when mermaid is true (default)", () => {
-            const result = defineNorthwesternConfig({ starlight: { title: "Test" } });
+            const result = defineNorthwesternConfig({
+                starlight: { title: "Test" },
+                legacyHtmlRedirects: false,
+            });
             const names = getIntegrations(result).map((i) => i.name);
             expect(names).toEqual(["northwestern-mermaid", "@astrojs/starlight"]);
         });
@@ -77,6 +107,7 @@ describe("defineNorthwesternConfig", () => {
             const result = defineNorthwesternConfig({
                 starlight: { title: "Test" },
                 mermaid: false,
+                legacyHtmlRedirects: false,
             });
             const names = getIntegrations(result).map((i) => i.name);
             expect(names).toEqual(["@astrojs/starlight"]);
@@ -127,6 +158,7 @@ describe("defineNorthwesternConfig", () => {
         const after = { name: "after-int", hooks: {} } as AstroIntegration;
         const result = defineNorthwesternConfig({
             starlight: { title: "Test" },
+            legacyHtmlRedirects: false,
             integrations: { before: [before], after: [after] },
         });
         const names = getIntegrations(result).map((i) => i.name);
@@ -148,7 +180,10 @@ describe("defineNorthwesternConfig", () => {
         });
 
         const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
-        const result = defineNorthwesternConfig({ starlight: { title: "Test" } });
+        const result = defineNorthwesternConfig({
+            starlight: { title: "Test" },
+            legacyHtmlRedirects: false,
+        });
 
         expect(getIntegrations(result).map((i) => i.name)).toEqual(["@astrojs/starlight"]);
         expect(spy).toHaveBeenCalledWith(expect.stringContaining("Mermaid support was requested"));
@@ -208,6 +243,79 @@ describe("defineNorthwesternConfig", () => {
                 },
             });
             expect(result).toHaveProperty("integrations");
+        });
+    });
+
+    describe("legacyHtmlRedirects", () => {
+        it("enabled by default — generates redirects and appends the flatten integration", () => {
+            const result = defineNorthwesternConfig({ starlight: { title: "Test" } });
+
+            expect(mockGenerateLegacyHtmlRedirects).toHaveBeenCalledOnce();
+            expect(mockLegacyHtmlRedirectsIntegration).toHaveBeenCalledOnce();
+            expect(result.redirects).toEqual({ "/legacy.html": "/legacy/" });
+            expect(getIntegrations(result).at(-1)?.name).toBe("northwestern-legacy-html-redirects");
+        });
+
+        it("disabled via `false` — skips generation and omits the integration", () => {
+            const result = defineNorthwesternConfig({
+                starlight: { title: "Test" },
+                legacyHtmlRedirects: false,
+            });
+
+            expect(mockGenerateLegacyHtmlRedirects).not.toHaveBeenCalled();
+            expect(mockLegacyHtmlRedirectsIntegration).not.toHaveBeenCalled();
+            expect(result.redirects).toBeUndefined();
+            expect(getIntegrations(result).map((i) => i.name)).not.toContain("northwestern-legacy-html-redirects");
+        });
+
+        it("forwards the options object through to the generator", () => {
+            defineNorthwesternConfig({
+                starlight: { title: "Test" },
+                legacyHtmlRedirects: { contentDir: "docs" },
+            });
+            expect(mockGenerateLegacyHtmlRedirects).toHaveBeenCalledWith({ contentDir: "docs" });
+        });
+
+        it("merges generated redirects with user-provided ones, user wins on conflicts", () => {
+            mockGenerateLegacyHtmlRedirects.mockReturnValueOnce({
+                "/legacy.html": "/legacy/",
+                "/shared.html": "/from-generator/",
+            });
+
+            const result = defineNorthwesternConfig({
+                starlight: { title: "Test" },
+                redirects: {
+                    "/manual/": "/manual-target/",
+                    "/shared.html": "/from-user/",
+                },
+            });
+
+            expect(result.redirects).toEqual({
+                "/legacy.html": "/legacy/",
+                "/shared.html": "/from-user/",
+                "/manual/": "/manual-target/",
+            });
+        });
+
+        it("preserves user redirects untouched when disabled", () => {
+            const result = defineNorthwesternConfig({
+                starlight: { title: "Test" },
+                legacyHtmlRedirects: false,
+                redirects: { "/old/": "/new/" },
+            });
+            expect(result.redirects).toEqual({ "/old/": "/new/" });
+        });
+
+        it("runs the flatten integration after user `integrations.after` entries", () => {
+            const after = { name: "after-int", hooks: {} } as AstroIntegration;
+            const result = defineNorthwesternConfig({
+                starlight: { title: "Test" },
+                integrations: { after: [after] },
+            });
+
+            const names = getIntegrations(result).map((i) => i.name);
+            expect(names.at(-2)).toBe("after-int");
+            expect(names.at(-1)).toBe("northwestern-legacy-html-redirects");
         });
     });
 });

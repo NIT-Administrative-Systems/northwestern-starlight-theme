@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-04-22
+
+### Added
+
+- **Legacy `.html` redirects.** Sites migrated from VuePress had every page served at `<slug>.html`; external bookmarks and inbound links still point there. A new `legacyHtmlRedirects` option on `defineNorthwesternConfig` (default `true`) scans `src/content/docs` and emits a redirect from `<slug>.html` to the canonical `<slug>/` URL for every page, with the URL hash preserved on forward so deep links like `#schedule-management` still land on the right anchor.
+
 ## [1.5.0] - 2026-03-31
 
 ### Added
@@ -179,7 +185,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OpenAPI plugin compatibility with method badge preservation
 - Reduced motion support for transitions
 
-[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.5.1...HEAD
+[1.5.1]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.3.2...v1.4.0
 [1.3.2]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.3.1...v1.3.2
