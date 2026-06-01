@@ -20,10 +20,10 @@
         "test:theme": "playwright test tests/e2e/theme-toggle.spec.ts"
     },
     "devDependencies": {
-        "@axe-core/playwright": "^4.11.1",
-        "@biomejs/biome": "^2.4.9",
-        "@playwright/test": "^1.58.2",
-        "knip": "^6.0.5",
+        "@axe-core/playwright": "^4.11.3",
+        "@biomejs/biome": "^2.4.16",
+        "@playwright/test": "^1.60.0",
+        "knip": "^6.15.0",
         "playwright": "^1.58.2",
         "stylelint": "^16.0.0",
         "stylelint-config-recess-order": "^7.7.0",
