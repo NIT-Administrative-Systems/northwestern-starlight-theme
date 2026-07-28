@@ -119,12 +119,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: "minimum"
+          - name: "0.32 / Astro 5"
             starlight: "0.32"
             astro: "5"
-          - name: "latest"
-            starlight: "latest"
-            astro: "latest"
+          - name: "0.38 / Astro 6"
+            starlight: "0.38"
+            astro: "6"
+          - name: "0.41 / Astro 7"
+            starlight: "0.41"
+            astro: "7"
 
     steps:
       - name: Checkout Repository
@@ -160,14 +163,26 @@ jobs:
           title: Test
           ---
           Hello world.
+
+          | Version | Supported |
+          | --- | --- |
+          | Astro ${{ matrix.astro }} | Yes |
+
+          ```mermaid
+          flowchart LR
+              Astro --> Starlight --> Northwestern
+          ```
           PAGE
           cat > /tmp/compat-test/package.json << 'PKG'
           { "type": "module" }
           PKG
           cd /tmp/compat-test
-          pnpm add @astrojs/starlight@${{ matrix.starlight }} astro@${{ matrix.astro }}
+          pnpm add @astrojs/starlight@${{ matrix.starlight }} astro@${{ matrix.astro }} astro-mermaid@2 mermaid@11
           pnpm add @nu-appdev/northwestern-starlight-theme@file:${{ github.workspace }}/packages/northwestern-starlight-theme
 
       - name: Verify build
         working-directory: /tmp/compat-test
-        run: npx astro build
+        run: |
+          npx astro build
+          rg --fixed-strings --quiet '<pre class="mermaid"' dist/index.html
+          rg --fixed-strings --quiet 'class="nu-table-scroll"' dist/index.html
