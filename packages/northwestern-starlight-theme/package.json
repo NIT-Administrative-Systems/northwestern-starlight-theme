@@ -72,11 +72,11 @@
         "src/"
     ],
     "dependencies": {
-        "@expressive-code/plugin-line-numbers": "^0.41.7",
+        "@expressive-code/plugin-line-numbers": "^0.44.1",
         "@resvg/resvg-wasm": "^2.6.2",
         "khroma": "^2.1.0",
-        "satori": "^0.26.0",
-        "zod": "^4.3.6"
+        "satori": "^0.29.0",
+        "zod": "^4.4.3"
     },
     "peerDependencies": {
         "@astrojs/starlight": ">=0.32.0",
@@ -93,7 +93,7 @@
         }
     },
     "devDependencies": {
-        "@types/hast": "^3.0.4",
+        "@types/hast": "^3.0.5",
         "typescript": "^6.0.2"
     }
 }

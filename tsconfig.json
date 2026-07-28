@@ -1,4 +1,7 @@
 {
     "files": [],
-    "references": [{ "path": "./packages/northwestern-starlight-theme" }, { "path": "./docs" }]
+    "references": [
+        { "path": "./packages/northwestern-starlight-theme/tsconfig.json" },
+        { "path": "./docs/tsconfig.json" }
+    ]
 }
