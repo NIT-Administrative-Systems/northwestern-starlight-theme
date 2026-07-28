@@ -130,6 +130,33 @@ describe("northwesternMermaid", () => {
         expect(scriptContent).toContain("__NU_MERMAID_TOOLBAR__ = true");
     });
 
+    it("uses the Unified processor when Starlight configured Sätteri", async () => {
+        const integration = northwesternMermaid();
+        const params = makeHookParams();
+        Object.assign(params.config, {
+            markdown: {
+                processor: {
+                    name: "satteri",
+                    options: {},
+                    createRenderer: vi.fn(),
+                },
+                remarkPlugins: [],
+                rehypePlugins: [],
+                remarkRehype: {},
+            },
+        });
+
+        await integration.hooks["astro:config:setup"]?.(params as never);
+
+        expect(params.updateConfig).toHaveBeenCalledWith(
+            expect.objectContaining({
+                markdown: expect.objectContaining({
+                    processor: expect.objectContaining({ name: "unified" }),
+                }),
+            }),
+        );
+    });
+
     it("merges user themeVariables on top of defaults", async () => {
         const integration = northwesternMermaid({
             mermaidConfig: {

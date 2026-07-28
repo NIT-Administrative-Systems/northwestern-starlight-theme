@@ -3,6 +3,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { unified } from "@astrojs/markdown-remark";
 import type { StarlightPlugin } from "@astrojs/starlight/types";
 import { nonEmptyStringSchema, northwesternThemeConfigSchema, validateSchema } from "./src/config-schema";
 import rehypeTableScroll from "./src/rehype-table-scroll";
@@ -202,11 +203,25 @@ export default function northwesternTheme(config: NorthwesternThemeConfig = {}):
                 addIntegration({
                     name: "northwestern-theme-config",
                     hooks: {
-                        "astro:config:setup": ({ updateConfig: updateAstroConfig }) => {
+                        "astro:config:setup": ({ config: astroConfig, updateConfig: updateAstroConfig }) => {
+                            const markdown = astroConfig.markdown ?? {};
+                            const markdownConfig =
+                                markdown.processor?.name === "satteri"
+                                    ? {
+                                          processor: unified({
+                                              remarkPlugins: markdown.remarkPlugins,
+                                              rehypePlugins: [...(markdown.rehypePlugins ?? []), rehypeTableScroll],
+                                              remarkRehype: markdown.remarkRehype,
+                                              gfm: markdown.gfm,
+                                              smartypants: markdown.smartypants,
+                                          }),
+                                      }
+                                    : {
+                                          rehypePlugins: [...(markdown.rehypePlugins ?? []), rehypeTableScroll],
+                                      };
+
                             updateAstroConfig({
-                                markdown: {
-                                    rehypePlugins: [rehypeTableScroll],
-                                },
+                                markdown: markdownConfig,
                                 vite: {
                                     plugins: [
                                         {

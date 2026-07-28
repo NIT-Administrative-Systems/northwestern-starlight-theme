@@ -1,3 +1,4 @@
+import { unified } from "@astrojs/markdown-remark";
 import type { AstroIntegration } from "astro";
 import type { AstroMermaidOptions } from "astro-mermaid";
 import { darken, isDark, lighten, mix, transparentize } from "khroma";
@@ -421,10 +422,9 @@ export const darkMermaidConfig: AstroMermaidOptions = createNorthwesternMermaidC
  * **Note:** `defineNorthwesternConfig` handles Mermaid integration ordering.
  * This function is only needed for manual setups.
  *
- * **Must be added before `starlight()` in the `integrations` array.** The
- * `astro-mermaid` remark plugin needs to register before Starlight's rehype
- * processing, and Astro processes integrations in order. Placing it after
- * `starlight()` causes Mermaid code blocks to be treated as plain code.
+ * **Must be added after `starlight()` in the `integrations` array.** This lets
+ * `astro-mermaid` detect and extend Starlight's active Markdown processor,
+ * including Astro 7's Sätteri pipeline.
  *
  * @param options - Merged with Northwestern defaults. Set `toolbar: false` to
  *   disable the hover toolbar.
@@ -437,11 +437,11 @@ export const darkMermaidConfig: AstroMermaidOptions = createNorthwesternMermaidC
  *
  * export default defineConfig({
  *     integrations: [
- *         northwesternMermaid(), // Must come before starlight()
  *         starlight({
  *             plugins: [northwesternTheme()],
  *             title: "My Docs",
  *         }),
+ *         northwesternMermaid(), // Must come after starlight()
  *     ],
  * });
  * ```
@@ -478,6 +478,32 @@ export function northwesternMermaid(options: NorthwesternMermaidOptions = {}): A
         hooks: {
             async "astro:config:setup"(params) {
                 const { default: mermaid } = await mermaidModulePromise;
+                let mermaidHookParams = params;
+                const markdown = params.config.markdown ?? {};
+
+                if (markdown.processor?.name === "satteri") {
+                    const processor = unified({
+                        remarkPlugins: markdown.remarkPlugins,
+                        rehypePlugins: markdown.rehypePlugins,
+                        remarkRehype: markdown.remarkRehype,
+                        gfm: markdown.gfm,
+                        smartypants: markdown.smartypants,
+                    });
+                    const unifiedMarkdown = {
+                        ...markdown,
+                        processor,
+                    };
+
+                    params.updateConfig({ markdown: { processor } });
+                    mermaidHookParams = {
+                        ...params,
+                        config: {
+                            ...params.config,
+                            markdown: unifiedMarkdown,
+                        },
+                    };
+                }
+
                 const mermaidIntegration = mermaid({
                     ...lightConfig,
                     ...overrides,
@@ -485,7 +511,7 @@ export function northwesternMermaid(options: NorthwesternMermaidOptions = {}): A
                     mermaidConfig: mergedLightMermaidConfig,
                 });
 
-                await mermaidIntegration.hooks["astro:config:setup"]?.(params);
+                await mermaidIntegration.hooks["astro:config:setup"]?.(mermaidHookParams);
 
                 params.injectScript(
                     "page",
