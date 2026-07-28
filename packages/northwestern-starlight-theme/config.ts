@@ -144,11 +144,11 @@ export type NorthwesternConfigOptions = Omit<AstroUserConfig, "integrations"> & 
     /**
      * Mermaid diagram support.
      *
-     * - `true` (default) — adds `northwesternMermaid()` before `starlight()` with
+     * - `true` (default) — adds `northwesternMermaid()` after `starlight()` with
      *   default options (branded colors, toolbar, dark mode). Requires `astro-mermaid`
      *   and `mermaid` to be installed.
      * - `false` — disable Mermaid entirely
-     * - `object` — adds `northwesternMermaid(options)` before `starlight()` with
+     * - `object` — adds `northwesternMermaid(options)` after `starlight()` with
      *   custom options (toolbar, theme overrides, etc.)
      */
     mermaid?: boolean | NorthwesternMermaidOptions;
@@ -255,9 +255,8 @@ export function defineNorthwesternConfig(options: NorthwesternConfigOptions): As
     }
 
     // Build theme config, handling mermaid dual-path.
-    // The standalone northwesternMermaid() integration MUST be added before starlight()
-    // so its remark plugin processes mermaid code blocks before expressive-code.
-    // The theme's built-in mermaid (via addIntegration inside config:setup) runs too late.
+    // astro-mermaid 2.1 detects Starlight's active Markdown processor, so the
+    // standalone integration is added immediately after Starlight below.
     const themeConfig: NorthwesternThemeConfig = { ...theme };
     let mermaidIntegration: AstroIntegration | undefined;
     const hasAstroMermaid = hasOptionalPackage("astro-mermaid");
@@ -299,17 +298,17 @@ export function defineNorthwesternConfig(options: NorthwesternConfigOptions): As
     };
     const mergedPlugins = mergeStarlightPlugins(northwesternTheme(themeConfig), starlightPlugins, helperPlugins);
 
-    // Build integration array: before → [mermaid] → starlight → after → [legacy-html-redirects]
+    // Build integration array: before → starlight → [mermaid] → after → [legacy-html-redirects]
     // The legacy-html-redirects integration runs last so it rewrites redirect pages
     // after every other astro:build:done hook has had a chance to emit them.
     const integrations: AstroIntegration[] = [
         ...(extraIntegrations?.before ?? []),
-        ...(mermaidIntegration ? [mermaidIntegration] : []),
         starlight({
             ...restStarlightConfig,
             expressiveCode: expressiveCodeConfig,
             plugins: mergedPlugins,
         }),
+        ...(mermaidIntegration ? [mermaidIntegration] : []),
         ...(extraIntegrations?.after ?? []),
         ...(legacyHtmlRedirects ? [legacyHtmlRedirectsIntegration()] : []),
     ];

@@ -94,13 +94,13 @@ describe("defineNorthwesternConfig", () => {
     });
 
     describe("mermaid integration ordering", () => {
-        it("adds mermaid before starlight when mermaid is true (default)", () => {
+        it("adds mermaid after starlight when mermaid is true (default)", () => {
             const result = defineNorthwesternConfig({
                 starlight: { title: "Test" },
                 legacyHtmlRedirects: false,
             });
             const names = getIntegrations(result).map((i) => i.name);
-            expect(names).toEqual(["northwestern-mermaid", "@astrojs/starlight"]);
+            expect(names).toEqual(["@astrojs/starlight", "northwestern-mermaid"]);
         });
 
         it("omits mermaid when mermaid is false", () => {
@@ -162,7 +162,7 @@ describe("defineNorthwesternConfig", () => {
             integrations: { before: [before], after: [after] },
         });
         const names = getIntegrations(result).map((i) => i.name);
-        expect(names).toEqual(["before-int", "northwestern-mermaid", "@astrojs/starlight", "after-int"]);
+        expect(names).toEqual(["before-int", "@astrojs/starlight", "northwestern-mermaid", "after-int"]);
     });
 
     it("creates mermaid integration during config construction", () => {
