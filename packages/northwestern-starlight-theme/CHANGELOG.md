@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Fullscreen Mermaid diagrams can be downloaded as high-resolution PNG files. PNG exports render at up to 4× the diagram's intrinsic size, use the active Mermaid theme's configured canvas color for reliable contrast, and share the same descriptive filenames as SVG downloads.
+
 ## [1.5.1] - 2026-04-22
 
 ### Added
