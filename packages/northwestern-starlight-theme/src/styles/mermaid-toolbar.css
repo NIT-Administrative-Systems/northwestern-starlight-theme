@@ -80,6 +80,11 @@
         background: var(--nu-hover-bg);
     }
 
+    .nu-mermaid-btn:disabled {
+        cursor: wait;
+        opacity: 0.6;
+    }
+
     :root:not([data-theme="light"]) .nu-mermaid-btn:hover {
         background: var(--nu-hover-bg);
     }

@@ -9,7 +9,7 @@
 import { installKeyboardAndFocus } from "./focus";
 import { buildOverlay } from "./overlay";
 import { createPanZoomController } from "./pan-zoom";
-import { downloadDiagramSvg, flashSuccess, showToast, writeToClipboard } from "./ui";
+import { downloadDiagramPng, downloadDiagramSvg, flashSuccess, showToast, writeToClipboard } from "./ui";
 
 const OPEN_SCALE = "scale(0.97)";
 const OPEN_TRANSITION = "transform 300ms cubic-bezier(0.16, 1, 0.3, 1)";
@@ -74,6 +74,27 @@ export function openFullscreen(
                 downloadDiagramSvg(diagramSvg, diagramContainer);
                 flashSuccess(button, "Downloaded!");
                 break;
+            case "download-png": {
+                const originalTitle = button.title;
+                button.disabled = true;
+                button.title = "Generating PNG…";
+                button.setAttribute("aria-busy", "true");
+
+                void downloadDiagramPng(diagramSvg, diagramContainer)
+                    .then(() => {
+                        button.title = originalTitle;
+                        flashSuccess(button, "Downloaded!");
+                    })
+                    .catch(() => {
+                        button.title = originalTitle;
+                        showToast(viewport, "PNG download failed");
+                    })
+                    .finally(() => {
+                        button.disabled = false;
+                        button.removeAttribute("aria-busy");
+                    });
+                break;
+            }
             case "copy-svg":
                 writeToClipboard(diagramSvg.outerHTML, button);
                 showToast(viewport, "SVG copied to clipboard");

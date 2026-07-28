@@ -72,6 +72,9 @@ function buildControlsBar(diagramContainer: HTMLElement) {
     bar.appendChild(separator);
 
     bar.appendChild(createActionButton("Download SVG", "download-svg", ICON_PATHS.download, OVERLAY_BTN_CLASS));
+    bar.appendChild(
+        createActionButton("Download high-resolution PNG", "download-png", ICON_PATHS.image, OVERLAY_BTN_CLASS),
+    );
     bar.appendChild(createActionButton("Copy SVG", "copy-svg", ICON_PATHS.copy, OVERLAY_BTN_CLASS));
 
     const diagramSource = diagramSources.get(diagramContainer);
