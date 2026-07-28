@@ -1,8 +1,46 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 
 import { gotoWithTheme } from "./helpers/theme";
 
 const MERMAID_PAGE = "/examples/mermaid/";
+
+interface PngCanvasCapture {
+    background: number[];
+    height: number;
+    width: number;
+}
+
+async function installPngCanvasCapture(page: Page): Promise<void> {
+    await page.evaluate(() => {
+        const originalToBlob = HTMLCanvasElement.prototype.toBlob;
+
+        HTMLCanvasElement.prototype.toBlob = function (callback, type, quality) {
+            const pixel = this.getContext("2d")?.getImageData(0, 0, 1, 1).data;
+            (
+                window as typeof window & {
+                    __NU_PNG_CANVAS_CAPTURE__?: PngCanvasCapture;
+                }
+            ).__NU_PNG_CANVAS_CAPTURE__ = {
+                background: pixel ? [...pixel] : [],
+                height: this.height,
+                width: this.width,
+            };
+            return originalToBlob.call(this, callback, type, quality);
+        };
+    });
+}
+
+async function readPngCanvasCapture(page: Page): Promise<PngCanvasCapture> {
+    return page.evaluate(() => {
+        const capture = (
+            window as typeof window & {
+                __NU_PNG_CANVAS_CAPTURE__?: PngCanvasCapture;
+            }
+        ).__NU_PNG_CANVAS_CAPTURE__;
+        if (!capture) throw new Error("PNG canvas was not captured");
+        return capture;
+    });
+}
 
 test.describe("mermaid toolbar", () => {
     test.beforeEach(async ({ page }) => {
@@ -157,6 +195,35 @@ test.describe("mermaid toolbar", () => {
         const zoomedOut = await badge.textContent();
         expect(Number.parseInt(zoomedOut!, 10)).toBeLessThan(100);
     });
+
+    test("downloads a high-resolution PNG with the light Mermaid canvas", async ({ page }) => {
+        const diagram = page.locator("pre.mermaid").first();
+        await diagram.hover();
+        await diagram.locator('.nu-mermaid-btn[data-action="fullscreen"]').click();
+
+        const overlay = page.locator(".nu-mermaid-overlay");
+        await expect(overlay).toBeVisible();
+
+        const pngButton = overlay.locator('.nu-mermaid-btn[data-action="download-png"]');
+        await expect(pngButton).toHaveAttribute("aria-label", "Download high-resolution PNG");
+
+        const viewBox = await diagram.locator(":scope > svg").evaluate((svg) => ({
+            height: svg.viewBox.baseVal.height,
+            width: svg.viewBox.baseVal.width,
+        }));
+        await installPngCanvasCapture(page);
+
+        const downloadPromise = page.waitForEvent("download");
+        await pngButton.click();
+        const download = await downloadPromise;
+
+        expect(download.suggestedFilename()).toBe("northwestern-starlight-theme_examples-mermaid-flow.png");
+
+        const capture = await readPngCanvasCapture(page);
+        expect(capture.width).toBeGreaterThanOrEqual(Math.floor(viewBox.width * 3.9));
+        expect(capture.height).toBeGreaterThanOrEqual(Math.floor(viewBox.height * 3.9));
+        expect(capture.background).toEqual([255, 255, 255, 255]);
+    });
 });
 
 test.describe("mermaid toolbar — toasts", () => {
@@ -252,6 +319,7 @@ test.describe("mermaid toolbar — mobile", () => {
 
         // Action buttons should still be visible
         await expect(overlay.locator('[data-action="download-svg"]')).toBeVisible();
+        await expect(overlay.locator('[data-action="download-png"]')).toBeVisible();
         await expect(overlay.locator('[data-action="close"]')).toBeVisible();
     });
 
@@ -308,5 +376,24 @@ test.describe("mermaid toolbar — dark mode", () => {
 
         const errors = page.locator("pre.mermaid div[style*='color: red']");
         await expect(errors).toHaveCount(0);
+    });
+
+    test("PNG export uses the dark Mermaid canvas", async ({ page }) => {
+        await gotoWithTheme(page, MERMAID_PAGE, "dark");
+        const diagram = page.locator("pre.mermaid").first();
+        await diagram.locator(":scope > svg").waitFor({ timeout: 15000 });
+        await diagram.locator('.nu-mermaid-btn[data-action="fullscreen"]').click();
+
+        const overlay = page.locator(".nu-mermaid-overlay");
+        await expect(overlay).toBeVisible();
+
+        await installPngCanvasCapture(page);
+
+        const downloadPromise = page.waitForEvent("download");
+        await overlay.locator('[data-action="download-png"]').click();
+        await downloadPromise;
+
+        const capture = await readPngCanvasCapture(page);
+        expect(capture.background).toEqual([28, 28, 31, 255]);
     });
 });

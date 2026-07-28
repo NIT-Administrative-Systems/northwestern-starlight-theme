@@ -24,6 +24,7 @@ export const ICON_PATHS = {
         "M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2v-2",
         "M16 4h2a2 2 0 012 2v6a2 2 0 01-2 2h-8a2 2 0 01-2-2V6a2 2 0 012-2",
     ],
+    image: ["M3 5a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5z", "M8.5 8.5h.01", "M21 15l-5-5L5 21"],
     code: ["M16 18l6-6-6-6", "M8 6l-6 6 6 6"],
     check: ["M20 6L9 17l-5-5"],
 } as const;
@@ -210,6 +211,20 @@ export async function writeToClipboard(text: string, triggerButton: HTMLButtonEl
 // SVG download
 // ---------------------------------------------------------------------------
 
+type DownloadExtension = "png" | "svg";
+
+function downloadBlob(blob: Blob, filename: string): void {
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = filename;
+    anchor.hidden = true;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
 /**
  * Download the diagram SVG with a descriptive filename derived from
  * the site title, page slug, and diagram type.
@@ -218,12 +233,171 @@ export function downloadDiagramSvg(svg: SVGElement, container: Element): void {
     const clone = svg.cloneNode(true) as SVGElement;
     clone.setAttribute("xmlns", SVG_NS);
     const blob = new Blob([clone.outerHTML], { type: "image/svg+xml" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = buildDownloadFilename(container);
-    anchor.click();
-    URL.revokeObjectURL(url);
+    downloadBlob(blob, buildDownloadFilename(container, "svg"));
+}
+
+// ---------------------------------------------------------------------------
+// PNG download
+// ---------------------------------------------------------------------------
+
+const PNG_TARGET_SCALE = 4;
+const MAX_CANVAS_DIMENSION = 8192;
+const MAX_CANVAS_AREA = 16_000_000;
+
+const RASTER_STYLE_PROPERTIES = [
+    "background-color",
+    "border-color",
+    "border-style",
+    "border-width",
+    "color",
+    "display",
+    "dominant-baseline",
+    "fill",
+    "fill-opacity",
+    "fill-rule",
+    "font-family",
+    "font-size",
+    "font-style",
+    "font-weight",
+    "letter-spacing",
+    "line-height",
+    "opacity",
+    "overflow",
+    "paint-order",
+    "shape-rendering",
+    "stroke",
+    "stroke-dasharray",
+    "stroke-dashoffset",
+    "stroke-linecap",
+    "stroke-linejoin",
+    "stroke-miterlimit",
+    "stroke-opacity",
+    "stroke-width",
+    "text-align",
+    "text-anchor",
+    "text-decoration",
+    "text-rendering",
+    "visibility",
+    "white-space",
+    "word-spacing",
+] as const;
+
+function parseSvgDimensions(svg: SVGElement): { width: number; height: number } {
+    const viewBox = svg.getAttribute("viewBox");
+    if (viewBox) {
+        const [, , width, height] = viewBox.split(/[\s,]+/).map(Number);
+        if (width > 0 && height > 0) return { width, height };
+    }
+
+    const bounds = svg.getBoundingClientRect();
+    return {
+        width: bounds.width > 0 ? bounds.width : 800,
+        height: bounds.height > 0 ? bounds.height : 600,
+    };
+}
+
+function calculatePngScale(width: number, height: number): number {
+    return Math.min(
+        PNG_TARGET_SCALE,
+        MAX_CANVAS_DIMENSION / width,
+        MAX_CANVAS_DIMENSION / height,
+        Math.sqrt(MAX_CANVAS_AREA / (width * height)),
+    );
+}
+
+function inlineRasterStyles(source: SVGElement, clone: SVGElement): void {
+    const sourceElements = [source, ...source.querySelectorAll("*")];
+    const cloneElements = [clone, ...clone.querySelectorAll("*")];
+
+    sourceElements.forEach((sourceElement, index) => {
+        const cloneElement = cloneElements[index] as SVGElement | HTMLElement | undefined;
+        if (!cloneElement || !("style" in cloneElement)) return;
+
+        const computedStyle = getComputedStyle(sourceElement);
+        for (const property of RASTER_STYLE_PROPERTIES) {
+            const value = computedStyle.getPropertyValue(property);
+            if (value) cloneElement.style.setProperty(property, value);
+        }
+    });
+}
+
+function isTransparentColor(color: string): boolean {
+    return color === "transparent" || /,\s*0(?:\.0+)?\s*\)$/.test(color) || /\/\s*0(?:\.0+)?%?\s*\)$/.test(color);
+}
+
+function resolveMermaidCanvasColor(): string {
+    const mode = document.documentElement.dataset.theme === "light" ? "light" : "dark";
+    const fallback = mode === "light" ? "#fff" : "#1c1c1f";
+    const themeVariables = window.__NU_MERMAID_CONFIGS__?.[mode]?.themeVariables;
+    const configuredBackground =
+        typeof themeVariables === "object" && themeVariables !== null
+            ? (themeVariables as Record<string, unknown>).background
+            : undefined;
+
+    if (typeof configuredBackground === "string") {
+        const probe = document.createElement("canvas").getContext("2d");
+        if (probe) {
+            probe.fillStyle = fallback;
+            probe.fillStyle = configuredBackground;
+            if (!isTransparentColor(probe.fillStyle)) return probe.fillStyle;
+        }
+    }
+
+    return fallback;
+}
+
+function canvasToPngBlob(canvas: HTMLCanvasElement): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+        canvas.toBlob((blob) => {
+            if (blob) {
+                resolve(blob);
+            } else {
+                reject(new Error("The browser could not encode the Mermaid diagram as PNG."));
+            }
+        }, "image/png");
+    });
+}
+
+/**
+ * Download a high-resolution PNG of the diagram.
+ *
+ * The raster target is 4× the SVG viewBox (capped to browser-safe canvas
+ * dimensions). The canvas is filled with the active Mermaid theme's configured
+ * background so every exported color keeps its intended contrast.
+ */
+export async function downloadDiagramPng(svg: SVGElement, container: Element): Promise<void> {
+    const { width, height } = parseSvgDimensions(svg);
+    const scale = calculatePngScale(width, height);
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(width * scale));
+    canvas.height = Math.max(1, Math.round(height * scale));
+
+    const context = canvas.getContext("2d", { alpha: false });
+    if (!context) throw new Error("The browser could not create a canvas for the Mermaid diagram.");
+
+    const clone = svg.cloneNode(true) as SVGElement;
+    clone.setAttribute("xmlns", SVG_NS);
+    clone.setAttribute("width", String(width));
+    clone.setAttribute("height", String(height));
+    clone.removeAttribute("style");
+    inlineRasterStyles(svg, clone);
+
+    const serializedSvg = new XMLSerializer().serializeToString(clone);
+    const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(serializedSvg)}`;
+    const image = new Image();
+
+    await new Promise<void>((resolve, reject) => {
+        image.onload = () => resolve();
+        image.onerror = () => reject(new Error("The Mermaid diagram could not be rasterized."));
+        image.src = svgUrl;
+    });
+
+    context.fillStyle = resolveMermaidCanvasColor();
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+    const pngBlob = await canvasToPngBlob(canvas);
+    downloadBlob(pngBlob, buildDownloadFilename(container, "png"));
 }
 
 // ---------------------------------------------------------------------------
@@ -252,7 +426,7 @@ function detectDiagramType(container: Element): string {
     return slugify(keyword.replace(/[-_](v\d+|beta)$/i, "").replace(/(diagram|chart)$/i, "")) || "diagram";
 }
 
-function buildDownloadFilename(container: Element): string {
+function buildDownloadFilename(container: Element, extension: DownloadExtension): string {
     const site = extractSiteSlug();
     const page = extractPageSlug();
     const type = detectDiagramType(container);
@@ -261,5 +435,5 @@ function buildDownloadFilename(container: Element): string {
     const sameType = allDiagrams.filter((d) => detectDiagramType(d) === type);
     const disambiguator = sameType.length > 1 ? `-${sameType.indexOf(container as HTMLElement) + 1}` : "";
 
-    return `${site}_${page}-${type}${disambiguator}.svg`;
+    return `${site}_${page}-${type}${disambiguator}.${extension}`;
 }

@@ -3,7 +3,7 @@ title: Mermaid Diagrams
 description: Mermaid diagram types with Northwestern theme styling.
 ---
 
-The theme applies Northwestern colors to [Mermaid](https://mermaid.js.org/) diagrams and adds a fullscreen viewer with pan/zoom, SVG download, source copying, and touch support. Hover any diagram below to see the toolbar.
+The theme applies Northwestern colors to [Mermaid](https://mermaid.js.org/) diagrams and adds a fullscreen viewer with pan/zoom, high-resolution PNG and SVG downloads, source copying, and touch support. Hover any diagram below to see the toolbar.
 
 See [Getting Started](/getting-started/#mermaid-diagrams-optional) for setup instructions.
 
