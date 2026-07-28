@@ -13,10 +13,10 @@
         "@astrojs/starlight": "^0.38.2",
         "@nu-appdev/northwestern-starlight-theme": "workspace:*",
         "astro": "^6.1.1",
-        "astro-mermaid": "^2.0.1",
-        "mermaid": "^11.12.2",
-        "sharp": "^0.34.1",
-        "starlight-changelogs": "^0.5.0",
+        "astro-mermaid": "^2.1.0",
+        "mermaid": "^11.16.0",
+        "sharp": "^0.35.3",
+        "starlight-changelogs": "^0.5.1",
         "starlight-package-managers": "^0.12.0"
     }
 }
