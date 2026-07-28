@@ -158,6 +158,15 @@ jobs:
               },
           });
           CONF
+          cat > /tmp/compat-test/src/content.config.ts << 'CONTENT'
+          import { defineCollection } from "astro:content";
+          import { docsLoader } from "@astrojs/starlight/loaders";
+          import { docsSchema } from "@astrojs/starlight/schema";
+
+          export const collections = {
+              docs: defineCollection({ loader: docsLoader(), schema: docsSchema() }),
+          };
+          CONTENT
           cat > /tmp/compat-test/src/content/docs/index.mdx << 'PAGE'
           ---
           title: Test
@@ -184,5 +193,15 @@ jobs:
         working-directory: /tmp/compat-test
         run: |
           npx astro build
-          rg --fixed-strings --quiet '<pre class="mermaid"' dist/index.html
-          rg --fixed-strings --quiet 'class="nu-table-scroll"' dist/index.html
+          node --input-type=module << 'CHECK'
+          import { readFile } from "node:fs/promises";
+
+          const html = await readFile("dist/index.html", "utf8");
+          const expectedFragments = ['<pre class="mermaid"', 'class="nu-table-scroll"'];
+
+          for (const fragment of expectedFragments) {
+              if (!html.includes(fragment)) {
+                  throw new Error(`Expected generated page to contain ${fragment}`);
+              }
+          }
+          CHECK
