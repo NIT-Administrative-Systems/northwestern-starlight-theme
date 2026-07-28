@@ -167,7 +167,7 @@ jobs:
               docs: defineCollection({ loader: docsLoader(), schema: docsSchema() }),
           };
           CONTENT
-          cat > /tmp/compat-test/src/content/docs/index.mdx << 'PAGE'
+          cat > /tmp/compat-test/src/content/docs/index.md << 'PAGE'
           ---
           title: Test
           ---
