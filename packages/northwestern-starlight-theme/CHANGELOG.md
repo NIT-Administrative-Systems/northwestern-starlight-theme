@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-07-28
+
 ### Added
 
 - Fullscreen Mermaid diagrams can be downloaded as high-resolution PNG files. PNG exports render at up to 4× the diagram's intrinsic size, use the active Mermaid theme's configured canvas color for reliable contrast, and share the same descriptive filenames as SVG downloads.
@@ -189,7 +191,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OpenAPI plugin compatibility with method badge preservation
 - Reduced motion support for transitions
 
-[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.5.1...HEAD
+[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.5.1...v1.6.0
 [1.5.1]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.3.2...v1.4.0
