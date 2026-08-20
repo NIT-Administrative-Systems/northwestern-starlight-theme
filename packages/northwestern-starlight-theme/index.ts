@@ -3,9 +3,9 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { unified } from "@astrojs/markdown-remark";
 import type { StarlightPlugin } from "@astrojs/starlight/types";
 import { nonEmptyStringSchema, northwesternThemeConfigSchema, validateSchema } from "./src/config-schema";
+import { addRehypePlugin, type MarkdownConfigLike } from "./src/markdown-processor";
 import rehypeTableScroll from "./src/rehype-table-scroll";
 
 /**
@@ -204,24 +204,17 @@ export default function northwesternTheme(config: NorthwesternThemeConfig = {}):
                     name: "northwestern-theme-config",
                     hooks: {
                         "astro:config:setup": ({ config: astroConfig, updateConfig: updateAstroConfig }) => {
-                            const markdown = astroConfig.markdown ?? {};
-                            const markdownConfig =
-                                markdown.processor?.name === "satteri"
-                                    ? {
-                                          processor: unified({
-                                              remarkPlugins: markdown.remarkPlugins,
-                                              rehypePlugins: [...(markdown.rehypePlugins ?? []), rehypeTableScroll],
-                                              remarkRehype: markdown.remarkRehype,
-                                              gfm: markdown.gfm,
-                                              smartypants: markdown.smartypants,
-                                          }),
-                                      }
-                                    : {
-                                          rehypePlugins: [...(markdown.rehypePlugins ?? []), rehypeTableScroll],
-                                      };
+                            // Extend whichever Markdown pipeline is active — never replace it.
+                            // `defineNorthwesternConfig()` has already pinned a `unified()`
+                            // processor before any plugin could register against it.
+                            const markdownConfig = addRehypePlugin(
+                                astroConfig.markdown as MarkdownConfigLike | undefined,
+                                rehypeTableScroll,
+                                (message) => logger.warn(message),
+                            );
 
                             updateAstroConfig({
-                                markdown: markdownConfig,
+                                ...(markdownConfig ? { markdown: markdownConfig } : {}),
                                 vite: {
                                     plugins: [
                                         {

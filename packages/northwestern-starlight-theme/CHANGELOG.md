@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.1] - 2026-08-20
+
+### Fixed
+
+- **Starlight plugins that extend the Markdown processor no longer stop working.** Astro 7 renders Markdown with the Sätteri processor and hands every integration the same live processor object. Plugins extend the pipeline by changing that object. The theme replaced it with a `unified()` processor from two `astro:config:setup` hooks, which run after Starlight has already set up its plugins, so everything those plugins had registered was thrown away.
+
+  The visible effect was `starlight-links-validator` 0.25 or newer: it validated zero links on every build and still printed "All internal links are valid", so broken internal links passed unnoticed. Any plugin that configures itself against the Sätteri processor was affected the same way.
+
+  `defineNorthwesternConfig()` now sets `markdown.processor` to `unified()` while `astro.config.*` is evaluated, before `starlight()` is created. No plugin ever sees Sätteri, and the theme only extends the processor it is given instead of replacing it. A processor you configure yourself is left alone.
+
+- Mermaid no longer swaps the Markdown processor either. `astro-mermaid` 2.1 supports Sätteri on its own.
+
 ## [1.6.0] - 2026-07-28
 
 ### Added
@@ -191,7 +203,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OpenAPI plugin compatibility with method badge preservation
 - Reduced motion support for transitions
 
-[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.6.1...HEAD
+[1.6.1]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.5.1...v1.6.0
 [1.5.1]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.4.0...v1.5.0

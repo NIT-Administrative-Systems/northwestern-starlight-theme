@@ -10,13 +10,13 @@
         "start": "astro dev"
     },
     "dependencies": {
-        "@astrojs/starlight": "^0.41.5",
+        "@astrojs/starlight": "^0.41.7",
         "@nu-appdev/northwestern-starlight-theme": "workspace:*",
-        "astro": "^7.1.5",
+        "astro": "^7.2.4",
         "astro-mermaid": "^2.1.0",
-        "mermaid": "^11.16.0",
+        "mermaid": "^11.17.0",
         "sharp": "^0.35.3",
-        "starlight-changelogs": "^0.5.1",
+        "starlight-changelogs": "^0.6.0",
         "starlight-package-managers": "^0.12.0"
     }
 }
