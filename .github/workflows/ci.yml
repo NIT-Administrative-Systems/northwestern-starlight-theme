@@ -111,6 +111,32 @@ jobs:
       - name: Run accessibility tests
         run: pnpm test:accessibility
 
+  links-validation:
+    name: 🔗 Link Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Verify link validation still fails on broken links
+        run: pnpm test:links-validation
+
   compatibility:
     name: ⭐ Starlight ${{ matrix.name }}
     runs-on: ubuntu-latest

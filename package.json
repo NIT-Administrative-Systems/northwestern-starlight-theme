@@ -15,6 +15,7 @@
         "test:watch": "vitest",
         "test:consumer-types": "pnpm build:types && pnpm --filter @nu-appdev/northwestern-starlight-theme exec tsc --project ../../tests/consumer-types/tsconfig.json --noEmit",
         "test:e2e": "playwright test",
+        "test:links-validation": "node tests/build/links-validation.mjs",
         "test:accessibility": "playwright test tests/e2e/accessibility.spec.ts",
         "test:mermaid": "playwright test tests/e2e/mermaid-toolbar.spec.ts",
         "test:theme": "playwright test tests/e2e/theme-toggle.spec.ts"
