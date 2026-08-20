@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.2] - 2026-08-20
+
+### Fixed
+
+- OG image text no longer unescapes twice. Entities were decoded in sequence with `&amp;` first, so a title containing the escaped text `&amp;lt;` came out as `<`. Decoding is now a single pass, and escaped text stays escaped.
+- The meta-refresh patterns used to rewrite legacy `.html` redirect pages are bounded. The previous patterns scanned the rest of the page from every start position, so time grew with the square of the page size: a 200 KB page of near-matches took over half a second. A tag longer than the bound is left alone, which skips hash forwarding for that page but keeps the redirect.
+
 ## [1.6.1] - 2026-08-20
 
 ### Fixed
@@ -203,7 +210,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OpenAPI plugin compatibility with method badge preservation
 - Reduced motion support for transitions
 
-[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.6.1...HEAD
+[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.6.2...HEAD
+[1.6.2]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.5.1...v1.6.0
 [1.5.1]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.5.0...v1.5.1
