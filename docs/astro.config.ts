@@ -18,11 +18,11 @@ export default defineNorthwesternConfig({
             },
             {
                 label: "Components",
-                autogenerate: { directory: "components" },
+                items: [{ autogenerate: { directory: "components" } }],
             },
             {
                 label: "Examples",
-                autogenerate: { directory: "examples" },
+                items: [{ autogenerate: { directory: "examples" } }],
             },
             {
                 label: "Changelog",

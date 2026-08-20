@@ -172,6 +172,28 @@ describe("rewriteRedirectPage", () => {
         const twice = rewriteRedirectPage(once);
         expect(twice).toBe(once);
     });
+
+    it("stays fast on a page full of half-written meta-refresh tags", () => {
+        // Unbounded quantifiers made this quadratic: every start position rescanned
+        // the rest of the page. 200k characters took well over half a second before
+        // the bounds went in, and grew with the square of the page size.
+        const pathological = '<meta\thttp-equiv="refresh"'.repeat(8000);
+
+        const start = performance.now();
+        const result = rewriteRedirectPage(pathological);
+        const elapsed = performance.now() - start;
+
+        expect(result).toBe(pathological);
+        expect(elapsed).toBeLessThan(500);
+    });
+
+    it("leaves a meta-refresh tag alone when it is longer than any Astro emits", () => {
+        // The scan is bounded, so an implausibly long tag simply misses. The page
+        // keeps its own meta refresh; only hash forwarding is skipped.
+        const bloated = `<html><meta http-equiv="refresh" content="0;url=/target/" data-x="${"a".repeat(1100)}"></html>`;
+
+        expect(rewriteRedirectPage(bloated)).toBe(bloated);
+    });
 });
 
 describe("flattenHtmlRedirectDirs", () => {

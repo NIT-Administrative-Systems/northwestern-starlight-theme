@@ -142,8 +142,13 @@ function flattenOne(root: string, rel: string): void {
     renameSync(tmpPath, dirPath);
 }
 
-const META_REFRESH_TAG = /<meta\s+http-equiv="refresh"[^>]*>/i;
-const META_REFRESH_URL = /url=([^"]+)"/i;
+// Every quantifier below is bounded. An unbounded one makes matching quadratic
+// on a page full of near-matches, because each failed start position rescans the
+// rest of the document (CodeQL `js/polynomial-redos`). The bounds are far above
+// any tag Astro emits; a page that exceeds them is left alone, which only costs
+// hash forwarding, not the redirect itself.
+const META_REFRESH_TAG = /<meta\s{1,32}http-equiv="refresh"[^>]{0,1024}>/i;
+const META_REFRESH_URL = /url=([^"]{1,2048})"/i;
 const HASH_FORWARD_SCRIPT = /<script>location\.replace\(/;
 
 /**
