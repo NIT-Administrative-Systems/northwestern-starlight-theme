@@ -7,8 +7,7 @@
             "project": ["tests/consumer-types/**/*.d.ts"]
         },
         "packages/northwestern-starlight-theme": {
-            "entry": ["src/scripts/**/*.ts"],
-            "ignoreDependencies": ["astro-mermaid", "mermaid"]
+            "entry": ["src/scripts/**/*.ts"]
         }
     }
 }
