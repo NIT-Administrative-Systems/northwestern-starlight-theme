@@ -15,6 +15,7 @@ import {
 } from "./legacy-html-redirects";
 import { type NorthwesternMermaidOptions, northwesternMermaid } from "./mermaid";
 import { northwesternConfigOptionsSchema, validateSchema } from "./src/config-schema";
+import { type MarkdownConfigLike, withUnifiedProcessor } from "./src/markdown-processor";
 
 /**
  * Vite plugin that enables `pluginLineNumbers` for both markdown code blocks
@@ -333,6 +334,14 @@ export function defineNorthwesternConfig(options: NorthwesternConfigOptions): As
     return {
         ...astroConfig,
         integrations,
+        // Pin the Markdown processor to `unified()` here, at `astro.config.*`
+        // evaluation time, so `starlight()` and every Starlight plugin observes it
+        // from the start. Doing this later from an `astro:config:setup` hook means
+        // replacing a processor plugins have already registered against — which
+        // silently drops those registrations (see `src/markdown-processor.ts`).
+        markdown: withUnifiedProcessor(
+            astroConfig.markdown as MarkdownConfigLike | undefined,
+        ) as AstroUserConfig["markdown"],
         ...(mergedRedirects ? { redirects: mergedRedirects } : {}),
         vite: {
             ...existingViteConfig,
