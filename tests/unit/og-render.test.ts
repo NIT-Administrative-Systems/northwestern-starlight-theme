@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { loadFont } from "../../packages/northwestern-starlight-theme/src/og/render.ts";
+import { decodeText, loadFont } from "../../packages/northwestern-starlight-theme/src/og/render.ts";
 
 afterEach(() => {
     vi.unstubAllGlobals();
@@ -33,5 +33,24 @@ describe("loadFont", () => {
         expect(loadFont("https://common.northwestern.edu/fonts/network-failure.ttf")).rejects.toThrow(
             "Failed to fetch OG font from https://common.northwestern.edu/fonts/network-failure.ttf: fetch failed",
         );
+    });
+});
+
+describe("decodeText", () => {
+    it("decodes the entities Starlight escapes", () => {
+        expect(decodeText("Tips &amp; tricks for &lt;Code&gt; &quot;blocks&quot; you&#39;ve used")).toBe(
+            `Tips & tricks for <Code> "blocks" you've used`,
+        );
+    });
+
+    it("does not unescape twice", () => {
+        // `&amp;lt;` is the escaped text `&lt;`. Decoding `&amp;` first would turn
+        // it into `&lt;` and then into `<`, inventing markup the page never had.
+        expect(decodeText("&amp;lt;script&amp;gt;")).toBe("&lt;script&gt;");
+        expect(decodeText("Cats &amp;amp; dogs")).toBe("Cats &amp; dogs");
+    });
+
+    it("leaves text without entities untouched", () => {
+        expect(decodeText("Plain title & a stray ; semicolon")).toBe("Plain title & a stray ; semicolon");
     });
 });

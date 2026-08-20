@@ -53,13 +53,24 @@ function toFontWeight(weight: string): number {
     return fontWeightMap[weight] ?? 400;
 }
 
-function decodeText(text: string) {
-    return text
-        .replaceAll("&amp;", "&")
-        .replaceAll("&lt;", "<")
-        .replaceAll("&gt;", ">")
-        .replaceAll("&quot;", '"')
-        .replaceAll("&#39;", "'");
+const HTML_ENTITIES: Record<string, string> = {
+    "&amp;": "&",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&quot;": '"',
+    "&#39;": "'",
+};
+
+/**
+ * Decode the HTML entities Starlight escapes into page titles and descriptions.
+ *
+ * One pass, because decoding `&amp;` before the others would unescape twice:
+ * `&amp;lt;` is the text `&lt;`, not `<`.
+ *
+ * @internal — exposed for unit tests.
+ */
+export function decodeText(text: string) {
+    return text.replace(/&(?:amp|lt|gt|quot|#39);/g, (entity) => HTML_ENTITIES[entity] ?? entity);
 }
 
 function rgbToCSS(rgb: RGBColor): string {
