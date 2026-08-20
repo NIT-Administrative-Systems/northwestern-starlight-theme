@@ -130,31 +130,29 @@ describe("northwesternMermaid", () => {
         expect(scriptContent).toContain("__NU_MERMAID_TOOLBAR__ = true");
     });
 
-    it("uses the Unified processor when Starlight configured Sätteri", async () => {
+    it("never swaps the Markdown processor out from under other plugins", async () => {
+        // `astro-mermaid` extends whichever processor is configured. The theme used
+        // to replace a Sätteri processor here, discarding everything Starlight
+        // plugins had registered on it (e.g. starlight-links-validator).
+        const processor = {
+            name: "satteri",
+            options: { mdastPlugins: [], hastPlugins: [{}] },
+            createRenderer: vi.fn(),
+        };
         const integration = northwesternMermaid();
         const params = makeHookParams();
         Object.assign(params.config, {
-            markdown: {
-                processor: {
-                    name: "satteri",
-                    options: {},
-                    createRenderer: vi.fn(),
-                },
-                remarkPlugins: [],
-                rehypePlugins: [],
-                remarkRehype: {},
-            },
+            markdown: { processor, remarkPlugins: [], rehypePlugins: [], remarkRehype: {} },
         });
 
         await integration.hooks["astro:config:setup"]?.(params as never);
 
-        expect(params.updateConfig).toHaveBeenCalledWith(
-            expect.objectContaining({
-                markdown: expect.objectContaining({
-                    processor: expect.objectContaining({ name: "unified" }),
-                }),
-            }),
+        const swappedToUnified = params.updateConfig.mock.calls.some(
+            ([update]) =>
+                (update as { markdown?: { processor?: { name?: string } } })?.markdown?.processor?.name === "unified",
         );
+        expect(swappedToUnified).toBe(false);
+        expect(processor.options.hastPlugins).toHaveLength(1);
     });
 
     it("merges user themeVariables on top of defaults", async () => {
