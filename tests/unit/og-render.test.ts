@@ -82,6 +82,25 @@ describe("loadFont", () => {
         expect(fetchMock).toHaveBeenCalledTimes(3);
     });
 
+    it("retries a body that fails mid-download and reports it with the font URL", async () => {
+        const url = fontURL("truncated");
+        // fetch() resolves on headers, so a truncated body fails only once it is read.
+        const fetchMock = vi.fn(async () => ({
+            ok: true,
+            status: 200,
+            statusText: "OK",
+            arrayBuffer: async () => {
+                throw new Error("terminated");
+            },
+        }));
+        vi.stubGlobal("fetch", fetchMock);
+
+        await expect(runWithTimers(() => loadFont(url))).rejects.toThrow(
+            `Failed to fetch OG font from ${url}: terminated`,
+        );
+        expect(fetchMock).toHaveBeenCalledTimes(3);
+    });
+
     it("gives up after three attempts on a 5xx", async () => {
         const url = fontURL("always-503");
         const fetchMock = vi.fn(async () => errorResponse(503, "Service Unavailable"));

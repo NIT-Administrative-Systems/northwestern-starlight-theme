@@ -86,20 +86,25 @@ function errorMessage(error: unknown): string {
 }
 
 /**
- * Fetch a font, retrying transient failures with exponential backoff.
+ * Fetch a font and its body, retrying transient failures with exponential backoff.
+ *
+ * The body is read inside the attempt because `fetch()` resolves as soon as the
+ * headers arrive: a connection truncated mid-download, or the timeout firing on a
+ * slow body, has to fail here to be retried at all.
  *
  * Network errors, timeouts, and 5xx responses are retried: a CDN blip should not
  * decide whether a docs build succeeds. A 4xx is a wrong URL, not a blip, so it
- * comes straight back for the caller to report.
+ * is reported on the first attempt.
  */
-async function fetchFontWithRetry(url: string): Promise<Response> {
+async function fetchFontBuffer(url: string): Promise<ArrayBuffer> {
     let lastError: unknown;
     for (let attempt = 1; attempt <= FONT_FETCH_ATTEMPTS; attempt++) {
         try {
             const response = await fetch(url, { signal: AbortSignal.timeout(FONT_FETCH_TIMEOUT_MS) });
-            if (response.ok || response.status < 500) return response;
+            if (response.ok) return await response.arrayBuffer();
             const statusText = response.statusText ? ` ${response.statusText}` : "";
             lastError = new Error(`HTTP ${response.status}${statusText}`);
+            if (response.status < 500) break;
         } catch (error) {
             lastError = error;
         }
@@ -107,32 +112,14 @@ async function fetchFontWithRetry(url: string): Promise<Response> {
             await new Promise((resolve) => setTimeout(resolve, FONT_RETRY_BASE_DELAY_MS * 2 ** (attempt - 1)));
         }
     }
-    throw lastError;
+    throw new Error(`[northwestern-starlight-theme] Failed to fetch OG font from ${url}: ${errorMessage(lastError)}`, {
+        cause: lastError,
+    });
 }
 
-async function readFont(url: string): Promise<ArrayBuffer> {
-    if (!/^https?:\/\//.test(url)) {
-        const file = await fs.readFile(url);
-        return file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength);
-    }
-
-    let response: Response;
-    try {
-        response = await fetchFontWithRetry(url);
-    } catch (error) {
-        throw new Error(`[northwestern-starlight-theme] Failed to fetch OG font from ${url}: ${errorMessage(error)}`, {
-            cause: error,
-        });
-    }
-
-    if (!response.ok) {
-        const statusText = response.statusText ? ` ${response.statusText}` : "";
-        throw new Error(
-            `[northwestern-starlight-theme] Failed to fetch OG font from ${url}: HTTP ${response.status}${statusText}`,
-        );
-    }
-
-    return response.arrayBuffer();
+async function readFontFile(path: string): Promise<ArrayBuffer> {
+    const file = await fs.readFile(path);
+    return file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength);
 }
 
 /**
@@ -150,7 +137,7 @@ const fontCache = new Map<string, Promise<ArrayBuffer>>();
 export function loadFont(url: string): Promise<ArrayBuffer> {
     const cached = fontCache.get(url);
     if (cached) return cached;
-    const pending = readFont(url);
+    const pending = /^https?:\/\//.test(url) ? fetchFontBuffer(url) : readFontFile(url);
     fontCache.set(url, pending);
     return pending;
 }
