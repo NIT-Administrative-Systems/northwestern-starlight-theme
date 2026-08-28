@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.3] - 2026-08-27
+
+### Fixed
+
+- **A CDN blip fetching an OG font no longer fails the whole build.** The fonts for OG images are fetched from the Northwestern CDN at build time, because their licenses do not allow shipping them inside the package. Each font was fetched once, with no timeout, and any failure threw: one refused connection took down a docs build, and with it the deploy behind it.
+
+  Font requests now time out after 10 seconds and retry twice with exponential backoff. Network errors, timeouts, and 5xx responses are retried; a 4xx is a wrong URL rather than a blip, so it is reported immediately. A font that still will not load is logged as a warning and the image renders in whichever font did load, since an OG image in the wrong typeface beats a failed build. Only an empty font list still throws, because satori has nothing to draw text with. Results are cached per URL, failures included, so an outage costs one retry sequence for the build instead of one per page.
+
 ## [1.6.2] - 2026-08-20
 
 ### Fixed
@@ -210,7 +218,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OpenAPI plugin compatibility with method badge preservation
 - Reduced motion support for transitions
 
-[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.6.2...HEAD
+[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.6.3...HEAD
+[1.6.3]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.6.2...v1.6.3
 [1.6.2]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.5.1...v1.6.0

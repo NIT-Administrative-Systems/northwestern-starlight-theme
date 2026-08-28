@@ -77,42 +77,125 @@ function rgbToCSS(rgb: RGBColor): string {
     return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
 }
 
-const fontCache = new Map<string, ArrayBuffer>();
+const FONT_FETCH_ATTEMPTS = 3;
+const FONT_FETCH_TIMEOUT_MS = 10_000;
+const FONT_RETRY_BASE_DELAY_MS = 500;
+
+function errorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : String(error);
+}
+
+/**
+ * Fetch a font, retrying transient failures with exponential backoff.
+ *
+ * Network errors, timeouts, and 5xx responses are retried: a CDN blip should not
+ * decide whether a docs build succeeds. A 4xx is a wrong URL, not a blip, so it
+ * comes straight back for the caller to report.
+ */
+async function fetchFontWithRetry(url: string): Promise<Response> {
+    let lastError: unknown;
+    for (let attempt = 1; attempt <= FONT_FETCH_ATTEMPTS; attempt++) {
+        try {
+            const response = await fetch(url, { signal: AbortSignal.timeout(FONT_FETCH_TIMEOUT_MS) });
+            if (response.ok || response.status < 500) return response;
+            const statusText = response.statusText ? ` ${response.statusText}` : "";
+            lastError = new Error(`HTTP ${response.status}${statusText}`);
+        } catch (error) {
+            lastError = error;
+        }
+        if (attempt < FONT_FETCH_ATTEMPTS) {
+            await new Promise((resolve) => setTimeout(resolve, FONT_RETRY_BASE_DELAY_MS * 2 ** (attempt - 1)));
+        }
+    }
+    throw lastError;
+}
+
+async function readFont(url: string): Promise<ArrayBuffer> {
+    if (!/^https?:\/\//.test(url)) {
+        const file = await fs.readFile(url);
+        return file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength);
+    }
+
+    let response: Response;
+    try {
+        response = await fetchFontWithRetry(url);
+    } catch (error) {
+        throw new Error(`[northwestern-starlight-theme] Failed to fetch OG font from ${url}: ${errorMessage(error)}`, {
+            cause: error,
+        });
+    }
+
+    if (!response.ok) {
+        const statusText = response.statusText ? ` ${response.statusText}` : "";
+        throw new Error(
+            `[northwestern-starlight-theme] Failed to fetch OG font from ${url}: HTTP ${response.status}${statusText}`,
+        );
+    }
+
+    return response.arrayBuffer();
+}
+
+/**
+ * Cached per URL, failures included. A static build renders one OG image per
+ * page, so a font the CDN is down for would otherwise be re-fetched — and
+ * re-retried — once per page. The retries above already cover a blip.
+ */
+const fontCache = new Map<string, Promise<ArrayBuffer>>();
 
 /**
  * Load a font from disk or a remote URL for OG image rendering.
  *
  * @internal
  */
-export async function loadFont(url: string): Promise<ArrayBuffer> {
+export function loadFont(url: string): Promise<ArrayBuffer> {
     const cached = fontCache.get(url);
     if (cached) return cached;
-    let buffer: ArrayBuffer;
-    if (/^https?:\/\//.test(url)) {
-        let response: Response;
-        try {
-            response = await fetch(url);
-        } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            throw new Error(`[northwestern-starlight-theme] Failed to fetch OG font from ${url}: ${message}`, {
-                cause: error,
-            });
-        }
+    const pending = readFont(url);
+    fontCache.set(url, pending);
+    return pending;
+}
 
-        if (!response.ok) {
-            const statusText = response.statusText ? ` ${response.statusText}` : "";
-            throw new Error(
-                `[northwestern-starlight-theme] Failed to fetch OG font from ${url}: HTTP ${response.status}${statusText}`,
+function fontFamilyName(url: string): string {
+    return url.includes("Poppins") ? "Poppins" : url.includes("Akkurat") ? "Akkurat Pro" : "Noto Sans";
+}
+
+const warnedFontUrls = new Set<string>();
+
+/**
+ * Load the fonts satori renders with, dropping any that failed.
+ *
+ * OG images are a nice-to-have; a font the CDN would not serve degrades the
+ * image (satori falls back to a font that did load) instead of failing the
+ * consumer's build. Satori needs at least one font, so an empty list still
+ * throws.
+ *
+ * @internal — exposed for unit tests.
+ */
+export async function loadSatoriFonts(fontUrls: string[]) {
+    const settled = await Promise.allSettled(fontUrls.map((url) => loadFont(url)));
+
+    const fonts = settled.flatMap((result, index) => {
+        const url = fontUrls[index];
+        if (result.status === "fulfilled") {
+            return [{ name: fontFamilyName(url), data: result.value, weight: 400 as const }];
+        }
+        if (!warnedFontUrls.has(url)) {
+            warnedFontUrls.add(url);
+            console.warn(
+                `[northwestern-starlight-theme] OG font unavailable, rendering without it: ${errorMessage(result.reason)}`,
             );
         }
+        return [];
+    });
 
-        buffer = await response.arrayBuffer();
-    } else {
-        const file = await fs.readFile(url);
-        buffer = file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength);
+    if (fonts.length === 0) {
+        throw new Error(
+            "[northwestern-starlight-theme] No OG fonts could be loaded, so OG images cannot be rendered. " +
+                "Check network access to the configured font URLs.",
+        );
     }
-    fontCache.set(url, buffer);
-    return buffer;
+
+    return fonts;
 }
 
 const logoCache = new Map<string, string>();
@@ -161,11 +244,7 @@ export async function renderOGImage({
         color: fontConfig.description?.color ?? ([255, 255, 255] as RGBColor),
     };
 
-    const fontData = await Promise.all(fontUrls.map(loadFont));
-    const satoriFont = fontUrls.map((url, i) => {
-        const name = url.includes("Poppins") ? "Poppins" : url.includes("Akkurat") ? "Akkurat Pro" : "Noto Sans";
-        return { name, data: fontData[i], weight: 400 as const };
-    });
+    const satoriFont = await loadSatoriFonts(fontUrls);
 
     const logoDataURL = logo ? await loadLogoDataURL(logo.path) : undefined;
     const logoW = logo?.size?.[0] ?? 60;

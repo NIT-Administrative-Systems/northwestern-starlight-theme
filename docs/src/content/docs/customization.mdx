@@ -161,6 +161,10 @@ defineNorthwesternConfig({
 
 Each page gets a 1200x630 PNG at build time: favicon logo, page title, and description on Northwestern purple with a light purple accent border. Set `site` in your config for absolute URLs. See [Getting Started](/getting-started/#open-graph-images) for setup.
 
+### Font Availability
+
+Poppins and Akkurat Pro are fetched from the Northwestern CDN while the images render, because their licenses do not allow redistributing them inside the package. Requests time out after 10 seconds and are retried twice with backoff, and a font that still will not load is reported as a warning: the images render in whichever font did load rather than failing the build. The build only fails if no font loads at all, since there would be nothing to draw the text with.
+
 To disable OG images:
 
 ```ts
