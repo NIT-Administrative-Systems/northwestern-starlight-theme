@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Starlight 0.42 support.** Starlight 0.42 no longer wraps the mobile menu button in a `<starlight-menu-button>` element, so the theme's header styles stopped matching it and the button fell back to Starlight's default white square on the purple header. The theme now also targets the button's `.sl-menu-button` class, which restores the translucent button, its hover state, and its focus ring. The old selectors stay, so Starlight 0.32 through 0.41 are unaffected, and the `@astrojs/starlight` peer range is still `>=0.32.0`.
+
+### Changed
+
+- The `@astrojs/markdown-remark` dependency now requires `^7.3.1`, which satisfies Starlight 0.42's `^7.3.0` peer requirement.
+
 ## [1.6.3] - 2026-08-27
 
 ### Fixed

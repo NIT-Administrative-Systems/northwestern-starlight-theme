@@ -11,7 +11,8 @@
     .header > nav a,
     .header .social-icons a,
     starlight-menu-button,
-    starlight-menu-button button {
+    starlight-menu-button button,
+    .sl-menu-button {
         color: var(--nu-topbar-text) !important;
         fill: var(--nu-topbar-text) !important;
     }
@@ -28,6 +29,7 @@
     }
 
     starlight-menu-button button,
+    .sl-menu-button,
     .header northwestern-theme-toggle button {
         background: rgb(255 255 255 / 15%) !important;
         border: 1px solid rgb(255 255 255 / 25%) !important;
@@ -36,11 +38,13 @@
     }
 
     starlight-menu-button button:hover,
+    .sl-menu-button:hover,
     .header northwestern-theme-toggle button:hover {
         background: rgb(255 255 255 / 25%) !important;
     }
 
     starlight-menu-button button:focus-visible,
+    .sl-menu-button:focus-visible,
     .header northwestern-theme-toggle button:focus-visible {
         outline: none !important;
         box-shadow: 0 0 0 2px rgb(255 255 255 / 60%) !important;
