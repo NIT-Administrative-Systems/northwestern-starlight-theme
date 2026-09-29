@@ -157,6 +157,9 @@ jobs:
           - name: "0.41 / Astro 7"
             starlight: "0.41"
             astro: "7"
+          - name: "0.42 / Astro 7"
+            starlight: "0.42"
+            astro: "7"
 
     steps:
       - name: Checkout Repository
