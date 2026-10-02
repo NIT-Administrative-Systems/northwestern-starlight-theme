@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-10-02
+
 ### Changed
 
 - **The Northwestern palette and fonts now come from [`@nu-appdev/northwestern-tokens`](https://github.com/NIT-Administrative-Systems/northwestern-tokens).** The theme kept its own copy of the brand colors, semantic colors and font stacks in `variables.css`, and its own `@font-face` rules in `typography.css`. Both now import the tokens package, a new runtime dependency that installs with the theme. The `--nu-*` names and values are unchanged, and the tokens load into the same `northwestern` cascade layer, so styles that reference or override them keep working. The theme's interface tokens, such as surfaces, links, focus rings and dark mode, stay in `variables.css`. The tokens package also defines `--nu-border-radius` (`0`); the theme already squares every corner.
@@ -235,7 +237,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OpenAPI plugin compatibility with method badge preservation
 - Reduced motion support for transitions
 
-[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.6.3...v1.7.0
 [1.6.3]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.6.2...v1.6.3
 [1.6.2]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.6.1...v1.6.2
