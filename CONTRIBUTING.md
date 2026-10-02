@@ -42,7 +42,7 @@ packages/northwestern-starlight-theme/
     components/              # Astro component overrides and custom components
     styles/                  # CSS organized by concern
       layers.css             # @layer starlight, northwestern
-      variables.css          # Design tokens (--nu-* prefix)
+      variables.css          # Imports the NU palette from @nu-appdev/northwestern-tokens; theme tokens
       typography.css         # Font imports, text utilities
       theme.css              # Starlight CSS variable mappings
       content.css            # Markdown prose (links, lists, figures, badges, asides, buttons)
@@ -82,7 +82,7 @@ Theme CSS goes in `@layer northwestern`, which sits above Starlight's base style
 @layer starlight, northwestern;
 ```
 
-Use `--nu-*` custom properties from `variables.css` for colors, spacing, and transitions. Don't add raw hex values for Northwestern brand colors.
+Use `--nu-*` custom properties for colors, spacing, and transitions. The brand palette and fonts come from [`@nu-appdev/northwestern-tokens`](https://github.com/NIT-Administrative-Systems/northwestern-tokens); `variables.css` adds the theme's own surface, link, focus and transition tokens. Don't add raw hex values for Northwestern brand colors, and don't add `@font-face` rules: a missing brand color or font belongs in the tokens package.
 
 ### Mermaid integration
 

@@ -243,7 +243,7 @@ defineNorthwesternConfig({
 
 ## Available CSS Variables
 
-The theme defines Northwestern design tokens as CSS custom properties. You can reference or override these in your own styles:
+The Northwestern palette, semantic colors and font stacks come from [`@nu-appdev/northwestern-tokens`](https://github.com/NIT-Administrative-Systems/northwestern-tokens), which the theme installs and loads for you. The theme adds its own interface tokens on top, such as surfaces, borders, links and focus rings. You can reference or override any of them in your own styles:
 
 ### Purple Scale
 
@@ -253,7 +253,7 @@ The theme defines Northwestern design tokens as CSS custom properties. You can r
     <Property name="--nu-purple-40" type="#a495c3" default="Dark mode accent" />
 </PropertyTable>
 
-See `src/styles/variables.css` in the theme package for the full token list.
+See the [tokens package README](https://github.com/NIT-Administrative-Systems/northwestern-tokens#tokens) for the full palette, and `src/styles/variables.css` in the theme package for the theme's interface tokens.
 
 ### Typography
 

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **The Northwestern palette and fonts now come from [`@nu-appdev/northwestern-tokens`](https://github.com/NIT-Administrative-Systems/northwestern-tokens).** The theme kept its own copy of the brand colors, semantic colors and font stacks in `variables.css`, and its own `@font-face` rules in `typography.css`. Both now import the tokens package, a new runtime dependency that installs with the theme. The `--nu-*` names and values are unchanged, and the tokens load into the same `northwestern` cascade layer, so styles that reference or override them keep working. The theme's interface tokens, such as surfaces, links, focus rings and dark mode, stay in `variables.css`. The tokens package also defines `--nu-border-radius` (`0`); the theme already squares every corner.
+- **Fonts load from Department Templates 4.0 as `.woff2`.** Akkurat Pro and most Poppins weights still loaded the `.woff` files from the retired `common.northwestern.edu/v8` template. The dept 4.0 files are the same font builds (Akkurat Pro 1.003, Poppins 4.004) with identical metrics, in a smaller format, so text renders the same. Two edge cases differ:
+  - Poppins at weight 100 or 200 now renders Poppins Thin. v8 served ExtraLight at weight 100. The theme uses neither weight.
+  - dept 4.0's Poppins files cover Latin-1 and common punctuation only. Characters outside it, such as `ł` or `ő`, fall back to Akkurat Pro. H3 to H6 already used the dept 4.0 Poppins file and behaved this way; H2 and the site title now do too.
+
 ## [1.7.0] - 2026-09-29
 
 ### Added

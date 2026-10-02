@@ -32,6 +32,12 @@ export default defineNorthwesternConfig({
 
 The helper applies Northwestern's purple palette, Akkurat Pro + Poppins typography, branded navigation, styled components, and dark mode. It handles integration ordering, plugin registration, and Mermaid setup.
 
+## Colors and fonts
+
+The palette and fonts come from [`@nu-appdev/northwestern-tokens`](https://github.com/NIT-Administrative-Systems/northwestern-tokens), which tracks Northwestern's Department Templates 4.0. It installs with the theme, so there is nothing extra to add. Its `--nu-*` custom properties, such as `--nu-purple-100` and `--nu-font-body`, are available in your own CSS.
+
+Akkurat Pro, Poppins and Noto Serif load as `.woff2` from `common.northwestern.edu`. Akkurat Pro's license allows only central hosting by the university, so neither package bundles font files.
+
 See the **[documentation](https://starlight-theme.entapp.northwestern.edu)** for setup options, customization, and component examples.
 
 ## Development
