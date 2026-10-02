@@ -1,0 +1,5 @@
+# The fixture is its own workspace root, so its install never resolves a parent
+# workspace, and it applies the same release-age rules as the repository.
+minimumReleaseAge: 4320
+minimumReleaseAgeExclude:
+  - "@nu-appdev/northwestern-tokens"

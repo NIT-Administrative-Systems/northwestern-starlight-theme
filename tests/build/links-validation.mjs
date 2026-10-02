@@ -90,7 +90,7 @@ try {
     log("installing the fixture site");
     cpSync(fixtureDir, projectDir, { recursive: true });
     writeHomePage(projectDir, BROKEN_LINK);
-    const install = run("pnpm", ["add", "--ignore-workspace", ...DEPENDENCIES, tarball], projectDir);
+    const install = run("pnpm", ["add", ...DEPENDENCIES, tarball], projectDir);
     if (!install.ok) throw new Error(`pnpm add failed:\n${install.output}`);
 
     log("building with a broken internal link");

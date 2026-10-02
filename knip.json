@@ -7,7 +7,8 @@
             "project": ["tests/consumer-types/**/*.d.ts"]
         },
         "packages/northwestern-starlight-theme": {
-            "entry": ["src/scripts/**/*.ts"]
+            "entry": ["src/scripts/**/*.ts"],
+            "ignoreDependencies": ["@nu-appdev/northwestern-tokens"]
         }
     }
 }
