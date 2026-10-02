@@ -74,6 +74,9 @@ importers:
       '@expressive-code/plugin-line-numbers':
         specifier: ^0.44.1
         version: 0.44.1
+      '@nu-appdev/northwestern-tokens':
+        specifier: ^1.0.1
+        version: 1.0.1
       '@resvg/resvg-wasm':
         specifier: ^2.6.2
         version: 2.6.2
@@ -1005,6 +1008,9 @@ packages:
   '@nodelib/fs.walk@1.2.8':
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
+
+  '@nu-appdev/northwestern-tokens@1.0.1':
+    resolution: {integrity: sha512-RKY2Ljt0ocDJeAbFkwtDgQjJeZWUw/7c+lFX5YiRusLs7hAaBLmmcXkdq1ZTfO7y98cZNPMa7JUQSs5rWRr34Q==}
 
   '@oslojs/encoding@1.1.0':
     resolution: {integrity: sha512-70wQhgYmndg4GCPxPPxPGevRKqTIJ2Nh4OkiMWmDAVYsTQ+Ta7Sq+rPevXyXGdzr30/qZBnyOalCszoMxlyldQ==}
@@ -4541,6 +4547,8 @@ snapshots:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.20.1
+
+  '@nu-appdev/northwestern-tokens@1.0.1': {}
 
   '@oslojs/encoding@1.1.0': {}
 
