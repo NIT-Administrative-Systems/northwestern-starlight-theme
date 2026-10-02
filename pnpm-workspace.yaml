@@ -1,4 +1,8 @@
 packages:
   - docs
   - "packages/*"
+allowBuilds:
+  esbuild: set this to true or false
 minimumReleaseAge: 4320
+minimumReleaseAgeExclude:
+  - "@nu-appdev/northwestern-tokens"
