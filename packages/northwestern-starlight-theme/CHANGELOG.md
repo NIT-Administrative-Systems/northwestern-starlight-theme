@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.0] - 2026-11-10
+
+### Added
+
+- **Mermaid 12 support.** Diagrams keep Mermaid's flat `classic` look, the `dagre` layout and Mermaid 11 flowchart sizing, so existing diagrams render with the same layout and size. Set `look`, `layout` or `flowchart` in `mermaidConfig` to use Mermaid 12's `neo` look and ELK layout instead. The `mermaid` peer range stays `>=11.0.0`.
+
+### Changed
+
+- **The diagram palette uses Northwestern tokens throughout.** Text on every filled shape now meets WCAG AA contrast in both modes, and dark-mode edges are brighter. Gantt, journey, kanban, timeline, mindmap, treemap, radar, packet, quadrant, architecture and C4 diagrams now use the brand palette instead of Mermaid's defaults.
+- `satori` moves to `^0.63.2`, which fixes GHSA-wx4j-mvgx-mqwp.
+
+### Fixed
+
+- On Mermaid 12, diagrams that the theme re-rendered fell back to Mermaid's pastel `redux-color` theme, often with unreadable labels.
+- In dark mode, astro-mermaid's first render could replace the theme's render and leave a diagram in light-mode colors.
+- Unreadable text on Gantt task bars, journey sections, class diagram edge labels, and C4 and architecture labels, plus white backgrounds on xy, quadrant, packet and radar charts in dark mode.
+
 ## [1.8.0] - 2026-10-02
 
 ### Changed
@@ -237,7 +254,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OpenAPI plugin compatibility with method badge preservation
 - Reduced motion support for transitions
 
-[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.8.0...HEAD
+[Unreleased]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.9.0...HEAD
+[1.9.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.6.3...v1.7.0
 [1.6.3]: https://github.com/NIT-Administrative-Systems/northwestern-starlight-theme/compare/v1.6.2...v1.6.3

@@ -6,3 +6,6 @@ allowBuilds:
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
   - "@nu-appdev/northwestern-tokens"
+overrides:
+  # satori pins fflate 0.7.3 exactly (GHSA-px8p-9vwx-vf98); drop once satori ships 0.7.5+
+  "satori>fflate": 0.7.5

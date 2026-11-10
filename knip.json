@@ -1,6 +1,7 @@
 {
     "$schema": "https://unpkg.com/knip@6/schema.json",
     "ignoreDependencies": ["astro", "hast"],
+    "ignoreBinaries": ["astro"],
     "workspaces": {
         ".": {
             "entry": ["tests/consumer-types/fixture.ts"],

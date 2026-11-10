@@ -13,6 +13,9 @@ type MermaidRuntime = typeof import("mermaid")["default"];
 const DIAGRAM_SELECTOR = "pre.mermaid:not(.nu-mermaid-fullscreen)";
 const PRERENDER_MARGIN = "200px";
 
+/** How long to wait for astro-mermaid's first render before rendering anyway. */
+const UPSTREAM_RENDER_TIMEOUT_MS = 10_000;
+
 /** Registry mapping diagram containers to their raw Mermaid source text. */
 export const diagramSources = new WeakMap<Element, string>();
 
@@ -63,6 +66,32 @@ export function captureDiagramSources(): void {
 }
 
 /**
+ * Resolve once astro-mermaid has rendered the container.
+ *
+ * astro-mermaid renders every diagram once on page load with the light config
+ * and marks it `data-processed`. It shares the Mermaid runtime with this module,
+ * so a render that finishes before it gets overwritten, sometimes with the
+ * wrong palette. Waiting for the attribute makes this module's render the last
+ * one. The timeout keeps diagrams rendering if astro-mermaid never finishes.
+ */
+function whenUpstreamRendered(container: HTMLElement): Promise<void> {
+    if (container.hasAttribute("data-processed")) return Promise.resolve();
+
+    return new Promise((resolve) => {
+        const done = () => {
+            observer.disconnect();
+            clearTimeout(timer);
+            resolve();
+        };
+        const observer = new MutationObserver(() => {
+            if (container.hasAttribute("data-processed")) done();
+        });
+        const timer = setTimeout(done, UPSTREAM_RENDER_TIMEOUT_MS);
+        observer.observe(container, { attributes: true, attributeFilter: ["data-processed"] });
+    });
+}
+
+/**
  * Render a single diagram container with the given theme.
  *
  * Initializes the Mermaid runtime with the Northwestern theme config,
@@ -77,6 +106,9 @@ async function renderDiagram(container: HTMLElement, mode: ThemeMode, index: num
 
     const version = (renderVersions.get(container) ?? 0) + 1;
     renderVersions.set(container, version);
+
+    await whenUpstreamRendered(container);
+    if (renderVersions.get(container) !== version) return;
 
     const mermaidRuntime = await loadRuntime();
     if (renderVersions.get(container) !== version) return;

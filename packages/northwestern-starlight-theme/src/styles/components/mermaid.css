@@ -11,8 +11,41 @@
 /* Container — card-like border matching cards.css */
 pre.mermaid,
 .mermaid {
+    /* Colors for SVG that Mermaid paints with hard-coded values. They mirror the
+       node, line and grid colors in mermaid.ts. Dark mode is the default. */
+    --nu-mermaid-node: var(--nu-purple-80);
+    --nu-mermaid-line: var(--nu-purple-30);
+    --nu-mermaid-grid: rgb(255 255 255 / 14%);
+    --nu-mermaid-surface: rgb(255 255 255 / 5%);
+    --nu-mermaid-border: rgb(164 149 195 / 45%);
+
     padding: 1.5rem;
     border: 1px solid var(--nu-border-color) !important;
+}
+
+:root[data-theme="light"] .mermaid {
+    --nu-mermaid-node: var(--nu-purple-100);
+    --nu-mermaid-line: var(--nu-purple-100);
+    --nu-mermaid-grid: var(--nu-black-10);
+    --nu-mermaid-surface: var(--nu-purple-surface-subtle);
+    --nu-mermaid-border: var(--nu-purple-40);
+}
+
+/* Gantt: d3 draws grid ticks with currentColor, which ignores gridColor */
+.mermaid svg[aria-roledescription="gantt"] .grid .tick line {
+    stroke: var(--nu-mermaid-grid) !important;
+}
+
+/* Kanban: column headers always use the body text color, so columns get a
+   neutral surface instead of a categorical fill that the text can clash with. */
+.mermaid svg[aria-roledescription="kanban"] .cluster > rect {
+    fill: var(--nu-mermaid-surface) !important;
+    stroke: var(--nu-mermaid-border) !important;
+}
+
+/* Architecture: service and group icons are hard-coded Mermaid blue */
+.mermaid svg[aria-roledescription="architecture"] rect[style*="#087ebf" i] {
+    fill: var(--nu-mermaid-node) !important;
 }
 
 /* Font — Mermaid applies font via inline style, CSS !important needed */
@@ -37,17 +70,23 @@ pre.mermaid,
     background: var(--nu-card-bg, #fff) !important;
 }
 
-/* Class diagram: edge labels on purple bg */
-.mermaid svg.classDiagram .labelBkg,
-.mermaid svg.classDiagram .labelBkg .edgeLabel,
-.mermaid svg.classDiagram .labelBkg .edgeLabel p {
-    background: var(--nu-purple-100) !important;
+/* ER diagram: Mermaid hard-codes white fills on the "zero" cardinality circles,
+   which read as solid dots in dark mode. Match the page so they stay hollow. */
+.mermaid marker[id*="er-zeroOr"] circle {
+    fill: var(--sl-color-bg, #fff) !important;
 }
 
-:root:not([data-theme="light"]) .mermaid svg.classDiagram .labelBkg,
-:root:not([data-theme="light"]) .mermaid svg.classDiagram .labelBkg .edgeLabel,
-:root:not([data-theme="light"]) .mermaid svg.classDiagram .labelBkg .edgeLabel p {
-    background: var(--nu-purple-80) !important;
+/* C4: relationship lines, arrowheads and labels are hard-coded #444444 */
+.mermaid svg[aria-roledescription="c4"] [stroke="#444444"] {
+    stroke: var(--nu-mermaid-line) !important;
+}
+
+.mermaid svg[aria-roledescription="c4"] [fill="#444444"] {
+    fill: var(--nu-mermaid-line) !important;
+}
+
+.mermaid svg[aria-roledescription="c4"] text[fill="#444444"] {
+    fill: var(--nu-color-text, #342f2e) !important;
 }
 
 /* Class diagram: first attribute row header tint */
@@ -82,5 +121,22 @@ pre.mermaid,
 /* Sequence diagram: actor label text outside the purple box */
 .mermaid [class*="actor-bottom"] [class*="actor"] tspan,
 .mermaid [class*="actor-top"] [class*="actor"] tspan {
+    fill: var(--nu-color-text, #342f2e) !important;
+}
+
+/* Treemap: leaves take their parent's color but pick a label color by their own
+   name, over two stacked translucent fills, so label contrast is left to chance.
+   Lighter tints with body text keep every label readable. */
+.mermaid svg[aria-roledescription="treemap"] rect.treemapSection {
+    fill-opacity: 0.12 !important;
+}
+
+.mermaid svg[aria-roledescription="treemap"] rect.treemapLeaf {
+    fill-opacity: 0.22 !important;
+}
+
+.mermaid
+    svg[aria-roledescription="treemap"]
+    :is(.treemapLabel, .treemapValue, .treemapSectionLabel, .treemapSectionValue) {
     fill: var(--nu-color-text, #342f2e) !important;
 }
