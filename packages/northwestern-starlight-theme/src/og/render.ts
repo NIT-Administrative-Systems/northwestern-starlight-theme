@@ -250,6 +250,9 @@ export async function renderOGImage({
                 justifyContent: "center",
                 width: "100%",
                 height: "100%",
+                // satori 0.30+ sizes boxes as content-box, which pushes the padded
+                // content off-center; border-box keeps the padding inside 1200×630.
+                boxSizing: "border-box",
                 background: `linear-gradient(to bottom, ${bgStart}, ${bgEnd})`,
                 padding: `${vPad}px ${hPad}px`,
                 paddingLeft: `${hPad + borderWidth}px`,

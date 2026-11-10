@@ -21,16 +21,16 @@
         "test:theme": "playwright test tests/e2e/theme-toggle.spec.ts"
     },
     "devDependencies": {
-        "@axe-core/playwright": "^4.13.0",
-        "@biomejs/biome": "^2.5.9",
-        "@playwright/test": "^1.62.1",
-        "knip": "^6.32.2",
-        "playwright": "^1.62.1",
-        "stylelint": "^17.14.1",
-        "stylelint-config-recess-order": "^7.8.0",
+        "@axe-core/playwright": "^4.14.0",
+        "@biomejs/biome": "^2.6.6",
+        "@playwright/test": "^1.65.0",
+        "knip": "^6.44.2",
+        "playwright": "^1.65.0",
+        "stylelint": "^17.16.0",
+        "stylelint-config-recess-order": "^7.10.0",
         "stylelint-config-standard": "^40.0.0",
-        "stylelint-order": "^8.1.1",
-        "vitest": "^4.1.11"
+        "stylelint-order": "^8.1.3",
+        "vitest": "^5.1.0"
     },
     "engines": {
         "node": ">= 22.0.0",
