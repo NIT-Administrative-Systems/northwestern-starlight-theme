@@ -28,6 +28,8 @@ function runAxeSuite(label: string, mediaOverrides?: Record<string, string>) {
                         await page.emulateMedia(mediaOverrides as Parameters<typeof page.emulateMedia>[0]);
                     }
                     await gotoWithTheme(page, route, theme);
+                    // The home page fades sections in; axe reads blended colors mid-animation.
+                    await page.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished)));
 
                     const results = await new AxeBuilder({ page }).include("main").analyze();
                     const violations = results.violations.filter(
