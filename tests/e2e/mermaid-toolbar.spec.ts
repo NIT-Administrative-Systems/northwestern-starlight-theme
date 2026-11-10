@@ -397,3 +397,17 @@ test.describe("mermaid toolbar — dark mode", () => {
         expect(capture.background).toEqual([28, 28, 31, 255]);
     });
 });
+
+test.describe("mermaid rendering", () => {
+    test("dark mode keeps the theme's render rather than astro-mermaid's light one", async ({ page }) => {
+        await gotoWithTheme(page, MERMAID_PAGE, "dark");
+        const diagrams = page.locator("pre.mermaid:not(.nu-mermaid-fullscreen)");
+
+        // astro-mermaid renders once with the light palette and shares the Mermaid
+        // runtime, so a theme render that finished first used to be overwritten.
+        for (const diagram of await diagrams.all()) {
+            await diagram.scrollIntoViewIfNeeded();
+            await expect(diagram.locator("> svg")).toHaveAttribute("id", /^nu-mermaid-dark-/, { timeout: 15000 });
+        }
+    });
+});

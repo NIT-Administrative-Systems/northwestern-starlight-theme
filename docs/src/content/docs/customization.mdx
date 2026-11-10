@@ -157,6 +157,14 @@ defineNorthwesternConfig({
 })
 ```
 
+Diagrams use Mermaid's flat `classic` look and `dagre` layout, which match the theme's square corners and keep existing diagrams laid out the same. Mermaid 12 defaults most diagram types to the `neo` look and the ELK layout; to use those instead, set them in `mermaidConfig`:
+
+```ts
+mermaid: {
+    mermaidConfig: { look: "neo", layout: "elk" },
+},
+```
+
 ## Open Graph Images
 
 Each page gets a 1200x630 PNG at build time: favicon logo, page title, and description on Northwestern purple with a light purple accent border. Set `site` in your config for absolute URLs. See [Getting Started](/getting-started/#open-graph-images) for setup.

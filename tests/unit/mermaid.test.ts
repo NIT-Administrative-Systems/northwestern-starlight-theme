@@ -174,3 +174,103 @@ describe("northwesternMermaid", () => {
         expect(configs.light.themeVariables).toHaveProperty("textColor");
     });
 });
+
+type Mode = "light" | "dark";
+
+function themeVars(mode: Mode): Record<string, string> {
+    return createNorthwesternMermaidConfig(mode).mermaidConfig?.themeVariables as Record<string, string>;
+}
+
+/** WCAG 2 relative luminance of a #rgb or #rrggbb color. */
+function luminance(color: string): number {
+    const hex = color.length === 4 ? `#${[...color.slice(1)].map((c) => c + c).join("")}` : color;
+    const [r, g, b] = [1, 3, 5].map((i) => {
+        const c = Number.parseInt(hex.slice(i, i + 2), 16) / 255;
+        return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function contrast(a: string, b: string): number {
+    const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+    return (hi + 0.05) / (lo + 0.05);
+}
+
+describe("Mermaid 12 appearance", () => {
+    it.each<Mode>(["light", "dark"])(
+        "sets theme, look, layout and flowchart sizing inside mermaidConfig (%s)",
+        (mode) => {
+            // mermaid.initialize() resets keys it is not given, so the toolbar's
+            // re-render needs these in the config it passes, not only astro-mermaid's.
+            expect(createNorthwesternMermaidConfig(mode).mermaidConfig).toMatchObject({
+                theme: "base",
+                look: "classic",
+                layout: "dagre",
+                flowchart: { minNodeWidth: 0, wrappingWidth: 200 },
+            });
+        },
+    );
+
+    it("lets a site opt back into Mermaid 12's neo look and ELK layout", async () => {
+        const integration = northwesternMermaid({ mermaidConfig: { look: "neo", layout: "elk" } });
+        const params = makeHookParams();
+        await integration.hooks["astro:config:setup"]?.(params as never);
+
+        const configs = JSON.parse(getLastInjectedScript(params).match(/__NU_MERMAID_CONFIGS__ = ({.*})/s)![1]);
+        expect(configs.dark).toMatchObject({ theme: "base", look: "neo", layout: "elk" });
+    });
+
+    it("uses Mermaid's quadrantNFill variable names", () => {
+        const vars = themeVars("light");
+        for (let i = 1; i <= 4; i++) {
+            expect(vars).toHaveProperty(`quadrant${i}Fill`);
+            expect(vars).toHaveProperty(`quadrant${i}TextFill`);
+        }
+    });
+
+    it("colors C4 elements from the Northwestern palette", () => {
+        const c4 = createNorthwesternMermaidConfig("light").mermaidConfig?.c4 as Record<string, string>;
+        expect(c4.system_bg_color).toBe("#4e2a84");
+        // C4 always draws white labels.
+        for (const [key, value] of Object.entries(c4)) {
+            if (key.endsWith("_bg_color")) expect(contrast(value, "#ffffff"), key).toBeGreaterThanOrEqual(4.5);
+        }
+    });
+});
+
+describe("Mermaid palette contrast", () => {
+    it.each<Mode>(["light", "dark"])("puts text on fills at WCAG AA or better (%s)", (mode) => {
+        const v = themeVars(mode);
+        const pairs: [string, string][] = [
+            ["primaryColor", "primaryTextColor"],
+            ["secondaryColor", "secondaryTextColor"],
+            ["tertiaryColor", "tertiaryTextColor"],
+            ["actorBkg", "actorTextColor"],
+            ["noteBkgColor", "noteTextColor"],
+            ["stateBkg", "stateLabelColor"],
+            ["requirementBackground", "requirementTextColor"],
+            ["taskBkgColor", "taskTextColor"],
+            ["critBkgColor", "taskTextColor"],
+            ["activeTaskBkgColor", "taskTextDarkColor"],
+            ["doneTaskBkgColor", "taskTextDarkColor"],
+            ["background", "textColor"],
+            ...Array.from({ length: 12 }, (_, i): [string, string] => [`cScale${i}`, `cScaleLabel${i}`]),
+            ...Array.from({ length: 4 }, (_, i): [string, string] => [
+                `quadrant${i + 1}Fill`,
+                `quadrant${i + 1}TextFill`,
+            ]),
+            ...Array.from({ length: 8 }, (_, i): [string, string] => [`fillType${i}`, "textColor"]),
+        ];
+
+        for (const [fill, text] of pairs) {
+            expect(contrast(v[fill], v[text]), `${text} on ${fill}`).toBeGreaterThanOrEqual(4.5);
+        }
+    });
+
+    it.each<Mode>(["light", "dark"])("keeps edges and node borders visible on the canvas (%s)", (mode) => {
+        const v = themeVars(mode);
+        for (const key of ["lineColor", "primaryBorderColor"]) {
+            expect(contrast(v[key], v.background), key).toBeGreaterThanOrEqual(3);
+        }
+    });
+});
